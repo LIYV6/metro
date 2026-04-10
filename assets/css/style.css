@@ -379,19 +379,195 @@ input {
 .news-item:last-child {
     border-bottom: none;
 }
+/* 新闻列表项样式说明：
+    - .news-title：新闻/通告列表项的标题，居中显示
+    - .news-meta：显示发布时间/作者，同行居中，供列表页快速阅读使用
+    （保留语义标签，便于无障碍和结构化数据）
+*/
 .news-title {
-    font-size: 18px;
-    color: #222;
-    margin-bottom: 6px;
-}
-.news-meta {
-    font-size: 12px;
-    color: #888;
+    text-align: center;
+    font-size: 1.15rem;
     margin-bottom: 8px;
 }
-.news-summary {
+/* 通告/新闻条目的元信息（时间/作者） */
+.news-meta {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+.news-meta .reporter { margin-left: 6px; }
+/* 通用卡片容器 */
+.content-card {
+    background: #ffffff;
+    border-radius: 12px;
+    /* 卡片容器：用于 article/statement/news 等内容的外层卡片样式 */
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    padding: 32px;
+    margin-bottom: 24px;
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: box-shadow 0.3s ease;
+}
+
+.content-card:hover {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* 卡片头部 */
+.card-header {
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    /* 卡片头部：包含标题和元信息（发布日期/作者） */
+    padding-bottom: 16px;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: 600;
+    /* 卡片标题：通常是文章/声明的主标题，交由模板内的 .card-title 使用 */
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    line-height: 1.3;
+}
+
+.card-meta {
     font-size: 14px;
-    color: #444;
+    color: #666666;
+    /* 卡片元信息：发布日期、作者等元信息容器 */
+}
+
+.meta-date {
+    margin-right: 20px;
+}
+
+.meta-author {
+    color: #409eff;
+    font-weight: 500;
+}
+
+/* 卡片正文 */
+.card-body {
+    font-size: 16px;
+    color: #333333;
+    line-height: 1.8;
+}
+
+.card-body p {
+    margin-bottom: 3px;
+}
+
+.card-body img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+.card-body a {
+    color: #409eff;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.card-body a:hover {
+    border-bottom-color: #0d15ed;
+}
+
+/* 文章与声明模板样式说明（由 loader.js 渲染，模板类名：article-report / statement）
+   - article-report: 文章详情卡片，标题居中（黑色），元信息居中显示
+   - statement: 声明类卡片，标题居中（红色），元信息居中显示
+*/
+.article-report .card-title,
+.content-card.article-report .card-title {
+    text-align: center;
+    font-size: 28px;
+    color: #1a1a1a; /* 文章标题颜色：黑色 */
+    letter-spacing: 1px;
+    margin: 0 auto;
+}
+
+.article-report .card-meta,
+.content-card.article-report .card-meta {
+    text-align: center;
+    margin-top: 8px;
+}
+
+@media (max-width: 420px) {
+    /* 在超窄屏上，元信息允许换行以保持可读性 */
+    .article-report .card-meta,
+    .content-card.article-report .card-meta {
+        display: block;
+    }
+}
+
+/* 声明模板专属样式 */
+.statement .card-title {
+    text-align: center;
+    font-size: 28px;
+    /* 声明模板标题：特定颜色用于区分声明类内容 */
+    color: #c00000;
+    letter-spacing: 1px;
+}
+
+.statement .card-meta {
+    text-align: center;
+    margin-top: 8px;
+    /* 声明模板元信息：居中显示（通常只有发布日期） */
+}
+
+/* 加载状态 */
+.loading {
+    position: relative;
+    min-height: 220px;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 36px;
+    height: 36px;
+    border: 3px solid #f0f0f0;
+    border-top-color: #409eff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* 错误状态 */
+.error {
+    text-align: center;
+    color: #f56c6c;
+    padding: 48px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+    .content-card {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 20px;
+    }
+
+    .statement .card-title {
+        font-size: 24px;
+    }
 }
 
 .pagination {
@@ -415,7 +591,6 @@ input {
     .page-container { padding: 12px; }
     .page-title { font-size: 18px; }
 }
-
 
 /*线网示意页面-下拉选项栏样式作用：和导航栏同高同色，包含下拉框+信息按钮*/
 .dropdown-bar {
