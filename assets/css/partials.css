@@ -1,6 +1,12 @@
 /* partials.css
-   集中管理 header/footer 相关样式以便快速查找与修改
-   仅包含 header/footer 必要样式，其他通用样式仍在 style.css 中。
+   Header/Footer 相关样式（功能注释）
+   - 仅包含 header 与 footer 的布局与视觉样式。
+   - 说明（当前实现）：
+       * 多行顶部导航（.main-nav.multiline-nav）已启用，JS 会计算行数并设置 --nav-rows / --nav-row-height；
+       * 移动端横向滑动（overflow-x / touch-action / 隐藏滚动条）相关样式已从 CSS 中删除（不再默认启用）；
+       * 导航背景由 .site-header 控制以保证多行时背景覆盖全部行；
+       * 脚本会同步更新根变量 --header-height 并设置 body paddingTop 以避免内容被遮挡。
+   - 如需恢复横向滑动，请查找历史提交或联系维护者获取恢复方法。
 */
 
 /* 在 fragments 未加载完成时隐藏主体以避免闪烁 */
@@ -17,8 +23,10 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     top: 0;
     left: 0;
     z-index: 999;
-    background: #0b66a3; /* 顶部深蓝色 */
+    /* 顶部背景由主容器统一控制（使用渐变以与原 .main-nav 保持一致） */
+    background: linear-gradient(90deg, rgba(11,102,163,1), rgba(11,102,163,0.95));
     color: var(--white-color);
+    transition: height 220ms ease, background 220ms ease;
 }
 
 /*头部容器：居中布局，最大宽度*/
@@ -29,15 +37,19 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     padding: 0 20px;
     height: 100%;
     display: flex;
-    align-items: center;
+    /* 使子项（logo 区、导航）在纵向上拉伸到 header 的高度，保证多行时高度一致 */
+    align-items: stretch;
     background-color: transparent;
     position: relative; /* 允许内部绝对定位汉堡按钮 */
 }
 
+/* 保证 logo 固定尺寸不被压缩，导航占据剩余空间（合并至下方 logo-area 与 main-nav 定义） */
+
 /* logo区域 */
 .logo-area {
     display: flex;
-    align-items: center;
+    height: 100%; /* 占满 header 高度以与导航保持一致 */
+    align-items: center; /* logo 在垂直方向居中 */
     gap: 20px;
 }
 
@@ -59,54 +71,175 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
 .home-icon:hover {
     background: rgba(255,255,255,0.06);
 } 
-
-.nav-toggle {
-    display: none;
-    background: none;
-    color: var(--white-color);
-    font-size: 22px;
-    line-height: 1;
-    width: 44px;
-    height: 44px;
-    border-radius: 6px;
-}
-
-/* 确保汉堡按钮始终可点击（提高 z-index）并且不被隐藏的 overlay 阻挡 */
-.nav-toggle { z-index: 1202; }
-
-/* 主导航菜单 */
+/* ========== 顶部精简吸顶 横向可滚动导航 ========== */
+/* 使用 position: sticky 实现吸顶，不脱离文档流 */
 .main-nav {
     flex: 1;
-    display: flex;
+    position: sticky;
     justify-content: center;
+    top: 0;
+    height: 100%; /* 占满 header 的高度，由 --header-height 控制 */
+    z-index: 1200; /* 高于内容，但低于可能的模态 */
+    /* 背景统一由 .site-header 控制，保持本元素透明以保证背景覆盖整行 */
+    background: transparent;
+    display: flex; /* 保持与 header 内 logo 区协同布局 */
+    align-items: stretch; /* 让内部 .nav-inner 占满高度并自行处理换行 */
+    transition: height 220ms ease;
+}
+
+    /* ======================================================
+       启用：多行自适应顶部导航（已启用，适用于 .main-nav.multiline-nav）
+
+       说明：当 .main-nav 带有类 .multiline-nav 时，导航将允许换行（flex-wrap）并根据容器宽度自动分配多行。
+       JS 会计算每行可放置的项数并将行数写入 CSS 变量 --nav-rows（见 assets/js/multiline-nav.js）。
+       页底背景（.main-footer）会基于 --nav-rows 自动调整顶部内边距，避免视觉遮挡。
+
+       若需禁用：移除 .multiline-nav 类或注释下面的规则。
+    */
+
+    .main-nav.multiline-nav .nav-inner { padding: 8px 12px; }
+    .main-nav.multiline-nav .nav-scroll { overflow: visible; }
+    .main-nav.multiline-nav .nav-list { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 12px; padding: 6px 12px; align-content: flex-start; align-items: flex-start; }
+    .main-nav.multiline-nav .nav-list .nav-item { flex: 0 0 auto; align-self: flex-start; }
+
+    /* 根据 --nav-rows 调整 main-nav 高度（每行 64px）并为主体及页脚留出空间 */
+        /*
+            多行导航容器高度说明：
+            - JS 会根据导航项和容器宽度计算实际行数并通过 CSS 变量写入 --nav-rows。
+            - 每行的高度由 --nav-row-height 决定（默认 64px），便于不同字体/行高情况下做微调。
+            - height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高度或行数。
+        */
+        .main-nav.multiline-nav {
+                --nav-rows: 1; /* 默认值，JS 会覆盖真实值 */
+                --nav-row-height: 64px; /* 单行高度的默认值，可由 JS 覆盖 */
+                height: calc(var(--nav-rows) * var(--nav-row-height));
+        }
+
+        /* 底部延伸边框：使用 .nav-inner::after 在导航容器底部绘制一条背景色线，
+           并将其垂直位置与多行高度对齐，确保无论换行多少行边框都延伸到最下方。
+           该伪元素不会遮挡交互（pointer-events: none）。如需不同颜色或粗细，可覆盖下列变量。 */
+        .main-nav.multiline-nav .nav-inner::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            /* 将伪元素放置在导航容器的实际底部，使用 calc 以适配多行高度 */
+            top: calc(100% - 1px);
+            height: 1px;
+            background: rgba(255,255,255,0.08); /* 可覆盖 */
+            pointer-events: none;
+            z-index: 1199;
+        }
+
+    /* 页脚顶部内边距调整：当导航增高时，页脚背景可视上移以保持视觉平衡 */
+    .main-footer {
+        transition: padding-top 220ms ease;
+        padding-top: calc(32px + (var(--nav-rows,1) - 1) * 12px); /* 基础 32px，加上每行的微调 */
+    }
+
+    /* 在较窄视口里限制最大行数示例（可按需调整） */
+    @media (max-width: 420px) {
+        .main-nav.multiline-nav { height: calc(var(--nav-rows) * 64px); }
+    }
+
+    /* ====================================================== */
+
+.main-nav .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    /* nav 内部顶部对齐，确保多行时项从上向下堆叠而不居中 */
+    align-items: flex-start;
+    position: relative;
+    padding: 0 12px;
+}
+
+/* 渐变遮罩，初始隐藏，JS 根据滚动显示/隐藏 */
+.nav-fade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 48px;
+    pointer-events: none;
+    transition: opacity 240ms ease;
+    opacity: 0;
+    z-index: 1210;
+}
+.nav-fade-left { left: 0; background: linear-gradient(90deg, rgba(11,102,163,1), rgba(11,102,163,0)); }
+.nav-fade-right { right: 0; background: linear-gradient(270deg, rgba(11,102,163,1), rgba(11,102,163,0)); }
+
+/* 可滚动容器 */
+.nav-scroll {
+    /* 可滚动容器：横向滚动相关样式已移除，导航默认允许换行（由 .main-nav.multiline-nav 控制） */
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0; /* 防止在 flex 容器中内容溢出被裁切 */
+    min-height: 64px;
 }
 
 .nav-list {
+    /* 使用 flex 布局以支持自动换行（配合 .main-nav.multiline-nav 的 flex-wrap） */
     display: flex;
     align-items: center;
-    gap: 28px;
-}
-.nav-link {
-    font-size: 16px;
-    font-weight: 500;
-    position: relative;
+    gap: 24px; /* 默认间距 */
+    padding: 0 56px; /* 给左右渐变留出空间（若使用渐变遮罩） */
 }
 
-/* 导航交互（伪元素 underline 与 hover） */
-.nav-link.active {
-    color: #fff;
+/* 窄屏进一步压缩内边距以确保首尾项可见并更易滑动 */
+@media (max-width: 420px) {
+    .nav-list { padding: 0 16px; gap: 20px; }
 }
-.nav-link::after { 
-    content: '';
-    position: absolute;
-    bottom:0; 
-    left:0; 
-    width:0;
-    height:2px;
-    background:var(--nav-hover-color); 
-    transition: width 0.3s ease; }
-.nav-link:hover { color: var(--nav-hover-color); }
-.nav-link:hover::after { width:100%; }
+.nav-item { list-style: none; }
+.nav-link {
+    display: inline-block;
+    padding: 10px 6px;
+    font-size: 16px;
+    color: var(--white-color);
+    border-radius: 4px;
+    transition: color 200ms ease, background-color 200ms ease, transform 200ms ease;
+}
+.nav-link:hover, .nav-link:focus {
+    color: var(--nav-hover-color);
+    outline: none;
+    transform: translateY(-2px);
+}
+.nav-link:focus { box-shadow: 0 0 0 3px rgba(255,204,0,0.12); }
+.nav-link.active { font-weight: 700; color: var(--nav-hover-color); }
+
+/* 微调字体垂直位置以提升视觉对齐 */
+.nav-link { line-height: 1; padding-top: 12px; padding-bottom: 10px; }
+
+/* 桌面端：关闭横向滚动，全部项平铺居中 */
+@media (min-width: 768px) {
+    .nav-scroll { overflow: visible; }
+    .nav-list { justify-content: center; gap: 32px; padding: 0; }
+    .nav-fade { display: none; }
+}
+
+/* 渐变显示时的可见状态 */
+.nav-fade.visible { opacity: 1; }
+
+/* 保证导航高度不遮挡主体内容（body padding-top 已设为 var(--header-height)）
+    说明：当启用多行导航时，JS 会将根变量 --header-height 更新为 rows * row-height，
+    body 的 padding-top 会随之调整以避免导航遮挡主体内容。 */
+.site-header { height: var(--header-height); }
+
+/* 全宽底部边框：绘制在 .site-header 的底部，覆盖页面左右全宽。
+    使用伪元素以避免影响导航内部布局；伪元素不会捕获指针事件。
+*/
+.site-header::after {
+     content: '';
+     position: absolute;
+     left: 0;
+     right: 0;
+     bottom: 0; /* 紧贴 header 底部 */
+     height: 1px;
+     background: rgba(255,255,255,0.08);
+     pointer-events: none;
+     z-index: 1198; /* 低于 nav 内部浮层，但高于页面内容 */
+}
+
 
 /* 移动端导航（当前项目使用 .nav-toggle + .mobile-nav-panel）
  说明：在窄屏时隐藏主导航，显示右侧汉堡按钮（使用 .nav-toggle），点击展开右侧滑出菜单*/
@@ -140,8 +273,11 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
 .mobile-nav-overlay{ pointer-events: none; }
 .mobile-nav-overlay.active{ opacity:1; visibility:visible; pointer-events: auto; }
 
-/* 窄屏断点 */
-@media (max-width: 900px){ .main-nav{ display:none; } .nav-toggle{ display:inline-flex; align-items:center; justify-content:center; position:absolute; right:16px; top:50%; transform:translateY(-50%); } }
+/* 窄屏断点：保持主导航可见（使用横向滚动），只显示汉堡按钮以便兼容旧交互 */
+@media (max-width: 900px){
+    /* 不隐藏 .main-nav：移动端使用横向滚动适配多项导航 */
+    .nav-toggle{ display:inline-flex; align-items:center; justify-content:center; position:absolute; right:16px; top:50%; transform:translateY(-50%); }
+}
 @media (max-width:420px){ .mobile-nav-panel{ width:86vw; } }
 
 /* 页脚主容器 */
