@@ -5,49 +5,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>信息总览</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/partials.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
+    <script src="https://unpkg.com/mustache@4.2.0/mustache.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json5/2.2.3/index.min.js"></script>
 </head>
 <body>
+    <script>window.PAGE_ID = 'info';</script>
 <!-- 页顶部 -->
     <div data-include="header"></div>
 
 <main class="news-page">
-    <div class="page-container">
-        <h1 class="page-title">线路建设</h1>
-        <div class="news-list">
-            <article class="news-item" data-slot="info.line-sigema"></article>
-            <article class="news-item" data-slot="info.line-11"></article>
+    <section class="page-container">
+        <h1 class="page-title" id="construction-trends">建设动态</h1>
+        <div class="news-list" id="slot-linenews">
+            <!-- loader.js 将把 line-sigema 与 line-11 注入到此处 -->
         </div>
-    </div>
-</main>
-
-<main class="news-page">
-    <div class="page-container">
+    </section>
+    <section class="page-container">
         <h1 class="page-title">通知公告</h1>
-        <div class="news-list">
-            <article class="news-item" data-slot="info.passenger-rule" id="passenger-rule"></article>
+        <div class="news-list" id="slot-notice">
+            <!-- loader.js 将把 passenger-rule 注入到此处 -->
         </div>
-    </div>
-</main>
-
-<main class="news-page"><!--页面主体-->
-    <div class="page-container"><!--主体区域-->
+    </section>
+    <section class="page-container"><!--主体区域-->
         <h1 class="page-title">线路规划</h1>
-        <div class="news-list">
-            <article class="news-item" data-slot="info.jqqd"></article>
+        <div class="news-list" id="slot-plan">
+            <!-- loader.js 将把 jqqd 注入到此处 -->
         </div>
-    </div><!--主体区域结束-->
-</main>
+    </section>
+</main><!--主体区域结束-->
 
-<!--网站页脚：全站底部信息-->
-    <!-- footer 由 fragments 注入 -->
+<!--网站页脚由 fragments 注入 -->
         <div data-include="footer"></div>
 <!-- 引入外部交互脚本，统一管理逻辑 -->
     <script src="../assets/js/include-fragments.js"></script>
-    <script src="../assets/js/multiline-nav.js"></script>
-    <script src="assets/js/multiline-nav.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+    <script src="../assets/js/navigate.js"></script>
     <script src="../assets/js/loader.js"></script>
 
 </body>

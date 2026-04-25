@@ -1,0 +1,21 @@
+{
+  "system": {
+    "dataBasePath": "../assets/data/",
+    "imageBasePath": "../assets/images/"
+  },
+
+  "autoRefresh": {
+    "enabled": false, //自动刷新开关（true/false）
+    "interval": "10d", //自动刷新间隔（仅enabled=true时生效）
+  },
+
+  "security": {
+    "allowedTags": ["p", "br", "b", "strong", "i", "em", "u", "a", "ul", "ol", "li", "blockquote", "img"],
+    "allowedAttr": ["href", "target", "src", "alt", "title", "width", "height", "loading"],
+    "forbidAttr": ["onerror", "onload", "onclick", "style"]
+  }
+  ,
+  "ui": {
+    "articleFont": "KaiTi"
+  }
+}

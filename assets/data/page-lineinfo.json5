@@ -1,0 +1,27 @@
+{
+    "pageId": "lineinfo",
+    
+    "slots": {
+        "slot-lineinfo": {
+            "dataKey": ["xlxx","route-guide"],
+            "semanticTag": "article",
+            "wrapperClass": "card"
+        },
+    },
+
+    "content": {
+        "xlxx": {
+            "type": "article",
+            "title": "线路信息",
+            "date": "2026-04-12",
+            "author": "LiYv",
+            "content": "<p>&emsp;&emsp;说实话，不会整这个页面。😭 单线路信息展示这块真的难住我了，页面结构复杂，整体工作量还特别大，以我和人工智障目前的菜鸡技术实在制作不下来。所以此处放了大佬的页面链接，先“共享”成果应急～</p><p>&emsp;&emsp;大佬做的线路信息和导航：<a href='https://mtrmap.mcbar.cc/route.html' target='_blank'>点击此处前往</a></p>",
+            
+        },
+        "route-guide": {
+            "type": "article",
+            "title": "乘车导航",
+            "content": "<p>&emsp;&emsp;这里是模组自带的导航。链接：<a href='https://routeguide.liyv.me' target='_blank'>点击此处前往</a></p>"
+        }
+    }
+}

@@ -5,34 +5,40 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>更多内容</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/partials.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <!--引入DOMPurify-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
+    <script src="https://unpkg.com/mustache@4.2.0/mustache.min.js"></script>
+    <!--新增：引入JSON5解析库-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json5/2.2.3/index.min.js"></script>
 </head>
-<body>
+<body class="moreinfo-page">
+    <script>window.PAGE_ID = 'moreinfo';</script>
+
     <div data-include="header"></div>
 
     <main class="news-page">
-        <div class="page-container">
-            <h1 class="page-title">更多内容</h1>
-            <div class="news-list" id="newsList">
-                <article class="news-item" data-slot="moreinfo.lymetro" id="lymetro"></article>
-                <article class="news-item" data-slot="moreinfo.furail" id="furail"></article>
-                <article class="news-item" data-slot="moreinfo.yirail" id="yirail"></article>
-                <article class="news-item" data-slot="moreinfo.service-culture" id="service-culture"></article>
-                <article class="news-item" data-slot="moreinfo.service-statement" id="service-statement"></article>
-                <article class="news-item" data-slot="moreinfo.privacy-statement" id="privacy-statement"></article>
-                <article class="news-item" data-slot="moreinfo.copyright-statement" id="copyright-statement"></article>
+        <section class="page-container">
+            <h1 class="page-title">简介</h1>
+            <div class="news-list" id="slot-introduce-list">
+<!--介绍-->
             </div>
-        </div>
+        </section>
+
+        <section class="page-container">
+            <h1 class="page-title">声明</h1>
+            <div class="news-list" id="slot-statement-list">
+<!--声明-->
+            </div>
+        </section>
     </main>
 
 <!--页脚-->
     <div data-include="footer"></div>
 
     <script src="../assets/js/include-fragments.js"></script>
-    <script src="../assets/js/multiline-nav.js"></script>
-    <script src="assets/js/multiline-nav.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+    <script src="../assets/js/navigate.js"></script>
     <script src="../assets/js/loader.js"></script>
 </body>
 </html>

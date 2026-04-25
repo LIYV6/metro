@@ -1,35 +1,36 @@
 /* partials.css
-   Header/Footer 相关样式（功能注释）
-   - 仅包含 header 与 footer 的布局与视觉样式。
-   - 说明（当前实现）：
-       * 多行顶部导航（.main-nav.multiline-nav）已启用，JS 会计算行数并设置 --nav-rows / --nav-row-height；
-       * 移动端横向滑动（overflow-x / touch-action / 隐藏滚动条）相关样式已从 CSS 中删除（不再默认启用）；
-       * 导航背景由 .site-header 控制以保证多行时背景覆盖全部行；
-       * 脚本会同步更新根变量 --header-height 并设置 body paddingTop 以避免内容被遮挡。
-   - 如需恢复横向滑动，请查找历史提交或联系维护者获取恢复方法。
+   用途：仅包含 header.html / footer.html fragment 所需的样式与辅助注释。
+   责任范围：
+    - 导航（header）与页脚（footer）的布局与交互样式。
+    - 当启用多行导航（.main-nav.multiline-nav）时，脚本会计算并写入 --nav-rows 与 --nav-row-height；
+    - 本文件不包含全局 reset 或 :root 变量（这些放在 assets/css/style.css），以减少重复与冲突。
 */
-
 /* 在 fragments 未加载完成时隐藏主体以避免闪烁 */
 html.fragments-loading body > :not(.site-header):not(.main-footer) {
     visibility: hidden;
     opacity: 0;
 }
 
-/* 头部导航样式作用：固定在页面顶部，层级最高，保证在banner上方显示*/
+/* partials.css
+   说明：仅保留 header.html、footer.html、以及 loader.js 模板相关样式和 fragments-loading spinner。
+   - 不再包含全局 reset/:root 或页面专属样式（这些已迁移到 assets/css/style.css）
+   - 此文件应被 header/footer 的 fragment 引入并优先保证导航/页脚样式与 loader 模板保持一致
+*/
+
+/* ========== Header / Navigation (保留用于 header.html) ========== */
 .site-header {
-    width: 100%;
+     width: 100%;
     height: var(--header-height);
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 999;
-    /* 顶部背景由主容器统一控制（使用渐变以与原 .main-nav 保持一致） */
+    z-index: 1200; /* 提高 z-index，确保 header 高于下拉栏和地图 */
     background: linear-gradient(90deg, rgba(11,102,163,1), rgba(11,102,163,0.95));
     color: var(--white-color);
     transition: height 220ms ease, background 220ms ease;
 }
 
-/*头部容器：居中布局，最大宽度*/
+/* 头部容器：居中布局，最大宽度 */
 .header-container {
     width: 100%;
     max-width: 1200px;
@@ -37,19 +38,15 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     padding: 0 20px;
     height: 100%;
     display: flex;
-    /* 使子项（logo 区、导航）在纵向上拉伸到 header 的高度，保证多行时高度一致 */
     align-items: stretch;
     background-color: transparent;
-    position: relative; /* 允许内部绝对定位汉堡按钮 */
+    position: relative;
 }
 
-/* 保证 logo 固定尺寸不被压缩，导航占据剩余空间（合并至下方 logo-area 与 main-nav 定义） */
-
-/* logo区域 */
 .logo-area {
     display: flex;
-    height: 100%; /* 占满 header 高度以与导航保持一致 */
-    align-items: center; /* logo 在垂直方向居中 */
+    height: 100%;
+    align-items: center;
     gap: 20px;
 }
 
@@ -60,17 +57,19 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     width: 44px;
     height: 44px;
     border-radius: 6px;
-    line-height: 0; /*避免svg偏移 */
+    line-height: 0;
 }
 
 .home-icon svg {
-    display: block; /*修复响应时 svg 偏离*/
+    display: block;
     width: 22px;
     height: 22px;
 }
+
 .home-icon:hover {
     background: rgba(255,255,255,0.06);
-} 
+}
+
 /* ========== 顶部精简吸顶 横向可滚动导航 ========== */
 /* 使用 position: sticky 实现吸顶，不脱离文档流 */
 .main-nav {
@@ -78,16 +77,28 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     position: sticky;
     justify-content: center;
     top: 0;
-    height: 100%; /* 占满 header 的高度，由 --header-height 控制 */
-    z-index: 1200; /* 高于内容，但低于可能的模态 */
+    height: 100%;
+    /* 占满 header 的高度，由 --header-height 控制 */
+    z-index: 1200;
+    /* 高于内容，但低于可能的模态 */
     /* 背景统一由 .site-header 控制，保持本元素透明以保证背景覆盖整行 */
     background: transparent;
-    display: flex; /* 保持与 header 内 logo 区协同布局 */
-    align-items: stretch; /* 让内部 .nav-inner 占满高度并自行处理换行 */
+    display: flex;
+    /* 保持与 header 内 logo 区协同布局 */
+    align-items: stretch;
+    /* 让内部 .nav-inner 占满高度并自行处理换行 */
     transition: height 220ms ease;
 }
 
-    /* ======================================================
+/* ===== 通用模板 & 字体说明 =====
+     - 本文件包含多个页面复用的组件样式（card, news-list, content-card 等）。
+     - 文章/新闻正文字体通过 CSS 变量 --article-font 控制，默认在 :root 中声明为楷体。
+     - 优先级策略（你偏好）：页面特有样式（assets/css/style.css）应覆盖本文件中通用样式。
+         为此，建议在页面 head 中确保先引入 partials.css，再引入 style.css，或在 style.css 使用更具体选择器。
+*/
+
+
+/* ======================================================
        启用：多行自适应顶部导航（已启用，适用于 .main-nav.multiline-nav）
 
        说明：当 .main-nav 带有类 .multiline-nav 时，导航将允许换行（flex-wrap）并根据容器宽度自动分配多行。
@@ -97,52 +108,76 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
        若需禁用：移除 .multiline-nav 类或注释下面的规则。
     */
 
-    .main-nav.multiline-nav .nav-inner { padding: 8px 12px; }
-    .main-nav.multiline-nav .nav-scroll { overflow: visible; }
-    .main-nav.multiline-nav .nav-list { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 12px; padding: 6px 12px; align-content: flex-start; align-items: flex-start; }
-    .main-nav.multiline-nav .nav-list .nav-item { flex: 0 0 auto; align-self: flex-start; }
+.main-nav.multiline-nav .nav-inner {
+    padding: 8px 12px;
+}
 
-    /* 根据 --nav-rows 调整 main-nav 高度（每行 64px）并为主体及页脚留出空间 */
-        /*
+.main-nav.multiline-nav .nav-scroll {
+    overflow: visible;
+}
+
+.main-nav.multiline-nav .nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 6px 12px;
+    align-content: flex-start;
+    align-items: flex-start;
+}
+
+.main-nav.multiline-nav .nav-list .nav-item {
+    flex: 0 0 auto;
+    align-self: flex-start;
+}
+
+/* 根据 --nav-rows 调整 main-nav 高度（每行 64px）并为主体及页脚留出空间 */
+/*
             多行导航容器高度说明：
             - JS 会根据导航项和容器宽度计算实际行数并通过 CSS 变量写入 --nav-rows。
             - 每行的高度由 --nav-row-height 决定（默认 64px），便于不同字体/行高情况下做微调。
             - height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高度或行数。
         */
-        .main-nav.multiline-nav {
-                --nav-rows: 1; /* 默认值，JS 会覆盖真实值 */
-                --nav-row-height: 64px; /* 单行高度的默认值，可由 JS 覆盖 */
-                height: calc(var(--nav-rows) * var(--nav-row-height));
-        }
+.main-nav.multiline-nav {
+    --nav-rows: 1;
+    /* 默认值，JS 会覆盖真实值 */
+    --nav-row-height: 64px;
+    /* 单行高度的默认值，可由 JS 覆盖 */
+    height: calc(var(--nav-rows) * var(--nav-row-height));
+}
 
-        /* 底部延伸边框：使用 .nav-inner::after 在导航容器底部绘制一条背景色线，
+/* 底部延伸边框：使用 .nav-inner::after 在导航容器底部绘制一条背景色线，
            并将其垂直位置与多行高度对齐，确保无论换行多少行边框都延伸到最下方。
            该伪元素不会遮挡交互（pointer-events: none）。如需不同颜色或粗细，可覆盖下列变量。 */
-        .main-nav.multiline-nav .nav-inner::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            /* 将伪元素放置在导航容器的实际底部，使用 calc 以适配多行高度 */
-            top: calc(100% - 1px);
-            height: 1px;
-            background: rgba(255,255,255,0.08); /* 可覆盖 */
-            pointer-events: none;
-            z-index: 1199;
-        }
+.main-nav.multiline-nav .nav-inner::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* 将伪元素放置在导航容器的实际底部，使用 calc 以适配多行高度 */
+    top: calc(100% - 1px);
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    /* 可覆盖 */
+    pointer-events: none;
+    z-index: 1199;
+}
 
-    /* 页脚顶部内边距调整：当导航增高时，页脚背景可视上移以保持视觉平衡 */
-    .main-footer {
-        transition: padding-top 220ms ease;
-        padding-top: calc(32px + (var(--nav-rows,1) - 1) * 12px); /* 基础 32px，加上每行的微调 */
+/* 页脚顶部内边距调整：当导航增高时，页脚背景可视上移以保持视觉平衡 */
+.main-footer {
+    transition: padding-top 220ms ease;
+    padding-top: calc(32px + (var(--nav-rows, 1) - 1) * 12px);
+    /* 基础 32px，加上每行的微调 */
+}
+
+/* 在较窄视口里限制最大行数示例（可按需调整） */
+@media (max-width: 420px) {
+    .main-nav.multiline-nav {
+        height: calc(var(--nav-rows) * 64px);
     }
+}
 
-    /* 在较窄视口里限制最大行数示例（可按需调整） */
-    @media (max-width: 420px) {
-        .main-nav.multiline-nav { height: calc(var(--nav-rows) * 64px); }
-    }
-
-    /* ====================================================== */
+/* ====================================================== */
 
 .main-nav .nav-inner {
     max-width: 1200px;
@@ -166,15 +201,24 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     opacity: 0;
     z-index: 1210;
 }
-.nav-fade-left { left: 0; background: linear-gradient(90deg, rgba(11,102,163,1), rgba(11,102,163,0)); }
-.nav-fade-right { right: 0; background: linear-gradient(270deg, rgba(11,102,163,1), rgba(11,102,163,0)); }
+
+.nav-fade-left {
+    left: 0;
+    background: linear-gradient(90deg, rgba(11, 102, 163, 1), rgba(11, 102, 163, 0));
+}
+
+.nav-fade-right {
+    right: 0;
+    background: linear-gradient(270deg, rgba(11, 102, 163, 1), rgba(11, 102, 163, 0));
+}
 
 /* 可滚动容器 */
 .nav-scroll {
     /* 可滚动容器：横向滚动相关样式已移除，导航默认允许换行（由 .main-nav.multiline-nav 控制） */
     width: 100%;
     flex: 1 1 auto;
-    min-width: 0; /* 防止在 flex 容器中内容溢出被裁切 */
+    min-width: 0;
+    /* 防止在 flex 容器中内容溢出被裁切 */
     min-height: 64px;
 }
 
@@ -182,15 +226,24 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     /* 使用 flex 布局以支持自动换行（配合 .main-nav.multiline-nav 的 flex-wrap） */
     display: flex;
     align-items: center;
-    gap: 24px; /* 默认间距 */
-    padding: 0 56px; /* 给左右渐变留出空间（若使用渐变遮罩） */
+    gap: 24px;
+    /* 默认间距 */
+    padding: 0 56px;
+    /* 给左右渐变留出空间（若使用渐变遮罩） */
 }
 
 /* 窄屏进一步压缩内边距以确保首尾项可见并更易滑动 */
 @media (max-width: 420px) {
-    .nav-list { padding: 0 16px; gap: 20px; }
+    .nav-list {
+        padding: 0 16px;
+        gap: 20px;
+    }
 }
-.nav-item { list-style: none; }
+
+.nav-item {
+    list-style: none;
+}
+
 .nav-link {
     display: inline-block;
     padding: 10px 6px;
@@ -199,203 +252,286 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     border-radius: 4px;
     transition: color 200ms ease, background-color 200ms ease, transform 200ms ease;
 }
-.nav-link:hover, .nav-link:focus {
+
+.nav-link:hover,
+.nav-link:focus {
     color: var(--nav-hover-color);
     outline: none;
     transform: translateY(-2px);
 }
-.nav-link:focus { box-shadow: 0 0 0 3px rgba(255,204,0,0.12); }
-.nav-link.active { font-weight: 700; color: var(--nav-hover-color); }
+
+.nav-link:focus {
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.12);
+}
+
+.nav-link.active {
+    font-weight: 700;
+    color: var(--nav-hover-color);
+}
 
 /* 微调字体垂直位置以提升视觉对齐 */
-.nav-link { line-height: 1; padding-top: 12px; padding-bottom: 10px; }
+.nav-link {
+    line-height: 1;
+    padding-top: 12px;
+    padding-bottom: 10px;
+}
 
 /* 桌面端：关闭横向滚动，全部项平铺居中 */
 @media (min-width: 768px) {
-    .nav-scroll { overflow: visible; }
-    .nav-list { justify-content: center; gap: 32px; padding: 0; }
-    .nav-fade { display: none; }
+    .nav-scroll {
+        overflow: visible;
+    }
+
+    .nav-list {
+        justify-content: center;
+        gap: 32px;
+        padding: 0;
+    }
+
+    .nav-fade {
+        display: none;
+    }
 }
 
 /* 渐变显示时的可见状态 */
-.nav-fade.visible { opacity: 1; }
+.nav-fade.visible {
+    opacity: 1;
+}
 
 /* 保证导航高度不遮挡主体内容（body padding-top 已设为 var(--header-height)）
     说明：当启用多行导航时，JS 会将根变量 --header-height 更新为 rows * row-height，
     body 的 padding-top 会随之调整以避免导航遮挡主体内容。 */
-.site-header { height: var(--header-height); }
+.site-header {
+    height: var(--header-height);
+}
 
 /* 全宽底部边框：绘制在 .site-header 的底部，覆盖页面左右全宽。
     使用伪元素以避免影响导航内部布局；伪元素不会捕获指针事件。
 */
 .site-header::after {
-     content: '';
-     position: absolute;
-     left: 0;
-     right: 0;
-     bottom: 0; /* 紧贴 header 底部 */
-     height: 1px;
-     background: rgba(255,255,255,0.08);
-     pointer-events: none;
-     z-index: 1198; /* 低于 nav 内部浮层，但高于页面内容 */
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* 紧贴 header 底部 */
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+    z-index: 1198;
+    /* 低于 nav 内部浮层，但高于页面内容 */
 }
 
 
-/* 移动端导航（当前项目使用 .nav-toggle + .mobile-nav-panel）
- 说明：在窄屏时隐藏主导航，显示右侧汉堡按钮（使用 .nav-toggle），点击展开右侧滑出菜单*/
+/*  移动端导航（当前项目使用 .nav-toggle + .mobile-nav-panel）
+ 说明：在窄屏时隐藏主导航，显示右侧汉堡按钮（使用 .nav-toggle），点击展开右侧滑出菜单
 
-.nav-toggle{ display: none; background:none; color:var(--white-color); font-size:22px; line-height:1; width:44px; height:44px; border-radius:6px; }
+.nav-toggle {
+    display: none;
+    background: none;
+    color: var(--white-color);
+    font-size: 22px;
+    line-height: 1;
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+}
 
-.mobile-nav-panel{ position:fixed; top:var(--header-height); left:0; right:0; width:100%; max-width:none; background:#0b66a3; color:white; box-shadow:0 4px 18px rgba(0,0,0,0.12); transform-origin: top; transform: scaleY(0); opacity:0; visibility:hidden; transition: transform 360ms cubic-bezier(.16,.84,.24,1), opacity 220ms ease; z-index:1115; overflow:hidden; }
+.mobile-nav-panel {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: none;
+    background: #0b66a3;
+    color: white;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    transform-origin: top;
+    transform: scaleY(0);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 360ms cubic-bezier(.16, .84, .24, 1), opacity 220ms ease;
+    z-index: 1115;
+    overflow: hidden;
+}
 
-.mobile-nav-panel.active{ transform-origin: top; transform: scaleY(1); opacity:1; visibility:visible; }
+.mobile-nav-panel.active {
+    transform-origin: top;
+    transform: scaleY(1);
+    opacity: 1;
+    visibility: visible;
+}
 
-/* 可定制移动面板内选项背景与透明度：
+可定制移动面板内选项背景与透明度：
    --mobile-nav-item-bg-rgb : 三元 RGB 值（逗号分隔），默认白色 '255,255,255'
    --mobile-nav-item-bg-opacity : 背景透明度，默认 1（不透明）
    --mobile-nav-item-text-color : 文字颜色，默认与面板主题色对比
    修改位置：assets/css/partials.css 中此处，或在全局 :root 中覆盖
-*/
+
 .mobile-nav-panel {
-    --mobile-nav-item-bg-rgb: 255,255,255;
+    --mobile-nav-item-bg-rgb: 255, 255, 255;
     --mobile-nav-item-bg-opacity: 1;
     --mobile-nav-item-text-color: #0b66a3;
 }
 
-.mobile-nav-panel .mobile-nav-list{ display:flex; flex-direction:column; }
-.mobile-nav-panel .mobile-nav-item a{ display:block; padding:14px 18px; color:white; border-bottom:1px solid rgba(255,255,255,0.06); }
-
-.nav-toggle.active{ font-size:20px; }
-
-/* 半透明遮罩，当移动面板展开时显示，点击可关闭 */
-.mobile-nav-overlay{ position:fixed; inset:var(--header-height) 0 0 0; top:var(--header-height); left:0; right:0; bottom:0; background:rgba(0,0,0,0.35); opacity:0; visibility:hidden; transition:opacity 200ms ease; z-index:1100; }
-/* 默认不捕获指针事件，避免遮挡 header 的交互；激活时恢复 pointer-events 以响应点击关闭 */
-.mobile-nav-overlay{ pointer-events: none; }
-.mobile-nav-overlay.active{ opacity:1; visibility:visible; pointer-events: auto; }
-
-/* 窄屏断点：保持主导航可见（使用横向滚动），只显示汉堡按钮以便兼容旧交互 */
-@media (max-width: 900px){
-    /* 不隐藏 .main-nav：移动端使用横向滚动适配多项导航 */
-    .nav-toggle{ display:inline-flex; align-items:center; justify-content:center; position:absolute; right:16px; top:50%; transform:translateY(-50%); }
-}
-@media (max-width:420px){ .mobile-nav-panel{ width:86vw; } }
-
-/* 页脚主容器 */
-.main-footer {
-    width: 100%;
-    background-color: #f0f0f0;
-    color: #333;
-    padding: 32px 0;
-}
-
-/* 页脚导航网格 */
-.footer-nav-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-bottom: 40px;
-}
-
-/* 导航栏统一样式 */
-.footer-nav-column h4 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 18px;
-    color: var(--mtr-text-white);
-}
-
-.footer-nav-column ul {
+.mobile-nav-panel .mobile-nav-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 
+.mobile-nav-panel .mobile-nav-item a {
+    display: block;
+    padding: 14px 18px;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav-toggle.active {
+    font-size: 20px;
+}
+
+半透明遮罩，当移动面板展开时显示，点击可关闭 
+.mobile-nav-overlay {
+    position: fixed;
+    inset: var(--header-height) 0 0 0;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 200ms ease;
+    z-index: 1100;
+}
+
+默认不捕获指针事件，避免遮挡 header 的交互；激活时恢复 pointer-events 以响应点击关闭 
+.mobile-nav-overlay {
+    pointer-events: none;
+}
+
+.mobile-nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+窄屏断点：保持主导航可见（使用横向滚动），只显示汉堡按钮以便兼容旧交互
+@media (max-width: 900px) {
+
+    不隐藏 .main-nav：移动端使用横向滚动适配多项导航 
+    .nav-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+} */
+
+/* @media (max-width:420px) {
+    .mobile-nav-panel {
+        width: 86vw;
+    }
+} */
+
+/* ========== Footer (保留 footer.html 使用的样式) ========== */
+/* 页脚主容器 */
+.main-footer {
+    width:100%;
+    background-color:#f0f0f0;
+    color:#333;
+    padding:32px 0;
+}
+
+.footer-nav-grid {
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    gap:30px;
+    margin-bottom:40px;
+}
+
+.footer-nav-column h4 {
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:18px;
+    color:var(--mtr-text-white);
+}
+.footer-nav-column ul {
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
 /* 链接统一样式（合并冗余覆盖写法） */
 .footer-nav-column ul li a {
-    font-size: 14px;
-    color: #555;
-    transition: color 0.2s ease;
+    font-size:14px;
+    color:#555;
+    transition:color .2s ease;
 }
-
 .footer-nav-column ul li a:hover {
-    color: var(--mtr-text-white);
-    text-decoration: underline;
+    color:var(--mtr-text-white);
+    text-decoration:underline;
 }
-
 /* 页脚分隔线 */
 .footer-divider {
-    width: 100%;
-    height: 1px;
-    background-color: #444;
-    margin-bottom: 12px;
+    width:100%;
+    height:1px;
+    background-color:#444;
+    margin-bottom:12px;
 }
-
 /* 办公地址 */
 .footer-address {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin: 8px 0 18px;
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin:8px 0 18px;
 }
-
-.footer-address .footer-small-title {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--mtr-text-white);
+.footer-small-title {
+    margin:0;
+    font-size:16px;
+    font-weight:600;
+    color:var(--mtr-text-white);
 }
-
 .footer-address .address-lines p {
-    margin: 0 0 6px;
-    color: #555;
-    font-size: 14px;
-    line-height: 1.3;
+    margin:0 0 6px;
+    color:#555;
+    font-size:14px;
+    line-height:1.3;
 }
-
 /* 版权区域 */
 .footer-copyright {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
 }
-
-.footer-copyright p {
-    font-size: 14px;
-    color: #999;
-}
-
 .copyright-links {
-    display: flex;
-    gap: 20px;
+    display:flex;
+    gap:20px;
 }
-
 .copyright-links a {
-    font-size: 13px;
-    color: #999;
-    transition: color 0.2s ease;
+    font-size:13px; color:#999; transition:color .2s ease;
 }
-
 .copyright-links a:hover {
-    color: var(--mtr-text-white);
-    text-decoration: underline;
+    color:var(--mtr-text-white); 
+    text-decoration:underline;
 }
-
 /* ============= 响应式合并（所有768px样式合并在一起）============= */
-@media (max-width: 768px) {
+@media (max-width:768px) {
     .footer-address {
-        flex-direction: column;
-        gap: 6px;
+        flex-direction:column; gap:6px;
     }
 
     .footer-copyright {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction:column; align-items:flex-start;
     }
 
     .copyright-links {
-        flex-wrap: wrap;
+        flex-wrap:wrap;
     }
 }
 
@@ -409,3 +545,146 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
         display: none;
     }
 }
+
+/* ========== Loader / fragments spinner & compatibility ==========
+     说明：此处为 fragments-loading（片段异步加载）使用的本地 spinner。
+     - spinner 的样式与动画在页面加载 fragments 时显示（class: html.fragments-loading）。
+     - 项目中该 spinner 在 style.css 与 partials.css 中均有定义 —— 建议将动画与样式统一到一个文件（例如 style.css 的全局部分），
+         以避免重复和困惑；当前保留在两个文件以保证片段级模板与全局都能生效。
+*/
+.loading { position:relative; min-height:220px; }
+.loading::after { content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:36px; height:36px; border:3px solid #f0f0f0; border-top-color:#409eff; border-radius:50%; animation:spin 1s linear infinite; }
+html.fragments-loading::after {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 36px;
+    height: 36px;
+    border: 3px solid #f0f0f0;
+    border-top-color: #409eff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    pointer-events: none;
+    z-index: 10000;
+}
+@keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+/* ========== Loader.js 模板相关样式========== */
+.card {
+    padding: 14px;
+}
+
+.card .card-header {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+}
+
+.card .card-title {
+    font-size: 20px;
+}
+
+.card .card-meta {
+    font-size: 13px;
+    color: #666;
+}
+
+.card .card-body {
+    font-size: 15px;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.card-meta {
+    font-size: 14px;
+    color: #666666;
+    text-align: center;
+}
+
+.card-body {
+    font-size: 16px;
+    color: #333333;
+    line-height: 1.8;
+}
+
+/* 声明类(statement) 标题强调为红色，兼容模板渲染 */
+.statement .card-title {
+    text-align: center;
+    font-size: 28px;
+    color: #c00000;
+    letter-spacing: 1px;
+}
+
+.page-container .card-header h3.card-title {
+    color: #c00000;
+}
+
+.article-report .card-title,
+.content-card.article-report .card-title {
+    text-align: center;
+    font-size: 28px;
+    color: #1a1a1a;
+    letter-spacing: 1px;
+    margin: 0 auto;
+}
+
+.article-report .card-meta,
+.content-card.article-report .card-meta {
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* ===== 通用：news 列表与 content-card（供 info/moreinfo/lineinfo 复用） ===== */
+.news-list {
+    display: block;
+}
+.news-item {
+    padding: 18px 0;
+    border-bottom: 1px solid #e6e6e6;
+}
+.news-item:last-child {
+    border-bottom: none;
+}
+.news-title {
+    text-align: center;
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+}
+.news-meta {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.content-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    padding: 32px;
+    margin-bottom: 24px;
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: box-shadow 0.3s ease;
+}
+.content-card:hover {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+}
+
+/* 文章正文字体（使用 CSS 变量 --article-font）
+   默认在 :root 中声明为楷体（"KaiTi"），如果需要按页面切换，请在页面对应的 style.css 中覆盖 --article-font 变量。
+   示例：在 page-specific CSS 中添加
+       body { --article-font: "Songti SC", serif; }
+   或者针对某个容器覆盖：
+       .info-page .content-card { font-family: var(--article-font); }
+*/
+.content-card, .card-body, .card { font-family: var(--article-font); }

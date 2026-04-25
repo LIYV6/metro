@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // fit 时不将图片缩放得过小，避免视觉上变得很小
     const MIN_FIT_SCALE = 0.6;
 
-    // 线路说明文本：尝试从外部文件 line-info.json 加载（见项目根目录），若失败回退为内置默认文本
+    // 线路说明文本：尝试从外部文件 linemap.json 加载（见项目根目录），若失败回退为内置默认文本
     const defaultLineInfo = {
         "全图": { zh: "服务器轨道交通全图，包含所有已开通线路及规划线路。", },
         "鲤湖湾州及鲤城": { zh: "鲤湖湾州及鲤城片区轨道交通线路，覆盖核心城区主要站点。",},
@@ -39,11 +39,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // 保存 promise，以便在用户点击时等待数据就绪
     // data 位于 assets/data/ 下，使用相对于站点根或当前路径的路径以避免 /views/ 下的 404
     // 使用以站点根为基准的绝对路径，避免在 /views/ 子路径下请求错误
-    const lineInfoPromise = fetch('/assets/data/line-info.json')
+    const lineInfoPromise = fetch('/assets/data/linemap.json')
         .then(r => r.json())
         .then(data => { lineInfo = data || {}; return lineInfo; })
         .catch(err => {
-            console.warn('无法加载 line-info.json, 已使用内置默认文本:', err);
+            console.warn('无法加载 linemap.json, 已使用内置默认文本:', err);
             lineInfo = defaultLineInfo;
             return lineInfo;
         });
