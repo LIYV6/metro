@@ -37,7 +37,7 @@
         // 在哪些注入容器内修复链接（query selector）
         linkFixContainers: ['.site-header', '.main-footer'],
         // 视图目录下常见文件名，linkFix 时会对匹配的相对链接前缀 'views/'
-        viewFilenames: ['info.html','lineinfo.html','linemap.html', 'moreinfo.html'],
+        viewFilenames: ['info.html','route.html','linemap.html', 'moreinfo.html'],
         // fetch 缓存策略，默认为 browser default
         fetchCache: 'default', // 可选 'no-store','no-cache','reload','force-cache','only-if-cached'
         // 是否将加载结果暴露为 window.__fragmentsLoaded（保持兼容），可关闭以避免全局污染
@@ -119,22 +119,35 @@
         });
     }
 
-    // 修复注入片段内的相对链接：当页面不在 views/ 目录下时，为特定文件名的相对链接添加 views/ 前缀
+    // 修复注入片段内的相对链接：支持相对路径和绝对路径的自动转换
     function fixRelativeLinks(containers, filenames) {
         try {
             const path = location.pathname || '';
-            if (path.indexOf('/views/') !== -1) return; // 在 views 页面内无需修改
+            const isInViews = path.indexOf('/views/') !== -1;
             const nameSet = Array.isArray(filenames) ? filenames.reduce((s, n) => (s[n] = true, s), {}) : {};
+            
             containers.forEach(containerSel => {
                 qAll(containerSel).forEach(root => {
                     qAll('a', root).forEach(a => {
                         try {
                             const href = a.getAttribute('href');
                             if (!href) return;
-                            if (/^(https?:)?\/\//i.test(href)) return; // external
-                            if (href.startsWith('#') || href.startsWith('/') || href.startsWith('./') || href.startsWith('../')) return;
-                            const name = href.split('?')[0].split('#')[0];
-                            if (nameSet[name]) a.setAttribute('href', 'views/' + href);
+                            // 跳过外部链接、锚点、已经是绝对路径的链接
+                            if (/^(https?:)?\/\//i.test(href)) return;
+                            if (href.startsWith('#')) return;
+                            
+                            // 如果是简单文件名（如 info.html）且在 views 目录外，添加 views/ 前缀
+                            if (!isInViews && !href.startsWith('/') && !href.startsWith('./') && !href.startsWith('../')) {
+                                const name = href.split('?')[0].split('#')[0];
+                                if (nameSet[name]) {
+                                    a.setAttribute('href', 'views/' + href);
+                                }
+                            }
+                            // 如果在 views 目录内且链接以 /views/ 开头，转换为相对路径
+                            else if (isInViews && href.startsWith('/views/')) {
+                                const relativePath = href.substring(7); // 去掉 '/views/'
+                                a.setAttribute('href', relativePath);
+                            }
                         } catch (e) { /* per-link ignore */ }
                     });
                 });

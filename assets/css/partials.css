@@ -1,33 +1,35 @@
 /* partials.css
-   用途：仅包含 header.html / footer.html fragment 所需的样式与辅助注释。
+   用途：header/footer fragment 样式、loader.js 模板样式、通用组件样式
    责任范围：
-    - 导航（header）与页脚（footer）的布局与交互样式。
-    - 当启用多行导航（.main-nav.multiline-nav）时，脚本会计算并写入 --nav-rows 与 --nav-row-height；
-    - 本文件不包含全局 reset 或 :root 变量（这些放在 assets/css/style.css），以减少重复与冲突。
-*/
-/* 在 fragments 未加载完成时隐藏主体以避免闪烁 */
-html.fragments-loading body > :not(.site-header):not(.main-footer) {
-    visibility: hidden;
-    opacity: 0;
-}
-
-/* partials.css
-   说明：仅保留 header.html、footer.html、以及 loader.js 模板相关样式和 fragments-loading spinner。
-   - 不再包含全局 reset/:root 或页面专属样式（这些已迁移到 assets/css/style.css）
-   - 此文件应被 header/footer 的 fragment 引入并优先保证导航/页脚样式与 loader 模板保持一致
+    - 导航（header）与页脚（footer）的布局与交互样式
+    - loader.js 生成的文章卡片样式
+    - 通用组件（card, news-list, content-card 等）
 */
 
-/* ========== Header / Navigation (保留用于 header.html) ========== */
+/* fragments 加载时隐藏主体以避免闪烁 */
 .site-header {
-     width: 100%;
+    width: 100%;
     height: var(--header-height);
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1200; /* 提高 z-index，确保 header 高于下拉栏和地图 */
+    z-index: 1200;
     background: linear-gradient(90deg, rgba(11,102,163,1), rgba(11,102,163,0.95));
     color: var(--white-color);
     transition: height 220ms ease, background 220ms ease;
+}
+
+/* 全宽底部边框 */
+.site-header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+    z-index: 1198;
 }
 
 /* 头部容器：居中布局，最大宽度 */
@@ -298,147 +300,7 @@ html.fragments-loading body > :not(.site-header):not(.main-footer) {
     opacity: 1;
 }
 
-/* 保证导航高度不遮挡主体内容（body padding-top 已设为 var(--header-height)）
-    说明：当启用多行导航时，JS 会将根变量 --header-height 更新为 rows * row-height，
-    body 的 padding-top 会随之调整以避免导航遮挡主体内容。 */
-.site-header {
-    height: var(--header-height);
-}
-
-/* 全宽底部边框：绘制在 .site-header 的底部，覆盖页面左右全宽。
-    使用伪元素以避免影响导航内部布局；伪元素不会捕获指针事件。
-*/
-.site-header::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    /* 紧贴 header 底部 */
-    height: 1px;
-    background: rgba(255, 255, 255, 0.08);
-    pointer-events: none;
-    z-index: 1198;
-    /* 低于 nav 内部浮层，但高于页面内容 */
-}
-
-
-/*  移动端导航（当前项目使用 .nav-toggle + .mobile-nav-panel）
- 说明：在窄屏时隐藏主导航，显示右侧汉堡按钮（使用 .nav-toggle），点击展开右侧滑出菜单
-
-.nav-toggle {
-    display: none;
-    background: none;
-    color: var(--white-color);
-    font-size: 22px;
-    line-height: 1;
-    width: 44px;
-    height: 44px;
-    border-radius: 6px;
-}
-
-.mobile-nav-panel {
-    position: fixed;
-    top: var(--header-height);
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: none;
-    background: #0b66a3;
-    color: white;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
-    transform-origin: top;
-    transform: scaleY(0);
-    opacity: 0;
-    visibility: hidden;
-    transition: transform 360ms cubic-bezier(.16, .84, .24, 1), opacity 220ms ease;
-    z-index: 1115;
-    overflow: hidden;
-}
-
-.mobile-nav-panel.active {
-    transform-origin: top;
-    transform: scaleY(1);
-    opacity: 1;
-    visibility: visible;
-}
-
-可定制移动面板内选项背景与透明度：
-   --mobile-nav-item-bg-rgb : 三元 RGB 值（逗号分隔），默认白色 '255,255,255'
-   --mobile-nav-item-bg-opacity : 背景透明度，默认 1（不透明）
-   --mobile-nav-item-text-color : 文字颜色，默认与面板主题色对比
-   修改位置：assets/css/partials.css 中此处，或在全局 :root 中覆盖
-
-.mobile-nav-panel {
-    --mobile-nav-item-bg-rgb: 255, 255, 255;
-    --mobile-nav-item-bg-opacity: 1;
-    --mobile-nav-item-text-color: #0b66a3;
-}
-
-.mobile-nav-panel .mobile-nav-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.mobile-nav-panel .mobile-nav-item a {
-    display: block;
-    padding: 14px 18px;
-    color: white;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.nav-toggle.active {
-    font-size: 20px;
-}
-
-半透明遮罩，当移动面板展开时显示，点击可关闭 
-.mobile-nav-overlay {
-    position: fixed;
-    inset: var(--header-height) 0 0 0;
-    top: var(--header-height);
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.35);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 200ms ease;
-    z-index: 1100;
-}
-
-默认不捕获指针事件，避免遮挡 header 的交互；激活时恢复 pointer-events 以响应点击关闭 
-.mobile-nav-overlay {
-    pointer-events: none;
-}
-
-.mobile-nav-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-窄屏断点：保持主导航可见（使用横向滚动），只显示汉堡按钮以便兼容旧交互
-@media (max-width: 900px) {
-
-    不隐藏 .main-nav：移动端使用横向滚动适配多项导航 
-    .nav-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-} */
-
-/* @media (max-width:420px) {
-    .mobile-nav-panel {
-        width: 86vw;
-    }
-} */
-
-/* ========== Footer (保留 footer.html 使用的样式) ========== */
+/* ========== Footer ========== */
 /* 页脚主容器 */
 .main-footer {
     width:100%;
@@ -572,6 +434,89 @@ html.fragments-loading::after {
 @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
 
 /* ========== Loader.js 模板相关样式========== */
+
+/* ===== 通用卡片样式（适用于 index/info/lineinfo/moreinfo 等页面） ===== */
+/* 页面容器/小节卡片：长方形卡片，圆角边框，左侧导航栏颜色色块 */
+.page-section,
+.page-container {
+    margin-bottom: 24px;
+}
+
+.section-card,
+.page-container {
+    position: relative;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 28px 32px 28px 48px; /* 左侧留出空间给色块 */
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    /* 
+     * 宽度和居中设置：与首页 content-extend 保持一致
+     * - width: 100% 确保在小屏幕上占满可用宽度
+     * - max-width: 1200px 限制最大宽度，与首页保持一致
+     * - margin-left/right: auto 实现水平居中对齐
+     */
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section-card:hover,
+.page-container:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* 左侧导航栏颜色色块 */
+.section-card::before,
+.page-container::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: var(--secondary-color); /* 导航栏深蓝色 */
+    border-radius: 12px 0 0 12px;
+}
+
+.section-card h2,
+.page-container .page-title {
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.section-card h2 a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.section-card h2 a:hover {
+    color: var(--primary-color);
+}
+
+.preview-item {
+    margin-bottom: 16px;
+}
+
+.preview-item h3 {
+    font-size: 1.15rem;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.preview-item .meta.summary {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0;
+}
+
 .card {
     padding: 14px;
 }
@@ -643,26 +588,95 @@ html.fragments-loading::after {
 }
 
 /* ===== 通用：news 列表与 content-card（供 info/moreinfo/lineinfo 复用） ===== */
+/* 
+ * news-list: 新闻/文章列表容器
+ * news-item: 单个新闻/文章项，现为独立卡片样式
+ * 设计说明：每篇文章为独立卡片，带有圆角、阴影和悬停效果
+ * 
+ * 布局说明：
+ * - news-list 直接放在 main 下，无需 page-container 外层
+ * - 通过 max-width 和 margin auto 实现居中
+ */
 .news-list {
     display: block;
+    width: 100%;
+    max-width: 1200px; /* 与首页保持一致的最大宽度 */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px; /* 两侧留白，避免贴边 */
 }
-.news-item {
-    padding: 18px 0;
-    border-bottom: 1px solid #e6e6e6;
+
+/* 
+ * 新闻/文章项样式：改为卡片样式
+ * - 移除底部分割线
+ * - 添加白色背景、圆角、阴影
+ * - 添加内边距使内容有呼吸感
+ * - 悬停时阴影加深并轻微上浮
+ * 
+ * 注意：loader.js 使用 wrapperClass: "card" 创建包装元素
+ * 因此这里同时支持 .card 和 .news-item 两种class
+ */
+.news-item,
+.card {
+    position: relative;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 24px 28px 24px 34px; /* 左侧留出空间给色块 */
+    margin-bottom: 20px; /* 卡片之间的间距 */
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
-.news-item:last-child {
-    border-bottom: none;
+
+/* 最后一篇文章不需要特殊处理，所有文章都是独立卡片 */
+.news-item:last-child,
+.card:last-child {
+    margin-bottom: 0; /* 最后一篇移除底部间距 */
 }
+
+/* 卡片悬停效果：阴影加深并轻微上浮 */
+.news-item:hover,
+.card:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* 卡片左侧导航栏颜色色块 */
+.news-item::before,
+.card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: var(--secondary-color); /* 导航栏深蓝色 */
+    border-radius: 12px 0 0 12px;
+}
+
 .news-title {
     text-align: center;
     font-size: 1.15rem;
     margin-bottom: 8px;
 }
+
 .news-meta {
     text-align: center;
     color: #666;
     font-size: 0.9rem;
     margin-bottom: 12px;
+}
+
+/* 页面标题样式（h1.page-title） */
+.news-page .page-title {
+    width: 100%;
+    max-width: 1200px;
+    margin: 30px auto 20px; /* 上边距30px，下边距20px，水平居中 */
+    padding: 0 20px; /* 与 news-list 保持一致的两侧留白 */
+    font-size: var(--h1-size);
+    color: var(--secondary-color);
+    text-align: center;
+    font-weight: 600;
 }
 
 .content-card {

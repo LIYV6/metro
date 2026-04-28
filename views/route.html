@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>线路图</title>
+    <link rel="stylesheet" href="../assets/css/partials.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/route.css?v=1774458908967u">
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>-->
+<!--    <script src="https://unpkg.com/mustache@4.2.0/mustache.min.js"></script>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/json5/2.2.3/index.min.js"></script>-->
+</head>
+<body>
+<!--    <script>window.PAGE_ID = 'route';</script>-->
+<!-- 页顶部 -->
+    <div data-include="header"></div>
+<main class="route-page">
+    <h1 class="page-title">欢迎使用线路信息系统</h1>
+    <div class="container">
+
+        <div id="lineSelector" class="line-selector">
+            <div class="category-tabs-wrapper">
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="all">全部<br/>All</button>
+                    <button class="category-tab" data-category="NORMAL">地铁<br/>Metro</button>
+                    <button class="category-tab" data-category="HIGH_SPEED">高铁火车<br/>Highspeed&Rail</button>
+                    <button class="category-tab" data-category="BOAT">轮船<br/>Boat</button>
+                    <button class="category-tab" data-category="AIRPLANE">飞机<br/>Plane</button>
+                    <button class="category-tab" data-category="CABLE_CAR">索道<br/>Cableway</button>
+                </div>
+                <a href="https://routeguide.liyv.me" target="_blank" class="nav-button">导航<br/>navigate</a>
+            </div>
+            <div class="selector-divider"></div>
+            <div id="lineBlocksContainer" class="line-blocks-container">
+            </div>
+            <div class="content-divider"></div>
+            <div id="routesContainer">
+                <div class="empty-state">
+                    <p>请点击上方线路方块查看详情</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+
+    <button id="backToTop" class="back-to-top" title="返回顶部">↑</button>
+</main><!--主体区域结束-->
+
+<!--网站页脚由 fragments 注入 -->
+        <div data-include="footer"></div>
+<!-- 引入外部交互脚本，统一管理逻辑 -->
+    <script src="../assets/js/include-fragments.js"></script>
+    <script src="../assets/js/navigate.js"></script>
+    <script src="../assets/js/route.js?v=1774458908967u"></script>
+
+</body>
+</html>

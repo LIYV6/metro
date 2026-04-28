@@ -1,12 +1,6 @@
-/*style.css 用途：
-    定义全局变量（:root），页面顺序的页面专属样式（index, info, lineinfo, linemap, moreinfo）。
-    若需覆盖通用模板样式（partials.css 中定义），请在本文件的对应页面段中使用更具体的选择器或覆盖 CSS 变量（例如 --article-font）。
-    从 JSON5 切换字体的建议用法：
-        - 在 assets/data/global.json5 中加入一个键（例如 "ui": { "articleFont": "KaiTi" }）。
-        - 在 loader.js（或 include-fragments 后脚本）读取该设置并在 document.documentElement.style.setProperty('--article-font', value);
-        - CSS 中使用 font-family: var(--article-font) 的地方会自动生效。*/
+/* style.css - 全局变量与页面专属样式 */
 
-/*全局样式重置与主题变量，作用：统一浏览器默认样式，定义全局主题，一键修改配色/尺寸*/
+/* 全局样式重置 */
 * {
     margin: 0;
     padding: 0;
@@ -33,7 +27,7 @@
 /* 主标题（h1）全局样式，.page-title 使用该尺寸以保证与 h1 等价 */
 h1 { font-size: var(--h1-size); }
 
-/*根变量：全局主题配置，修改此处可一键更换主题*/
+/* 根变量：全局主题配置 */
 :root {
 /*红色 */
     --primary-color: #e60012;
@@ -76,26 +70,23 @@ body {
     min-height: 100vh;
     font-family: var(--font-family);
     color: var(--text-color);
-    font-family: var(--font-family); /* 英文/数字首选 Arial, 中文会回退到 SimHei/MSYH */
     overflow-x: hidden;
-     /*避免内容被固定头部遮挡：优先使用 --header-height（由 JS 或样式控制），
-         若未设置则使用 nav 行数与行高的乘积作为回退，确保多行导航时页面下移*/
-     padding-top: max(var(--header-height), calc(var(--nav-rows, 1) * var(--nav-row-height, 64px)));
+    padding-top: max(var(--header-height), calc(var(--nav-rows, 1) * var(--nav-row-height, 64px)));
 }
 
-/*清除列表默认样式*/
+/* 列表重置 */
 ul, li {
     list-style: none;
 }
 
-/*统一链接样式*/
+/* 链接样式 */
 a {
     text-decoration: none;
     color: inherit;
     transition: color 0.3s ease;
 }
 
-/*图片自适应，避免溢出*/
+/* 图片自适应 */
 img {
     max-width: 100%;
     height: auto;
@@ -110,51 +101,40 @@ button {
     transition: all 0.3s ease;
 }
 
-/*使页面main在可用空间中伸展，保证页脚位于视口底部 */
+/* main 区域伸展 */
 main {
     flex: 1 0 auto;
     display: block;
 }
 
-/*清除输入框默认样式*/
+/* 输入框重置 */
 input {
     font-family: inherit;
     outline: none;
     border: none;
 }
 
-/* index.html页面专属样式 */
+/* index.html 页面专属样式 */
 
-/* 横幅区样式作用：全屏大图展示，适配不同屏幕尺寸*/
+/* 横幅区 */
 .hero-banner {
     width: 100%;
-/*占据整个视口高度，减去固定头部高度，确保大图“覆盖一个屏幕” */
     height: calc(100vh - var(--header-height));
     position: relative;
     overflow: hidden;
-    z-index: 0; /* 在 header 之下 */
+    z-index: 0;
 }
 
-/* Banner 背景（现在使用背景图替代 img） */
+/* Banner 背景 */
 .banner-bg {
     position: absolute;
-    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    inset: 0;
     background-size: cover;
-    background-position: center center;
+    background-position: center;
     background-repeat: no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-/* --- Hero / Banner（简洁且易维护）
-   - 背景使用 .banner-bg，图片通过 background-image 设置（cover, center）
-   - 英雄区文字由 --hero-title-size 控制，用于快速调整大小
-   - 动画：延迟 1s，从下向上浮现（600ms），使用 forwards 保持最终状态
-*/
-.banner-bg { /* 背景容器，覆盖 hero-banner 区域 */
-    position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat;
-    display:flex; align-items:center; justify-content:center;
 }
 .hero-title {
     color: var(--white-color);
@@ -171,6 +151,8 @@ input {
     opacity: 0;
     animation: heroSlideUp 800ms cubic-bezier(.0,.6,.2,1) 1s forwards;
     z-index: 2;
+    /* 动画结束后添加水面阴影效果 */
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.3));
 }
 .hero-title::after {
     content: attr(data-text);
@@ -239,21 +221,15 @@ input {
 }
 
 /* ===== index.html（首页：page-container / page-title） =====
-   说明：将页面容器样式放在 index 页面专属段，便于按页面顺序维护。
+   说明：page-container 的基础样式已移至 partials.css。
+         此处仅保留页面特定的覆盖样式（如有需要）。
 */
-.page-container {
-    width: 100%;
-    max-width: 1000px;
-    margin: 18px auto;
-    padding: 22px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-    transition: box-shadow 220ms ease, transform 160ms ease;
+.page-title { 
+    font-size: var(--h1-size); 
+    color: #003366; 
+    margin-bottom: 12px; 
+    text-align: center; 
 }
-.page-container:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.12); transform: translateY(-4px); }
-.page-container:active { box-shadow: 0 6px 20px rgba(0,0,0,0.14); transform: translateY(-1px); }
-.page-title { font-size: var(--h1-size); color: #003366; margin-bottom: 12px; text-align: center; }
 
 
 /* 保留页面特有小范围样式可在此处添加（暂无其他覆盖规则） */
@@ -565,7 +541,7 @@ html.fragments-loading::after {
     transform: scale(1.05);
 }
 
-/*信息弹窗样式*/
+/*信息弹窗样式（linemap.html 页面使用）*/
 .info-modal {
     display: none; /*默认隐藏*/
     position: fixed;
@@ -587,14 +563,23 @@ html.fragments-loading::after {
     justify-content: center;
 }
 
+/* 
+ * 弹窗内容框：适配电脑端和移动端
+ * - 移动端优先设计：width: 90% 确保在小屏幕上占据大部分宽度
+ * - max-width: 400px 限制在大屏幕上的最大宽度，避免过宽
+ * - min-width: 280px 保证在极小屏幕上仍有足够的可读空间
+ */
 .modal-content {
-    width: 400px;
+    width: 90%; /* 移动端优先：占据屏幕90%宽度 */
+    max-width: 400px; /* 电脑端最大宽度限制 */
+    min-width: 280px; /* 最小宽度保证可读性 */
     background: white;
     padding: 20px;
     border-radius: 8px;
     position: relative;
 }
 
+/* 关闭按钮样式 */
 .close-btn {
     position: absolute;
     top: 10px;
@@ -617,3 +602,10 @@ html.fragments-loading::after {
     color: #333;
     line-height: 1.6;
 }
+
+/* ===== info/lineinfo/moreinfo 页面专属样式 ===== */
+/* 
+ * 注：这三个页面的 page-container 现在使用与首页统一的宽度（1200px）
+ * 宽度和居中设置在 partials.css 中的 .page-container 规则中统一定义
+ * 如需针对特定页面调整宽度，可在此处添加覆盖样式
+ */
