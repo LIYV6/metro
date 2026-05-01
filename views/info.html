@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信息总览</title>
+    <link rel="stylesheet" href="../assets/css/partials.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/libs/purify.min.js"></script>
+    <script src="../assets/js/libs/mustache.min.js"></script>
+    <script src="../assets/js/libs/json5.min.js"></script>
+</head>
+<body>
+    <script>window.PAGE_ID = 'info';</script>
+<!-- 页顶部 -->
+    <div data-include="header"></div>
+
+<main class="news-page">
+
+    <h1 class="page-title" id="construction-trends">建设动态</h1>
+    <div class="news-list" id="slot-linenews">
+        <!-- loader.js 将把 line-sigema 与 line-11 注入到此处 -->
+    </div>
+
+    <h1 class="page-title">通知公告</h1>
+    <div class="news-list" id="slot-1"></div>
+
+    <h1 class="page-title">线路规划</h1>
+    <div class="news-list" id="slot-plan"></div>
+</main><!--主体区域结束-->
+
+<!--网站页脚由 fragments 注入 -->
+        <div data-include="footer"></div>
+<!-- 引入外部交互脚本，统一管理逻辑 -->
+    <script src="../assets/js/include-fragments.js"></script>
+    <script src="../assets/js/navigate.js"></script>
+    <script src="../assets/js/loader.js"></script>
+
+</body>
+</html>
