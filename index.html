@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--页面标题-->
+    <title>鲤鱼铁路</title>
+<!--引入外部样式文件，统一管理页面样式-->
+    <link rel="stylesheet" href="assets/css/partials.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+<!--预留扩展位：可引入额外CSS文件-->
+</head>
+<body>
+<!--header 由 fragments 注入-->
+    <div data-include="header"></div>
+
+<!--主视觉横幅区-->
+<main id="snap-container"><!--第一节-->
+    <section id="first-screen" class="snap-page">
+            <div class="hero-banner" id="section-banner">
+                    <!-- 将首页图片改为背景图：可通过 CSS 或行内 style 修改 background-image -->
+                    <div class="banner-bg" role="img" aria-label="站点横幅" style="background-image: url('assets/images/abcd.png');">
+                        <!-- 文字使用 data-text 属性以便生成倒影 -->
+                        <div class="hero-title" data-text="欢迎访问鲤铁官网">欢迎访问鲤铁官网</div>
+                    </div>
+
+                    <div class="hero-inner">
+                        <div class="banner-label">
+                            <span>首页图</span>
+                        </div>
+                    </div>
+            </div>
+            <!-- 预留底部功能区 -->
+    </section>
+<!--第二节开始-->
+    <section id="second-screen" class="snap-page">
+    <main>
+
+    <section id="section-planning" class="page-section">
+    <div class="content-extend">
+        <div class="section-card">
+            <h2>信息总览</h2>
+            <article class="preview-item">
+                <h3>一站式浏览最新信息</h3>
+                <p class="meta summary">2026-03-18&emsp;轨道交通∑线正式开通运营</p>
+            </article>
+            <p><a href="views/info.html" class="info-link">查看全部信息&gt;</a></p>
+        </div>
+    </div>
+    </section>
+
+    <section id="section-navigation" class="page-section">
+    <div class="content-extend">
+        <div class="section-card">
+            <h2>线路服务</h2>
+            <article class="preview-item">
+                <h3>线路站点的信息和导航</h3>
+
+            </article>
+            <p><a href="views/route.html" class="info-link">点击此处查看线路服务&gt;</a></p>
+        </div>
+    </div>
+    </section>
+
+    <section id="section-line-map" class="page-section">
+                <div class="content-extend">
+                    <div class="section-card">
+                        <h2>乘客服务</h2>
+                        <article class="preview-item">
+                            <h3>乘客条例和使用指南</h3>
+                        </article>
+                            <p><a href="views/server.html" class="info-link">点击此处查看使用指南&gt;</a></p>
+                    </div>
+                </div>
+            </section>
+
+    <section id="section-about" class="page-section">
+                    <div class="content-extend">
+                        <div class="section-card">
+                            <h2><a href="views/moreinfo.html">更多信息</a></h2>
+                            <article class="preview-item">
+                                <h3>还有信息这里看</h3>
+                                <p class="meta summary">2026-03-18&emsp;鲤鱼铁路简介</p>
+                            </article>
+                            <p><a href="views/moreinfo.html" class="info-link">点击此处了解更多信息&gt;</a></p>
+                        </div>
+                    </div>
+                </section>
+
+    </main>
+    </section><!-- 第二节结束 -->
+</main>
+
+<!--网站页脚：全站底部信息-->
+        <div data-include="footer"></div>
+
+    <script src="assets/js/include-fragments.js"></script>
+    <script src="assets/js/navigate.js"></script>
+<!--预留扩展位：可引入统计脚本、地图插件、额外JS文件-->
+</body>
+</html>

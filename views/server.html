@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信息总览</title>
+    <link rel="stylesheet" href="../assets/css/partials.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/libs/purify.min.js"></script>
+    <script src="../assets/js/libs/mustache.min.js"></script>
+    <script src="../assets/js/libs/json5.min.js"></script>
+</head>
+
+<body>
+<script>window.PAGE_ID = 'server';</script>
+<!-- 页顶部 -->
+<div data-include="header"></div>
+
+
+<main class="news-page">
+
+    <h1 class="page-title">乘客服务</h1>
+        <div class="news-list" id="slot-1">
+
+        </div>
+        <!-- loader.js 将把 passenger-rule 注入到此处 -->
+</main>
+<!--网站页脚 -->
+<div data-include="footer"></div>
+<!-- 引入外部交互脚本，统一管理逻辑 -->
+<script src="../assets/js/include-fragments.js"></script>
+<script src="../assets/js/navigate.js"></script>
+<script src="../assets/js/loader.js"></script>
+
+</body>
+</html>

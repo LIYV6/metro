@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>线路图</title>
+    <link rel="stylesheet" href="../assets/css/partials.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/route.css?v=1774458908967u">
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>-->
+<!--    <script src="https://unpkg.com/mustache@4.2.0/mustache.min.js"></script>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/json5/2.2.3/index.min.js"></script>-->
+</head>
+<body>
+<!--    <script>window.PAGE_ID = 'route';</script>-->
+<!-- 页顶部 -->
+    <div data-include="header"></div>
+
+<main class="route-page">
+    <div class="container">
+<!--二级导航开始-->
+    <div class="secondary-nav-wrapper">
+        <div class="category-tabs secondary-nav">
+            <button class="category-tab secondary-nav-item active" data-tab="line-info">线路信息Info</button>
+            <button class="category-tab secondary-nav-item" data-tab="route-map">线路图Map</button>
+            <button class="category-tab secondary-nav-item" data-tab="timetable">首末班车时间表TimeTable</button>
+            <button class="category-tab secondary-nav-item info-style"><a href="https://routeguide.liyv.me" target="_blank">乘车导航Navigate</a></button>
+        </div>
+    </div>
+<!--二级导航结束-->
+    <div class="nav-divider"></div><!--红色分割线-->
+        <!--线路信息内容区域-->
+        <div id="line-info-content" class="tab-content active">
+
+                    <div class="category-tabs-wrapper">
+                        <div class="category-tabs">
+                            <button class="category-tab active" data-category="all">全部<br/>All</button>
+                            <button class="category-tab" data-category="NORMAL">地铁<br/>Metro</button>
+                            <button class="category-tab" data-category="HIGH_SPEED">高铁火车<br/>Highspeed&Rail</button>
+                            <button class="category-tab" data-category="BOAT">轮船<br/>Boat</button>
+                            <button class="category-tab" data-category="AIRPLANE">飞机<br/>Plane</button>
+                            <button class="category-tab" data-category="CABLE_CAR">索道<br/>Cableway</button>
+                        </div>
+                    </div>
+                    <div class="selector-divider"></div><!--分割线-->
+                    <div id="lineBlocksContainer" class="line-blocks-container">
+                    </div>
+                    <div class="content-divider"></div>
+                    <div id="routesContainer">
+                        <div class="empty-state">
+                            <p>请点击上方线路方块查看详情</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    <div id="tooltip" class="tooltip-container"></div>
+    
+    <!----------线路图内容区域开始----------->
+        <div id="route-map-content" class="tab-content" style="display: none;">
+<!-- 地图选择导航：采用与线路分类标签相同的样式-->
+            <div class="map-nav-wrapper">
+                <div class="map-nav secondary-nav">
+                    <button class="map-nav-item secondary-nav-item active" data-map="全图">全图<br/>Full Map</button>
+                    <button class="map-nav-item secondary-nav-item" data-map="鲤湖湾州及鲤城">鲤湖湾州及鲤城<br/>Leehowae&LiCity</button>
+                    <button class="map-nav-item secondary-nav-item" data-map="大都会辖地">大都会辖地<br/>Greater Politan</button>
+                    <button class="map-nav-item secondary-nav-item" data-map="第三城">第三城<br/>City Three</button>
+                    <button class="map-nav-item secondary-nav-item" data-map="铜钿城">铜钿城<br/>Doodee City</button>
+                    <button class="map-nav-item secondary-nav-item" data-map="铁路">铁路<br/>Railway</button>
+                    <button class="map-nav-item secondary-nav-item info-style" data-map="info" id="infoBtn">地图说明<br/>Map Info</button>
+                </div>
+            </div>
+<!--地图和控制按钮-->
+            <div class="map-container" id="mapContainer">
+                <img src="../assets/images/全图.png" alt="服务器轨道交通线网图" class="subway-map" id="subwayMap">
+                <div class="control-buttons">
+                    <button class="control-btn" id="zoomIn">+</button>
+                    <button class="control-btn" id="zoomOut">-</button>
+                    <button class="control-btn" id="reset">⟳</button>
+                </div>
+            </div>
+<!-- 信息弹窗-->
+            <div class="info-modal" id="infoModal">
+                <div class="modal-content">
+                    <button class="close-btn" id="closeBtn">&times;</button>
+                    <h2 id="modal-title">地图说明</h2>
+                    <div class="modal-body" id="info-text"><!-- Content injected via JS --></div>
+
+                    <div class="modal-footer">
+                        <p data-i18n="contact">信息提供: 
+                            <a href="https://github.com/LIYV6" target="_blank" style="color: #0000ee; text-decoration: underline">
+                                Yv Li</a> + 
+                            <a href="https://github.com/frankniubi" target="_blank" style="color: #0000ee; text-decoration: underline">
+                                Frank Lau</a>
+                        </p>
+                    </div>
+
+                </div>
+            </div><!--信息弹窗结束-->
+        </div><!----------线路图内容区域结束----------->
+
+<!--首末班车时间表内容区域-->
+        <div id="timetable-content" class="tab-content" style="display: none;">
+            <p style="text-align: center; padding: 40px; color: #666;">首末班车时间表功能开发中，敬请期待！</p>
+        </div>
+
+    <button id="backToTop" class="back-to-top" title="返回顶部">↑</button>
+</main><!--主体区域结束-->
+
+<!--网站页脚由 fragments 注入 -->
+        <div data-include="footer" id="site-footer"></div>
+<!-- 引入外部交互脚本，统一管理逻辑 -->
+    <script src="../assets/js/include-fragments.js"></script>
+    <script src="../assets/js/navigate.js"></script>
+    <script src="../assets/js/route.js?v=1774458908967u"></script>
+    <script src="../assets/js/linemap.js"></script>
+
+</body>
+</html>
