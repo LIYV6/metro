@@ -7,8 +7,9 @@
 <!--页面标题-->
     <title>鲤鱼铁路</title>
 <!--引入外部样式文件，统一管理页面样式-->
-    <link rel="stylesheet" href="assets/css/partials.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/part.css">
+    <link rel="stylesheet" href="assets/css/index.css">
 <!--预留扩展位：可引入额外CSS文件-->
 </head>
 <body>
@@ -38,65 +39,62 @@
     <main>
 
     <section id="section-planning" class="page-section">
-    <div class="content-extend">
-        <div class="section-card">
-            <h2>信息总览</h2>
-            <article class="preview-item">
+        <div class="card">
+            <header class="card-header">
+                <h2 class="card-title">信息总览</h2>
+            </header>
+            <div class="card-body">
                 <h3>一站式浏览最新信息</h3>
-                <p class="meta summary">2026-03-18&emsp;轨道交通∑线正式开通运营</p>
-            </article>
-            <p><a href="views/info.html" class="info-link">查看全部信息&gt;</a></p>
+                <p class="card-meta">2026-03-18 轨道交通∑线正式开通运营</p>
+                <p><a href="views/info.html" class="page-link">查看全部信息&gt;</a></p>
+            </div>
         </div>
-    </div>
     </section>
 
     <section id="section-navigation" class="page-section">
-    <div class="content-extend">
-        <div class="section-card">
-            <h2>线路服务</h2>
-            <article class="preview-item">
+        <div class="card">
+            <header class="card-header">
+                <h2 class="card-title">线路服务</h2>
+            </header>
+            <div class="card-body">
                 <h3>线路站点的信息和导航</h3>
-
-            </article>
-            <p><a href="views/route.html" class="info-link">点击此处查看线路服务&gt;</a></p>
+                <p><a href="views/route.html" class="page-link">点击此处查看线路服务&gt;</a></p>
+            </div>
         </div>
-    </div>
     </section>
 
     <section id="section-line-map" class="page-section">
-                <div class="content-extend">
-                    <div class="section-card">
-                        <h2>乘客服务</h2>
-                        <article class="preview-item">
-                            <h3>乘客条例和使用指南</h3>
-                        </article>
-                            <p><a href="views/server.html" class="info-link">点击此处查看使用指南&gt;</a></p>
-                    </div>
-                </div>
-            </section>
+        <div class="card">
+            <header class="card-header">
+                <h2 class="card-title">乘客服务</h2>
+            </header>
+            <div class="card-body">
+                <h3>乘客条例和使用指南</h3>
+                <p><a href="views/server.html" class="page-link">点击此处查看使用指南&gt;</a></p>
+            </div>
+        </div>
+    </section>
 
     <section id="section-about" class="page-section">
-                    <div class="content-extend">
-                        <div class="section-card">
-                            <h2><a href="views/moreinfo.html">更多信息</a></h2>
-                            <article class="preview-item">
-                                <h3>还有信息这里看</h3>
-                                <p class="meta summary">2026-03-18&emsp;鲤鱼铁路简介</p>
-                            </article>
-                            <p><a href="views/moreinfo.html" class="info-link">点击此处了解更多信息&gt;</a></p>
-                        </div>
-                    </div>
-                </section>
+        <div class="card">
+            <header class="card-header">
+                <h2 class="card-title"><a href="views/moreinfo.html">更多信息</a></h2>
+            </header>
+            <div class="card-body">
+                <h3>还有信息这里看</h3>
+                <p class="card-meta">2026-03-18 鲤鱼铁路简介</p>
+                <p><a href="views/moreinfo.html" class="page-link">点击此处了解更多信息&gt;</a></p>
+            </div>
+        </div>
+    </section>
 
     </main>
     </section><!-- 第二节结束 -->
 </main>
 
-<!--网站页脚：全站底部信息-->
+<!--网站页脚-->
         <div data-include="footer"></div>
 
     <script src="assets/js/include-fragments.js"></script>
-    <script src="assets/js/navigate.js"></script>
-<!--预留扩展位：可引入统计脚本、地图插件、额外JS文件-->
 </body>
 </html>

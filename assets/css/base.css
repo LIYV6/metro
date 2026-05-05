@@ -1,0 +1,98 @@
+/*此处定义全局变量和全局样式重置*/
+
+/* 根变量：全局主题配置 */
+:root {
+    /*红色 */
+    --primary-color: #e60012;
+    /*功能区背景主色：深蓝色 */
+    --secondary-color: #003366;
+    /*辅助色白色文字/图标*/
+    --white-color: #ffffff;
+    /*页脚导航白色文字（MTR主题）*/
+    --mtr-text-white: #540a5e;
+    /*正文默认色：深灰色*/
+    --text-color: #333333;
+    /*导航hover高亮色*/
+    --nav-hover-color: #ffcc00;
+    /*全局字体字体策略：英文字母/数字优先使用 Arial，其次 Times New Roman；中文优先使用黑体，其次微软雅黑 */
+    --font-family: "Arial", "Times New Roman", "SimHei", "Microsoft YaHei", sans-serif;
+    /*头部固定高度，方便布局计算*/
+    --header-height: 64px;
+    /* 页面文章/声明/新闻正文字体*/
+    --article-font: "KaiTi", "STKaiti",sans-serif;
+    /* 标题尺寸（h1）全局变量：统一页面主标题样式 */
+    --h1-size: 2rem;
+    /*功能区固定高度*/
+    --function-height: 120px;
+    /*首页英雄区大字（可直接修改）*/
+    --hero-title-size: 40px;
+}
+
+/* 全局样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 主标题（h1）全局样式，.page-title 使用该尺寸以保证与 h1 等价 */
+h1 { font-size: var(--h1-size); }
+
+html, body {height: 100%;}
+
+/* 确保页面内锚点跳转时不会被固定头部遮挡*/
+[id] {scroll-margin-top: calc(max(var(--header-height), calc(var(--nav-rows, 1) * var(--nav-row-height, 64px))) + 12px);}
+
+/*全局平滑滚动（页面内锚点/脚本滚动优先）*/
+html { scroll-behavior: smooth; }
+
+body {
+    display: flex;
+    background-color: #f5f5f5;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: var(--font-family), sans-serif;
+    color: var(--text-color);
+    overflow-x: hidden;
+    padding-top: max(var(--header-height), calc(var(--nav-rows, 1) * var(--nav-row-height, 64px)));
+}
+
+/* 列表重置 */
+ul, li {
+    list-style: none;
+}
+
+/* 链接样式 */
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+/* 图片自适应 */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+/* main 区域伸展 */
+main {
+    flex: 1 0 auto;
+    display: block;
+}
+
+/* 输入框重置 */
+input {
+    font-family: inherit;
+    outline: none;
+    border: none;
+}

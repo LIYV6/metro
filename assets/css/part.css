@@ -1,25 +1,5 @@
-/* partials.css
-   用途：header/footer fragment 样式、loader.js 模板样式、通用组件样式
-   责任范围：
-    - 导航（header）与页脚（footer）的布局与交互样式
-    - loader.js 生成的文章卡片样式
-    - 通用组件（card, news-list, content-card 等）
-*/
-
-/* ===== index.html 页面链接样式 ===== */
-/* 提取自 index.html 的内联样式，用于"查看全部信息"等链接 */
-.info-link {
-    color: blue;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-}
-
-.info-link:hover,
-.info-link:focus {
-    color: #0000cc;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-}
+/* partials.css通用组件样式
+    header与footer的样式,loader.js 生成的文章卡片样式,通用组件（card, news-list, content-card 等）*/
 
 /* fragments 加载时隐藏主体以避免闪烁 */
 .site-header {
@@ -61,17 +41,12 @@
     position: relative;
 }
 
-.logo-area {
-    display: flex;
-    height: 100%;
-    align-items: center;
-}
-
 /* 品牌Logo区域 */
 .brand-logo {
     display: flex;
     align-items: center;
     gap: 12px;
+    height: 100%;
 }
 
 .brand-icon {
@@ -172,14 +147,12 @@
 
 .nav-link {
     display: inline-block;
-    padding: 0 18px;
     font-size: 17px;
     color: #000000; /* 黑色字体 */
     border-radius: 0;
     transition: color 200ms ease, background-color 200ms ease, transform 200ms ease, font-weight 200ms ease;
     line-height: 1;
-    padding-top: 12px;
-    padding-bottom: 10px;
+    padding: 12px 18px 10px;
 }
 
 .nav-link:hover,
@@ -222,16 +195,12 @@
     opacity: 1;
 }
 
-/* ======================================================
-       启用：多行自适应顶部导航（已启用，适用于 .main-nav.multiline-nav）
-
-       说明：当 .main-nav 带有类 .multiline-nav 时，导航将允许换行（flex-wrap）并根据容器宽度自动分配多行。
-       JS 会计算每行可放置的项数并将行数写入 CSS 变量 --nav-rows（见 assets/js/multiline-nav.js）。
-       页底背景（.main-footer）会基于 --nav-rows 自动调整顶部内边距，避免视觉遮挡。
-
-       若需禁用：移除 .multiline-nav 类或注释下面的规则。
-    */
-
+/* =========================
+启用：多行自适应顶部导航（已启用，适用于 .main-nav.multiline-nav）
+说明：当 .main-nav 带有类 .multiline-nav 时，导航将允许换行（flex-wrap）并根据容器宽度自动分配多行。
+JS 会计算每行可放置的项数并将行数写入 CSS 变量 --nav-rows（见 assets/js/multiline-nav.js）。
+页底背景（.main-footer）会基于 --nav-rows 自动调整顶部内边距，避免视觉遮挡。
+若需禁用：移除 .multiline-nav 类或注释下面的规则。*/
 .main-nav.multiline-nav .nav-inner {
     padding: 8px 12px;
 }
@@ -255,13 +224,11 @@
     align-self: flex-start;
 }
 
-/* 根据 --nav-rows 调整 main-nav 高度（每行 64px）并为主体及页脚留出空间 */
-/*
-            多行导航容器高度说明：
-            - JS 会根据导航项和容器宽度计算实际行数并通过 CSS 变量写入 --nav-rows。
-            - 每行的高度由 --nav-row-height 决定（默认 64px），便于不同字体/行高情况下做微调。
-            - height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高度或行数。
-        */
+/* 根据 --nav-rows 调整 main-nav 高度（每行 64px）并为主体及页脚留出空间
+多行导航容器高度说明：
+JS 会根据导航项和容器宽度计算实际行数并通过 CSS 变量写入 --nav-rows。
+每行的高度由 --nav-row-height 决定（默认 64px），便于不同字体/行高情况下做微调。
+height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高度或行数。*/
 .main-nav.multiline-nav {
     --nav-rows: 1;
     /* 默认值，JS 会覆盖真实值 */
@@ -271,8 +238,8 @@
 }
 
 /* 底部延伸边框：使用 .nav-inner::after 在导航容器底部绘制一条背景色线，
-           并将其垂直位置与多行高度对齐，确保无论换行多少行边框都延伸到最下方。
-           该伪元素不会遮挡交互（pointer-events: none）。如需不同颜色或粗细，可覆盖下列变量。 */
+并将其垂直位置与多行高度对齐，确保无论换行多少行边框都延伸到最下方。
+该伪元素不会遮挡交互（pointer-events: none）。如需不同颜色或粗细，可覆盖下列变量。 */
 .main-nav.multiline-nav .nav-inner::after {
     content: '';
     position: absolute;
@@ -292,9 +259,8 @@
     width:100%;
     background-color:#f0f0f0;
     color:#333;
-    padding:32px 0;
     transition: padding-top 220ms ease;
-    padding-top: calc(32px + (var(--nav-rows, 1) - 1) * 12px);
+    padding: calc(32px + (var(--nav-rows, 1) - 1) * 12px) 0 32px;
     /* 基础 32px，加上每行的微调 */
 }
 
@@ -306,9 +272,7 @@
 }
 
 /* ====================================================== */
-
 /* ========== Footer ========== */
-
 /* 页脚内容容器 */
 .main-footer .container {
     max-width: 1200px;
@@ -480,17 +444,37 @@ html.fragments-loading::after {
     to { transform: translate(-50%,-50%) rotate(360deg); } 
 }
 
-/* ========== Loader.js 模板相关样式========== */
+/* ========== 全站通用链接样式 ==========
+   适用于：index.html 的 .page-link 和 info/moreinfo.html 的正文链接
+   特点：蓝色下划线，悬停时变为紫色波浪线并轻微上浮 */
+.page-link,
+.info-page main a,
+.moreinfo-page main a {
+    color: #0044cc;
+    text-decoration: underline;
+    text-decoration-color: #0044cc;
+    text-underline-offset: 2px;
+    transition: color 160ms ease, transform 120ms ease, text-decoration-color 160ms ease;
+}
 
-/* ===== 通用卡片样式（适用于 index/info/lineinfo/moreinfo 等页面） ===== */
+.page-link:hover, .page-link:focus,
+.info-page main a:hover, .info-page main a:focus,
+.moreinfo-page main a:hover, .moreinfo-page main a:focus {
+    color: #6a0dad; /* 紫色 */
+    text-decoration-style: wavy; /* 波浪线 */
+    text-decoration-color: #6a0dad;
+    transform: translateY(-3px); /* 上浮效果 */
+}
+
+/* ========== Loader.js 模板相关样式========== */
+/* ===== 通用卡片样式（适用于 index/info/moreinfo 等页面） ===== */
 /* 页面容器/小节卡片：长方形卡片，圆角边框，左侧导航栏颜色色块 */
-.page-section,
-.page-container {
+.page-section {
     margin-bottom: 24px;
 }
 
-.section-card,
-.page-container {
+/* index.html 首页卡片：需要独立的宽度和居中设置 */
+.page-section .card {
     position: relative;
     background: #ffffff;
     border-radius: 12px;
@@ -498,27 +482,19 @@ html.fragments-loading::after {
     padding: 28px 32px 28px 48px; /* 左侧留出空间给色块 */
     overflow: hidden;
     transition: box-shadow 0.3s ease, transform 0.2s ease;
-    /* 
-     * 宽度和居中设置：与首页 content-extend 保持一致
-     * - width: 100% 确保在小屏幕上占满可用宽度
-     * - max-width: 1200px 限制最大宽度，与首页保持一致
-     * - margin-left/right: auto 实现水平居中对齐
-     */
     width: 100%;
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.section-card:hover,
-.page-container:hover {
+.page-section .card:hover {
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
     transform: translateY(-2px);
 }
 
-/* 左侧导航栏颜色色块 */
-.section-card::before,
-.page-container::before {
+/* 卡片左侧导航栏颜色色块 */
+.page-section .card::before {
     content: '';
     position: absolute;
     left: 0;
@@ -529,43 +505,26 @@ html.fragments-loading::after {
     border-radius: 12px 0 0 12px;
 }
 
-.section-card h2,
-.page-container .page-title {
-    font-size: 1.5rem;
-    color: var(--secondary-color);
-    margin-bottom: 16px;
-    font-weight: 600;
+/* index.html 卡片内容左对齐 */
+.page-section .card .card-body {
+    text-align: left;
 }
 
-.section-card h2 a {
-    color: var(--secondary-color);
-    text-decoration: none;
-    transition: color 0.2s ease;
+.page-section .card .card-meta {
+    text-align: left;
 }
 
-.section-card h2 a:hover {
-    color: var(--primary-color);
-}
-
-.preview-item {
-    margin-bottom: 16px;
-}
-
-.preview-item h3 {
-    font-size: 1.15rem;
-    color: var(--text-color);
-    margin-bottom: 8px;
-    font-weight: 500;
-}
-
-.preview-item .meta.summary {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 0;
+.page-section .card .page-link {
+    display: inline-block;
 }
 
 .card {
     padding: 14px;
+}
+
+/* news-list 内的卡片（info.html等页面使用） */
+.news-list .card {
+    padding: 24px 28px 24px 34px; /* 与 news-item 保持一致 */
 }
 
 .card .card-header {
@@ -615,10 +574,6 @@ html.fragments-loading::after {
     letter-spacing: 1px;
 }
 
-.page-container .card-header h3.card-title {
-    color: #c00000;
-}
-
 .article-report .card-title,
 .content-card.article-report .card-title {
     text-align: center;
@@ -634,12 +589,11 @@ html.fragments-loading::after {
     margin-top: 8px;
 }
 
-/* ===== 通用：news 列表与 content-card（供 info/moreinfo/lineinfo 复用） ===== */
+/* ===== 通用：news 列表与 content-card（供 info/moreinfo复用） ===== */
 /* 
  * news-list: 新闻/文章列表容器
  * news-item: 单个新闻/文章项，现为独立卡片样式
  * 设计说明：每篇文章为独立卡片，带有圆角、阴影和悬停效果
- * 
  * 布局说明：
  * - news-list 直接放在 main 下，无需 page-container 外层
  * - 通过 max-width 和 margin auto 实现居中
@@ -659,12 +613,11 @@ html.fragments-loading::after {
  * - 添加白色背景、圆角、阴影
  * - 添加内边距使内容有呼吸感
  * - 悬停时阴影加深并轻微上浮
- * 
  * 注意：loader.js 使用 wrapperClass: "card" 创建包装元素
  * 因此这里同时支持 .card 和 .news-item 两种class
  */
 .news-item,
-.card {
+.news-list .card {
     position: relative;
     background: #ffffff;
     border-radius: 12px;
@@ -677,20 +630,20 @@ html.fragments-loading::after {
 
 /* 最后一篇文章不需要特殊处理，所有文章都是独立卡片 */
 .news-item:last-child,
-.card:last-child {
+.news-list .card:last-child {
     margin-bottom: 0; /* 最后一篇移除底部间距 */
 }
 
 /* 卡片悬停效果：阴影加深并轻微上浮 */
 .news-item:hover,
-.card:hover {
+.news-list .card:hover {
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
     transform: translateY(-2px);
 }
 
 /* 卡片左侧导航栏颜色色块 */
 .news-item::before,
-.card::before {
+.news-list .card::before {
     content: '';
     position: absolute;
     left: 0;
@@ -713,7 +666,13 @@ html.fragments-loading::after {
     font-size: 0.9rem;
     margin-bottom: 12px;
 }
-
+/*小节通用标题样式*/
+.page-title {
+    font-size: var(--h1-size);
+    color: #003366;
+    margin-bottom: 12px;
+    text-align: center;
+}
 /* 页面标题样式（h1.page-title） */
 .news-page .page-title {
     width: 100%;
@@ -741,118 +700,6 @@ html.fragments-loading::after {
     box-shadow: 0 4px 24px rgba(0,0,0,0.1);
 }
 
-/* 文章正文字体（使用 CSS 变量 --article-font）
-   默认在 :root 中声明为楷体（"KaiTi"），如果需要按页面切换，请在页面对应的 style.css 中覆盖 --article-font 变量。
-   示例：在 page-specific CSS 中添加
-       body { --article-font: "Songti SC", serif; }
-   或者针对某个容器覆盖：
-       .info-page .content-card { font-family: var(--article-font); }
-*/
-.content-card, .card-body, .card { font-family: var(--article-font); }
-
-/* ========== 二级导航通用样式（灰黑色背景，平分宽度） ==========
-   适用于：二级导航(.secondary-nav)、线路分类标签(.category-tabs)、地图导航(.map-nav) */
-.secondary-nav-wrapper,
-.category-tabs-wrapper,
-.map-nav-wrapper {
-    width: 100vw; /* 与视口同宽，不受container限制 */
-    margin-left: calc(-50vw + 50%); /* 居中定位 */
-    background: rgba(0, 0, 0, 0.4); /* 半透明灰色背景，与图片一致 */
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    border-radius: 0; /* 矩形，无圆角 */
-    overflow: hidden;
-}
-
-.secondary-nav,
-.category-tabs,
-.map-nav {
-    display: flex;
-    flex-wrap: wrap; /* 允许换行 */
-    gap: 0;
-    padding: 0;
-    justify-content: flex-start; /* 左对齐，适应换行 */
-    background: transparent;
-    width: 100%;
-}
-
-.secondary-nav-item,
-.category-tab,
-.map-nav-item {
-    flex: 1 1 0; /* 平均分配宽度，允许收缩和扩展 */
-    min-width: max-content; /* 最小宽度为内容宽度，确保内容完整显示 */
-    max-width: 100%; /* 不超过容器宽度 */
-    padding: 14px 20px; /* 调整左右内边距 */
-    border: none;
-    border-radius: 0; /* 矩形 */
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: transparent;
-    color: #ffffff; /* 白色字体 */
-    white-space: normal; /* 允许文字换行 */
-    text-align: center;
-    position: relative;
-    display: flex; /* 使用flex布局 */
-    align-items: center; /* 垂直居中 */
-    justify-content: center; /* 水平居中 */
-    word-break: keep-all; /* 保持单词完整性 */
-    overflow: visible; /* 显示溢出内容 */
-}
-
-.secondary-nav-item:hover,
-.category-tab:hover,
-.map-nav-item:hover {
-    background: rgba(255, 255, 255, 0.1); /* 悬停时微亮 */
-    color: #ffffff;
-    transform: none;
-}
-
-.secondary-nav-item.active,
-.category-tab.active,
-.map-nav-item.active {
-    background: #e60012 !important; /* 选中时背景变红，与图片一致 */
-    color: #ffffff !important;
-    font-weight: 600 !important;
-}
-
-.secondary-nav-item a,
-.category-tab a {
-    color: inherit;
-    text-decoration: none;
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.secondary-nav-item a:hover,
-.category-tab a:hover {
-    color: inherit;
-    text-decoration: none;
-}
-
-/* 深蓝色特殊按钮样式（用于地图说明、乘车导航等） */
-.secondary-nav-item.info-style,
-.map-nav-item.info-style {
-    background: #003366; /* 深蓝色背景 */
-    color: #ffffff;
-    font-weight: 600;
-}
-
-.secondary-nav-item.info-style:hover,
-.map-nav-item.info-style:hover {
-    background: #004080; /* 悬停时稍浅的蓝色 */
-    color: #ffffff;
-}
-
-/* 响应式：小屏幕下调整二级导航样式 */
-@media (max-width: 768px) {
-    .secondary-nav-item,
-    .category-tab,
-    .map-nav-item {
-        padding: 12px 16px;
-        font-size: 14px;
-    }
-}
+/* 文章正文字体*/
+.content-card, .card-body, .card {
+    font-family: var(--article-font), sans-serif; }
