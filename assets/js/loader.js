@@ -1,6 +1,56 @@
 // loader.js 全功能+动态自动刷新+JSON5支持版
 // assets/js/loader.js
 //新增：将模板移到JS内部，支持反引号多行字符串
+
+// ========== 调试配置 ==========
+const DEBUG_CONFIG = {
+    ENABLE_LOADER_LOGS: false,        // 是否开启 loader 模块日志
+    ENABLE_CACHE_LOGS: false,        // 是否开启缓存相关日志
+    ENABLE_REFRESH_LOGS: false,      // 是否开启自动刷新日志
+    ENABLE_RENDER_LOGS: false        // 是否开启渲染过程日志
+};
+
+// ========== 统一日志管理函数 ==========
+/**统一的调试日志输出函数
+ * @param {string} level - 日志级别 ('info' | 'warn' | 'error' | 'success')
+ * @param {...*} args - 日志内容（支持多个参数）*/
+function debugLog(level, ...args) {
+    // 如果全局关闭日志，直接返回
+    if (!DEBUG_CONFIG.ENABLE_LOADER_LOGS) return;
+    
+    // 根据具体类型检查是否开启
+    const message = args[0] || '';
+    const isCacheRelated = message.includes('缓存') || message.includes('cache');
+    const isRefreshRelated = message.includes('刷新') || message.includes('refresh');
+    const isRenderRelated = message.includes('渲染') || message.includes('render') || message.includes('容器');
+    
+    if (isCacheRelated && !DEBUG_CONFIG.ENABLE_CACHE_LOGS) return;
+    if (isRefreshRelated && !DEBUG_CONFIG.ENABLE_REFRESH_LOGS) return;
+    if (isRenderRelated && !DEBUG_CONFIG.ENABLE_RENDER_LOGS) return;
+    
+    // 添加统一前缀
+    const prefix = '[Loader]';
+    const formattedArgs = [prefix, ...args];
+    
+    // 根据级别调用对应的 console 方法
+    switch (level) {
+        case 'info':
+            console.log(...formattedArgs);
+            break;
+        case 'warn':
+            console.warn(...formattedArgs);
+            break;
+        case 'error':
+            console.error(...formattedArgs);
+            break;
+        case 'success':
+            console.log('%c✓', 'color: #4caf50; font-weight: bold;', ...formattedArgs);
+            break;
+        default:
+            console.log(...formattedArgs);
+    }
+}
+
 const Templates = {
 //=====文章模板=====
     article: `
@@ -192,11 +242,11 @@ class MultiPageLoader {
     // ========== 内容注入（多容器容错）injectAll 函数读取本地 Templates==========
     injectAll() {
         if (!this.globalConfig || !this.currentPageData) {
-            console.warn('[Loader] injectAll: globalConfig 或 currentPageData 为空');
+            debugLog('warn', 'injectAll: globalConfig 或 currentPageData 为空');
             return;
         }
 
-        console.log('[Loader] 开始渲染页面，slots:', Object.keys(this.currentPageData.slots || {}));
+        debugLog('info', '开始渲染页面，slots:', Object.keys(this.currentPageData.slots || {}));
 
         const templates = Templates;
         const slots = this.currentPageData.slots;
@@ -204,7 +254,7 @@ class MultiPageLoader {
         const securityRules = this.globalConfig.security;
 
         if (!slots || typeof slots !== 'object') {
-            console.warn('[Loader] injectAll: slots 不存在或不是对象');
+            debugLog('warn', 'injectAll: slots 不存在或不是对象');
             return;
         }
 
@@ -214,27 +264,27 @@ class MultiPageLoader {
                 const container = document.getElementById(containerId);
 
                 if (!container) {
-                    console.warn(`[Loader] 容器[${containerId}]不存在，已自动忽略`);
+                    debugLog('warn', `容器[${containerId}]不存在，已自动忽略`);
                     return;
                 }
                 
                 if (!slotConfig.dataKey) {
-                    console.warn(`[Loader] 容器[${containerId}]无dataKey，已自动忽略`);
+                    debugLog('warn', `容器[${containerId}]无dataKey，已自动忽略`);
                     return;
                 }
 
-                console.log(`[Loader] 正在渲染容器: ${containerId}, dataKey:`, slotConfig.dataKey);
+                debugLog('info', `正在渲染容器: ${containerId}, dataKey:`, slotConfig.dataKey);
                 container.innerHTML = '';
                 const dataKeys = Array.isArray(slotConfig.dataKey) ? slotConfig.dataKey : [slotConfig.dataKey];
 
                 dataKeys.forEach(key => {
                     const itemData = content[key];
                     if (!itemData) {
-                        console.warn(`[Loader] 内容key[${key}]不存在，已自动忽略`);
+                        debugLog('warn', `内容key[${key}]不存在，已自动忽略`);
                         return;
                     }
 
-                    console.log(`[Loader] 渲染内容项: ${key}, type: ${itemData.type}`);
+                    debugLog('info', `渲染内容项: ${key}, type: ${itemData.type}`);
                     const tagName = slotConfig.semanticTag || 'div';
                     const wrapper = document.createElement(tagName);
                     if (slotConfig.wrapperClass) wrapper.className = slotConfig.wrapperClass;
@@ -243,14 +293,14 @@ class MultiPageLoader {
                     const tpl = templates[itemData.type] || templates.article;
                     wrapper.innerHTML = this.render(tpl, itemData, securityRules);
                     container.appendChild(wrapper);
-                    console.log(`[Loader] ✓ 已渲染 ${key} 到容器 ${containerId}`);
+                    debugLog('success', `已渲染 ${key} 到容器 ${containerId}`);
                 });
             } catch (e) {
-                console.error(`[Loader] 容器[${containerId}]渲染失败，已自动跳过`, e);
+                debugLog('error', `容器[${containerId}]渲染失败，已自动跳过`, e);
             }
         });
         
-        console.log('[Loader] 所有容器渲染完成');
+        debugLog('info', '所有容器渲染完成');
     }
 
     // ========== 数据加载（JSON5版） ==========
@@ -262,7 +312,7 @@ class MultiPageLoader {
             const text = await res.text();
             return JSON5.parse(text);
         } catch (e) {
-            console.error(`加载JSON5失败: ${url}`, e);
+            debugLog('error', `加载JSON5失败: ${url}`, e);
             return null;
         }
     }
@@ -279,7 +329,7 @@ class MultiPageLoader {
         if (this.refreshTimer) {
             clearTimeout(this.refreshTimer);
             this.refreshTimer = null;
-            console.log("已停止旧的自动刷新定时器");
+            debugLog('info', '已停止旧的自动刷新定时器');
         }
 
         // 更新当前状态
@@ -291,10 +341,10 @@ class MultiPageLoader {
             // 解析间隔（支持 '5s','2m','1h','1d'）
             const ms = this.parseIntervalToMs(newInterval);
             this.currentAutoRefreshInterval = ms;
-            console.log(`已启动自动刷新，间隔: ${ms}ms`);
+            debugLog('info', `已启动自动刷新，间隔: ${ms}ms`);
             this.startRefreshLoop();
         } else {
-            console.log("已关闭自动刷新");
+            debugLog('info', '已关闭自动刷新');
             // 当自动刷新关闭时，保留最后一次缓存的数据用于页面渲染（不再轮询）
         }
     }
@@ -326,20 +376,20 @@ class MultiPageLoader {
                 // 4. 检测数据变化，有变化才重渲染
                 const hashStr = JSON.stringify(pageData);
                 if (this.currentHash !== hashStr) {
-                    console.log(`页面[${this.pageId}]数据已更新，自动重渲染`);
+                    debugLog('info', `页面[${this.pageId}]数据已更新，自动重渲染`);
                     this.currentPageData = pageData;
                     this.injectAll();
                     // 缓存此次页面数据到 localStorage
                     try {
                         localStorage.setItem(`pagecache:${this.pageId}`, JSON.stringify(pageData));
-                        console.log('已将页面数据写入本地缓存');
+                        debugLog('info', '已将页面数据写入本地缓存');
                     } catch (e) {
-                        console.warn('写入本地缓存失败', e);
+                        debugLog('warn', '写入本地缓存失败', e);
                     }
                     this.currentHash = hashStr;
                 }
             } catch (e) {
-                console.error("刷新循环异常", e);
+                debugLog('error', '刷新循环异常', e);
             }
 
             // 5. 下一轮循环（用当前最新的间隔）
@@ -354,36 +404,36 @@ class MultiPageLoader {
     // ========== 初始化 ==========
     async init() {
         try {
-            console.log(`[Loader] 开始初始化页面: ${this.pageId}`);
+            debugLog('info', `开始初始化页面: ${this.pageId}`);
             
             // 1. 首次加载全局配置
             this.globalConfig = await this.fetchJson(this.globalConfigUrl);
             if (!this.globalConfig) {
-                console.error("全局配置加载失败，终止渲染");
+                debugLog('error', '全局配置加载失败，终止渲染');
                 return;
             }
-            console.log('[Loader] 全局配置加载成功', this.globalConfig);
+            debugLog('info', '全局配置加载成功', this.globalConfig);
 
             // 2. 初始化自动刷新（支持关闭时使用本地缓存）
             const initialEnabled = this.globalConfig.autoRefresh?.enabled ?? true;
             const initialIntervalRaw = this.globalConfig.autoRefresh?.interval ?? 3000;
             const initialInterval = this.parseIntervalToMs(initialIntervalRaw);
 
-            console.log(`[Loader] 自动刷新状态: enabled=${initialEnabled}, interval=${initialIntervalRaw}`);
+            debugLog('info', `自动刷新状态: enabled=${initialEnabled}, interval=${initialIntervalRaw}`);
 
             if (!initialEnabled) {
-                console.log('[Loader] 自动刷新已关闭，尝试使用本地缓存或重新请求数据');
+                debugLog('info', '自动刷新已关闭，尝试使用本地缓存或重新请求数据');
                 
                 // 检查数据文件是否有更新
                 const dataUrl = `${this.globalConfig.system.dataBasePath}page-${this.pageId}.json5`;
-                console.log(`[Loader] 正在检查数据文件: ${dataUrl}`);
+                debugLog('info', `正在检查数据文件: ${dataUrl}`);
                 
                 try {
                     // 先尝试从服务器获取最新数据
                     const freshPageData = await this.fetchJson(dataUrl);
                     
                     if (freshPageData) {
-                        console.log('[Loader] 从服务器获取到最新数据');
+                        debugLog('info', '从服务器获取到最新数据');
                         const freshHash = JSON.stringify(freshPageData);
                         
                         // 检查是否有本地缓存
@@ -397,13 +447,13 @@ class MultiPageLoader {
                                 
                                 // 比较哈希值，如果相同则使用缓存
                                 if (freshHash === cachedHash) {
-                                    console.log('[Loader] 数据未变化，使用本地缓存');
+                                    debugLog('info', '数据未变化，使用本地缓存');
                                     shouldUseCache = true;
                                 } else {
-                                    console.log('[Loader] 检测到数据更新，将使用新数据并更新缓存');
+                                    debugLog('info', '检测到数据更新，将使用新数据并更新缓存');
                                 }
                             } catch (e) {
-                                console.warn('[Loader] 解析缓存失败，将使用新数据', e);
+                                debugLog('warn', '解析缓存失败，将使用新数据', e);
                             }
                         }
                         
@@ -413,10 +463,10 @@ class MultiPageLoader {
                             this.currentPageData = pageData;
                             this.injectAll();
                             this.currentHash = JSON.stringify(pageData);
-                            console.log('[Loader] 使用本地缓存渲染页面');
+                            debugLog('info', '使用本地缓存渲染页面');
                         } else {
                             // 使用新数据
-                            console.log('[Loader] 数据加载成功，内容keys:', Object.keys(freshPageData.content || {}));
+                            debugLog('info', '数据加载成功，内容keys:', Object.keys(freshPageData.content || {}));
                             this.currentPageData = freshPageData;
                             this.injectAll();
                             this.currentHash = freshHash;
@@ -424,27 +474,27 @@ class MultiPageLoader {
                             // 更新缓存
                             try { 
                                 localStorage.setItem(`pagecache:${this.pageId}`, JSON.stringify(freshPageData)); 
-                                console.log('[Loader] 已将最新数据写入本地缓存');
+                                debugLog('info', '已将最新数据写入本地缓存');
                             } catch(e){
-                                console.warn('[Loader] 写入本地缓存失败', e);
+                                debugLog('warn', '写入本地缓存失败', e);
                             }
                         }
                     } else {
                         // 服务器请求失败，尝试使用缓存
-                        console.warn('[Loader] 服务器数据加载失败，尝试使用本地缓存');
+                        debugLog('warn', '服务器数据加载失败，尝试使用本地缓存');
                         const cached = localStorage.getItem(`pagecache:${this.pageId}`);
                         if (cached) {
                             const pageData = JSON.parse(cached);
                             this.currentPageData = pageData;
                             this.injectAll();
                             this.currentHash = JSON.stringify(pageData);
-                            console.log('[Loader] 使用本地缓存渲染页面（服务器请求失败）');
+                            debugLog('info', '使用本地缓存渲染页面（服务器请求失败）');
                         } else {
-                            console.error('[Loader] 无本地缓存且服务器请求失败，无法渲染页面');
+                            debugLog('error', '无本地缓存且服务器请求失败，无法渲染页面');
                         }
                     }
                 } catch (e) {
-                    console.warn('[Loader] 数据加载异常，尝试使用本地缓存', e);
+                    debugLog('warn', '数据加载异常，尝试使用本地缓存', e);
                     // 异常情况下使用缓存
                     const cached = localStorage.getItem(`pagecache:${this.pageId}`);
                     if (cached) {
@@ -453,21 +503,21 @@ class MultiPageLoader {
                             this.currentPageData = pageData;
                             this.injectAll();
                             this.currentHash = JSON.stringify(pageData);
-                            console.log('[Loader] 使用本地缓存渲染页面（异常情况）');
+                            debugLog('info', '使用本地缓存渲染页面（异常情况）');
                         } catch (parseError) {
-                            console.error('[Loader] 缓存解析失败', parseError);
+                            debugLog('error', '缓存解析失败', parseError);
                         }
                     }
                 }
             } else {
-                console.log('[Loader] 自动刷新已开启，将启动刷新循环');
+                debugLog('info', '自动刷新已开启，将启动刷新循环');
             }
 
             // 启动自动刷新或保持关闭
             this.updateAutoRefresh(initialEnabled, initialInterval);
-            console.log('[Loader] 初始化完成');
+            debugLog('info', '初始化完成');
         } catch (e) {
-            console.error("[Loader] 初始化失败", e);
+            debugLog('error', '初始化失败', e);
         }
     }
 }

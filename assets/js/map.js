@@ -1,9 +1,9 @@
 // DOM加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-    // 检查是否在 route.html 中（线路图在 tab 内）
+    // 检查是否在 源route.html 中（线路图在 tab 内）
     const isRoutePage = document.getElementById('route-map-content') !== null;
     
-    // 如果在 route.html 中，只有当线路图 tab 被激活时才初始化
+    // 如果在 源route.html 中，只有当线路图 tab 被激活时才初始化
     if (isRoutePage) {
         const routeMapTab = document.querySelector('[data-tab="route-map"]');
         const routeMapContent = document.getElementById('route-map-content');
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // 动态调整地图容器位置（用于处理导航换行）
+// 注意：此函数不依赖 navigate.js，直接通过 getBoundingClientRect 获取实际高度
 function adjustMapContainerPosition() {
     const mapContainer = document.getElementById('mapContainer');
     const mapNavWrapper = document.querySelector('.map-nav-wrapper');
@@ -47,14 +48,14 @@ function adjustMapContainerPosition() {
     
     // 使用 requestAnimationFrame 确保在浏览器重排后计算
     requestAnimationFrame(() => {
-        // 直接获取header的实际高度，而不是使用CSS变量
+        // ⭐ 关键：直接获取header的实际高度，而不是依赖CSS变量
+        // 这样即使没有 navigate.js 设置 --header-height，也能正常工作
         const header = document.querySelector('.site-header');
-        const headerHeight = header ? header.getBoundingClientRect().height : 67;
         
         // 计算总偏移量：
         // header高度 + 二级导航高度 + 分割线高度 + 地图导航高度
         // 因为map-container是fixed定位，相对于视口，所以需要考虑所有在它上面的元素
-        let totalOffset = headerHeight;
+        let totalOffset = header ? header.getBoundingClientRect().height : 67;
         
         // 加上二级导航高度（如果存在且可见）
         if (secondaryNavWrapper && secondaryNavWrapper.offsetHeight > 0) {
@@ -72,7 +73,7 @@ function adjustMapContainerPosition() {
         // 设置地图容器的top值
         mapContainer.style.top = totalOffset + 'px';
         
-        // 调试信息
+        // 调试信息（需要时取消注释）
         // console.log('=== 地图容器位置调试 ===');
         // console.log('Header实际高度:', headerHeight, 'px');
         // console.log('二级导航高度:', secondaryNavWrapper ? secondaryNavWrapper.offsetHeight : 0, 'px');
@@ -146,8 +147,6 @@ function initLinemap() {
             return lineInfo;
         });
 
-    // 语言支持已简化为中文，移除切换逻辑
-
     // ========== 信息按钮功能 ==========
     // 打开弹窗（注入对应线路说明），使用 class 控制显示以配合 CSS
     infoBtn.addEventListener('click', function(e) {
@@ -164,7 +163,7 @@ function initLinemap() {
         }
         
         const item = lineInfo[selectedValue];
-        // 若数据尚未加载，显示加载提示并在加载完成后更新（中文）
+        // 若数据尚未加载，显示加载提示并在加载完成后更新中文
         if (!item) {
             infoText.textContent = '正在加载...';
             document.getElementById('modal-title').textContent = '线路说明';
@@ -175,7 +174,7 @@ function initLinemap() {
             });
             return;
         }
-        //数据已就绪，直接显示（中文）
+        //数据已就绪，直接显示中文
         infoText.textContent = item.zh || '';
         document.getElementById('modal-title').textContent = '线路说明';
         infoModal.classList.add('show');

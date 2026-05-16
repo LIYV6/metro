@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>线路图</title>
+    <meta name="description" content="鲤鱼铁路线路图：浏览全部地铁、铁路、轮渡、航空及索道线路信息，查询站点详情与导航。">
+    <meta name="keywords" content="鲤鱼铁路, 线路图, 地铁, 铁路, 轮渡, 航空, 站点查询, 导航">
+    <meta name="author" content="鲤鱼铁路">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="线路图 - 鲤鱼铁路">
+    <meta property="og:description" content="浏览鲤鱼铁路全部交通线路与站点信息。">
+    <meta property="og:type" content="website">
+    <title>线路图 - 鲤鱼铁路</title>
     <link rel="stylesheet" href="../assets/css/base.css">
     <link rel="stylesheet" href="../assets/css/part.css">
-    <link rel="stylesheet" href="../assets/css/route.css?v=1774458908967u">
+    <link rel="stylesheet" href="../assets/css/route.css">
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>-->
+    <script src="../assets/js/libs/sql-wasm.js"></script>
 </head>
 <body>
 <!-- 页顶部 -->
@@ -33,7 +42,7 @@
                         <div class="category-tabs">
                             <button class="category-tab active" data-category="all">全部<br/>All</button>
                             <button class="category-tab" data-category="NORMAL">地铁<br/>Metro</button>
-                            <button class="category-tab" data-category="HIGH_SPEED">高铁火车<br/>Highspeed&Rail</button>
+                            <button class="category-tab" data-category="HIGH_SPEED">铁路<br/>Rail</button>
                             <button class="category-tab" data-category="BOAT">轮船<br/>Boat</button>
                             <button class="category-tab" data-category="AIRPLANE">飞机<br/>Plane</button>
                             <button class="category-tab" data-category="CABLE_CAR">索道<br/>Cableway</button>
@@ -85,9 +94,9 @@
 
                     <div class="modal-footer">
                         <p data-i18n="contact">信息提供: 
-                            <a href="https://github.com/LIYV6" target="_blank" style="color: #0000ee; text-decoration: underline">
+                            <a href="https://github.com/LIYV6" target="_blank" class="page-link">
                                 Yv Li</a> + 
-                            <a href="https://github.com/frankniubi" target="_blank" style="color: #0000ee; text-decoration: underline">
+                            <a href="https://github.com/frankniubi" target="_blank" class="page-link">
                                 Frank Lau</a>
                         </p>
                     </div>
@@ -108,8 +117,46 @@
         <div data-include="footer" id="site-footer"></div>
 <!-- 引入外部交互脚本，统一管理逻辑 -->
     <script src="../assets/js/include-fragments.js"></script>
-    <script src="../assets/js/navigate.js"></script>
-    <script src="../assets/js/route.js?v=1774458908967u"></script>
+    <script>
+        // 动态调整 body 的 padding-top，确保内容不被固定导航遮挡
+        // 此脚本在 header 加载完成后执行，直接获取实际高度
+        (function() {
+            function adjustBodyPadding() {
+                var header = document.querySelector('.site-header');
+                if (header) {
+                    var headerHeight = header.getBoundingClientRect().height;
+                    document.body.style.paddingTop = headerHeight + 'px';
+                }
+            }
+            
+            // 立即执行一次
+            adjustBodyPadding();
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', function() {
+                clearTimeout(window.__resizeTimer);
+                window.__resizeTimer = setTimeout(adjustBodyPadding, 100);
+            });
+            
+            // 监听 DOM 变化（等待 fragments 加载完成）
+            if (window.MutationObserver) {
+                var observer = new MutationObserver(function() {
+                    var header = document.querySelector('.site-header');
+                    if (header && header.offsetHeight > 0) {
+                        adjustBodyPadding();
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+                
+                // 5秒后停止监听，避免无限等待
+                setTimeout(function() {
+                    observer.disconnect();
+                }, 5000);
+            }
+        })();
+    </script>
+    <script src="../assets/js/route.js"></script>
     <script src="../assets/js/map.js"></script>
 
 </body>

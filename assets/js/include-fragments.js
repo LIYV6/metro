@@ -1,8 +1,6 @@
-/* include-fragments.js
-   重构目标：配置驱动、模块化、可扩展并改进错误处理与加载性能。
+/* include-fragments.js重构目标：配置驱动、模块化、可扩展并改进错误处理与加载性能。
    行为说明：在 DOMContentLoaded 时（或之后）查找占位符并注入片段，
-   默认保留与原实现兼容的占位符与候选路径。可通过传入配置自定义路径、选择器、缓存策略、去重规则和错误回调。
-*/
+   默认保留与原实现兼容的占位符与候选路径。可通过传入配置自定义路径、选择器、缓存策略、去重规则和错误回调。*/
 (function () {
     'use strict';
 
@@ -37,7 +35,7 @@
         // 在哪些注入容器内修复链接（query selector）
         linkFixContainers: ['.site-header', '.main-footer'],
         // 视图目录下常见文件名，linkFix 时会对匹配的相对链接前缀 'views/'
-        viewFilenames: ['info.html','route.html','linemap.html', 'moreinfo.html'],
+        viewFilenames: ['info.html','源route.html','linemap.html', 'moreinfo.html'],
         // fetch 缓存策略，默认为 browser default
         fetchCache: 'default', // 可选 'no-store','no-cache','reload','force-cache','only-if-cached'
         // 是否将加载结果暴露为 window.__fragmentsLoaded（保持兼容），可关闭以避免全局污染
@@ -124,7 +122,10 @@
         try {
             const path = location.pathname || '';
             const isInViews = path.indexOf('/views/') !== -1;
-            const nameSet = Array.isArray(filenames) ? filenames.reduce((s, n) => (s[n] = true, s), {}) : {};
+            // 将文件名数组转换为查找集合
+            const nameSet = Array.isArray(filenames) 
+                ? filenames.reduce((set, name) => { set[name] = true; return set; }, {})
+                : {};
             
             containers.forEach(containerSel => {
                 qAll(containerSel).forEach(root => {
@@ -160,6 +161,46 @@
         try {
             document.documentElement.classList.toggle('fragments-loading', !!isLoading);
         } catch (e) {}
+    }
+
+    // ⭐ 新增：导航链接自动高亮功能
+    function highlightActiveNav() {
+        try {
+            const navLinks = document.querySelectorAll('.nav-link');
+            if (!navLinks || navLinks.length === 0) return;
+            
+            // 获取当前页面路径
+            const curPath = (window.location.pathname || window.location.href).replace(/\\/g, '/');
+            
+            navLinks.forEach(function(a) {
+                try {
+                    const href = a.getAttribute('href') || '';
+                    if (!href) return;
+                    
+                    // 创建临时 <a> 元素来解析路径
+                    const tmp = document.createElement('a');
+                    tmp.href = href;
+                    const targetPath = (tmp.pathname || '').replace(/\\/g, '/');
+                    
+                    // 判断当前 URL 是否包含目标路径
+                    if (targetPath && curPath.indexOf(targetPath) !== -1) {
+                        a.classList.add('active');
+                    } else {
+                        a.classList.remove('active');
+                    }
+                    
+                    // 点击时更新激活状态
+                    a.addEventListener('click', function() {
+                        navLinks.forEach(function(el) { el.classList.remove('active'); });
+                        a.classList.add('active');
+                    }, false);
+                } catch (e) {
+                    // 忽略单个链接的错误
+                }
+            });
+        } catch (e) {
+            console && console.warn && console.warn('导航高亮失败:', e);
+        }
     }
 
     // ---------- FragmentLoader 类（对外 API） ----------
@@ -206,6 +247,9 @@
                     try { dedupeElements(cfg.dedupeSelectors); } catch (e) { cfg.onError && cfg.onError(e, { step: 'dedupe' }); }
                     try { fixRelativeLinks(cfg.linkFixContainers, cfg.viewFilenames); } catch (e) { cfg.onError && cfg.onError(e, { step: 'fixLinks' }); }
 
+                    // ⭐ 新增：导航链接自动高亮
+                    try { highlightActiveNav(); } catch (e) { cfg.onError && cfg.onError(e, { step: 'highlightNav' }); }
+
                     // 等待一帧以便样式重算（单层 rAF 即可）
                     await new Promise(r => requestAnimationFrame(r));
 
@@ -220,9 +264,6 @@
 
             return this._loadedPromise;
         }
-
-        // 手动触发（和 load 相同）
-        init() { return this.load(); }
     }
 
     // 将类或实例按配置暴露到全局（可选）以保持兼容与扩展性

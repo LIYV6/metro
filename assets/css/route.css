@@ -1,14 +1,14 @@
 :root {
     --page-bg: #f5efe2;
-    --paper-bg: rgba(255, 252, 246, 0.88);
+    --paper-bg: #FFFCF6E0;
     --paper-strong: #fffdf8;
     --ink: #162033;
     --ink-soft: #5f6c80;
-    --line: rgba(22, 32, 51, 0.12);
+    --line: #1620331F;
     --accent: #b24a2f;
     --accent-deep: #7f2412;
-    --shadow-lg: 0 24px 70px rgba(37, 28, 16, 0.16);
-    --shadow-md: 0 12px 28px rgba(37, 28, 16, 0.10);
+    --shadow-lg: 0 24px 70px #251C1029;
+    --shadow-md: 0 12px 28px #251C101A;
     /* 动态变量：线路颜色（由JS动态设置，此处提供默认值）*/
     --route-color: #1a1a1a;
 }
@@ -17,7 +17,7 @@
 body {
     font-family: Georgia, "Times New Roman", "Songti SC", "Noto Serif SC", serif;
     color: var(--ink);
-    background: rgba(255, 252, 247, 0.96); /* 与展示容器背景色一致，消除左侧分界颜色 */
+    background: #FFFCF7F5; /* 与展示容器背景色一致，消除左侧分界颜色 */
     min-height: 100vh;
     padding: 0; /* 移除内边距，使内容全宽显示 */
     /* 如果没有navigate.js，需要手动设置padding-top防止被导航遮挡 */
@@ -42,7 +42,7 @@ body {
 .map-nav-wrapper {
     width: 100vw; /* 与视口同宽，不受container限制 */
     margin-left: calc(-50vw + 50%); /* 居中定位 */
-    background: rgba(0, 0, 0, 0.4); /* 半透明灰色背景，与图片一致 */
+    background: #00000066; /* 半透明灰色背景，与图片一致 */
     padding: 0;
     margin-top: 0;
     margin-bottom: 0;
@@ -90,7 +90,7 @@ body {
 .secondary-nav-item:hover,
 .category-tab:hover,
 .map-nav-item:hover {
-    background: rgba(255, 255, 255, 0.1); /* 悬停时微亮 */
+    background: #FFFFFF1A; /* 悬停时微亮 */
     color: #ffffff;
     transform: none;
 }
@@ -155,7 +155,7 @@ body {
     /* 增加上下内边距，减少黑色背景影响 为滚动条留出空间 */
     padding: 32px 48px 32px 40px;
     /* 修改背景色与展示容器一致 */
-    background: rgba(255, 252, 247, 0.96);
+    background: #FFFCF7F5;
     /* 移除边框，使视觉上连起来 */
     border-radius: 0; /* 矩形，无圆角 */
     margin-bottom: 22px; /* 恢复底部边距，与黑色标题区域增加间距 */
@@ -171,18 +171,18 @@ body {
 }
 
 .line-blocks-container::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
+    background: #0000000D;
     border-radius: 4px;
 }
 
 .line-blocks-container::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
+    background: #00000033;
     border-radius: 4px;
     transition: background 0.2s ease;
 }
 
 .line-blocks-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
+    background: #0000004D;
 }
 
 
@@ -209,20 +209,20 @@ body {
     font-weight: 700;
     text-align: center;
     white-space: nowrap;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 2px #0000004D;
     z-index: 1;
 }
 
 .line-block:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 16px 36px rgba(37, 28, 16, 0.2);
-    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 16px 36px #251C1033;
+    border-color: #FFFFFFCC;
 }
 
 .line-block.active {
     transform: scale(1.1);
     border-color: white;
-    box-shadow: 0 20px 40px rgba(37, 28, 16, 0.28);
+    box-shadow: 0 20px 40px #251C1047;
 }
 
 .line-block-tooltip {
@@ -230,7 +230,7 @@ body {
     bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(22, 32, 51, 0.95);
+    background: #162033F2;
     color: white;
     padding: 8px 12px;
     border-radius: 8px;
@@ -240,7 +240,7 @@ body {
     pointer-events: none;
     transition: opacity 0.2s ease;
     z-index: 10;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px #00000033;
 }
 
 .line-block-tooltip::after {
@@ -250,7 +250,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: rgba(22, 32, 51, 0.95);
+    border-top-color: #162033F2;
 }
 
 .line-block:hover .line-block-tooltip {
@@ -282,7 +282,7 @@ body {
     width: 100vw; /* 与视口同宽，与二级导航对齐 */
     margin-left: calc(-50vw + 50%); /* 居中定位 */
     /* 添加背景色与色块容器一致 */
-    background: rgba(255, 252, 247, 0.96);
+    background: #FFFCF7F5;
     border: none; /* 移除边框 */
     box-shadow: none; /* 移除阴影 */
     padding: 0 40px 22px;
@@ -296,17 +296,17 @@ body {
     max-width: none; /* 取消最大宽度限制，与次级导航一样宽 */
     margin: 0 0 22px; /* 移除自动居中 */
     background: transparent; /* 卡片背景透明，与容器融合 */
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* 只保留底部细线分隔 */
+    border-bottom: 1px solid #00000014; /* 只保留底部细线分隔 */
 }
 
 .route-card {
-    background: rgba(255, 252, 247, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.64);
+    background: #FFFCF7EB;
+    border: 1px solid #FFFFFFA3;
     border-radius: 26px;
     padding: 0;
     margin-bottom: 22px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(37, 28, 16, 0.08);
+    box-shadow: 0 4px 12px #251C1014;
     backdrop-filter: blur(14px);
 }
 .route-card.hidden {
@@ -323,7 +323,7 @@ body {
     margin: 0;
     padding: 18px 22px;
     background:
-        linear-gradient(135deg, rgba(11, 19, 36, 0.96) 0%, rgba(30, 41, 59, 0.94) 100%);
+        linear-gradient(135deg, #0B1324F5 0%, #1E293BEF 100%);
     color: white;
     flex-wrap: wrap;
     gap: 12px;
@@ -348,7 +348,7 @@ body {
     letter-spacing: 0.3px;
 }
 .route-title p {
-    color: rgba(255,255,255,0.7);
+    color: #FFFFFFB3;
     font-size: 12px;
     font-weight: 500;
 }
@@ -390,17 +390,31 @@ body {
     display: flex;
     flex-direction: row;
     position: relative;
-    padding: 220px 20px 180px 20px;
+    padding: 220px 20px 210px 20px;
     overflow-x: auto;
+    overflow-y: auto;
     align-items: flex-start;
     min-height: 160px;
 }
+
+/* 垂直滚动条：与线路色块容器保持一致 */
 .station-list::-webkit-scrollbar {
-    height: 8px;
+    width: 8px;
 }
-.station-list::-webkit-scrollbar-thumb {
-    background: #ccc;
+
+.station-list::-webkit-scrollbar-track {
+    background: #0000000D;
     border-radius: 4px;
+}
+
+.station-list::-webkit-scrollbar-thumb {
+    background: #00000033;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.station-list::-webkit-scrollbar-thumb:hover {
+    background: #0000004D;
 }
 .station-main-line {
     display: none;
@@ -654,7 +668,7 @@ body {
     width: 100%; /* 与父容器同宽 */
     max-width: none; /* 不限制最大宽度 */
     margin: 0; /* 移除所有边距，与展示区和页脚无缝连接 */
-    background: rgba(255, 252, 247, 0.96); /* 应用背景色，消除界限 */
+    background: #FFFCF7F5; /* 应用背景色，消除界限 */
     border: none; /* 移除边框 */
     border-radius: 0; /* 矩形边框 */
     padding: 32px 40px 80px; /* 增加上下内边距，文字距边界留间距，底部加大间距覆盖页脚 */
@@ -674,7 +688,7 @@ body {
 }
 
 .exit-section-title {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: #1a1a1a;
     margin-bottom: 12px;
@@ -707,12 +721,6 @@ body {
     transition: all 0.2s ease;
 }
 
-.exit-card:hover {
-    background: #f0f2f5;
-    border-color: #ccc;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
 .exit-name {
     font-size: 18px;
     font-weight: 700;
@@ -732,6 +740,106 @@ body {
 
 .exit-destination-item:last-child {
     margin-bottom: 0;
+}
+
+/* Tooltip 样式（从 JS 中提取）*/
+.tooltip-header {
+    background: linear-gradient(135deg, rgba(11, 19, 36, 0.96) 0%, rgba(30, 41, 59, 0.94) 100%);
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tooltip-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.tooltip-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.tooltip-section {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.tooltip-section-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.tooltip-section-empty {
+    color: #999;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.tooltip-lines-container {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.tooltip-line-badge {
+    background: var(--line-color, #999);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip-line-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip-nearby-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.tooltip-nearby-link {
+    text-decoration: none;
+    background: #e0f7fa;
+    color: #006064;
+    border: 1px solid #00acc1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tooltip-nearby-link i {
+    margin-right: 4px;
+}
+
+.tooltip-error {
+    font-size: 14px;
+    color: #ff5252;
+    text-align: center;
+    padding: 10px;
+}
+
+.tooltip-error i {
+    margin-right: 5px;
 }
 
 .tooltip.show {
@@ -761,7 +869,7 @@ body {
     padding: 15px;
     border-radius: 50%;
     font-size: 18px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px #00000033;
     transition: all 0.3s;
     width: 50px;
     height: 50px;
@@ -778,7 +886,7 @@ body {
     transform: translateY(-3px);
 }
 /*线路信息页面样式结束*/
-/* =====route.html-map页面专属样式开始=====*/
+/* =====源route.html-map页面专属样式开始=====*/
 /*图片展示区域样式*/
 .map-container {
     width: 100%;
@@ -825,13 +933,13 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 2px solid rgba(0, 51, 102, 0.2); /* 淡蓝色边框 */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* 轻微阴影 */
+    border: 2px solid #00336633; /* 淡蓝色边框 */
+    box-shadow: 0 2px 8px #00000026; /* 轻微阴影 */
 }
 
 .control-btn:hover {
     background: #f0f4f8; /* 悬停时淡灰色背景 */
-    border-color: rgba(0, 51, 102, 0.4);
+    border-color: #00336666;
     transform: scale(1.05);
 }
 
@@ -843,7 +951,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: #00000080;
     z-index: 9999;
     align-items: center;
     justify-content: center;
@@ -916,4 +1024,4 @@ body.route-map-active .main-footer {
         max-height: 90vh;
     }
 }
-/* =====route.html-map页面专属样式结束=====*/
+/* =====源route.html-map页面专属样式结束=====*/
