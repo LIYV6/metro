@@ -2,17 +2,34 @@
   
   "pageId": "moreinfo",//页面ID
   
-  "slots":{
-    // 容器具体区域
-    "slot-introduce-list":{
-      "dataKey": ["lyrail","furail","yirail","service-culture"],//内容ID或数组
-      "semanticTag": "article",//外层语义标签
-      "wrapperClass": "card", //外层CSS类名
+  "slots": {
+    "lyrail": {
+      "dataKey": "lyrail",
+      "semanticTag": "article"
     },
-    "slot-statement-list":{
-      "dataKey": ["service","privacy","copyright"],
-      "semanticTag": "article",
-      "wrapperClass": "card",
+    "furail": {
+      "dataKey": "furail",
+      "semanticTag": "article"
+    },
+    "yirail": {
+      "dataKey": "yirail",
+      "semanticTag": "article"
+    },
+    "service-culture": {
+      "dataKey": "service-culture",
+      "semanticTag": "article"
+    },
+    "service": {
+      "dataKey": "service",
+      "semanticTag": "statement"
+    },
+    "privacy": {
+      "dataKey": "privacy",
+      "semanticTag": "statement"
+    },
+    "copyright": {
+      "dataKey": "copyright",
+      "semanticTag": "statement"
     }
   },
   
@@ -44,7 +61,7 @@
     "type": "article",
     "title": "怡文铁路",
     "date": "2026-03-18",
-    "content": "<p>&emsp;&emsp;怡铁(Great Iven Rail)是一家独具特色的特种与观光轨道交通运营商。如果说其他铁路公司是为了缩短两地的时间，那么怡铁则是为了无限延长沿途的惊叹。凭借顶尖的极端环境工程技术，怡铁专注于地质奇观、极地探索与特色工业遗迹的线路开发，将交通运输升华为一场场震撼人心的探险与视觉盛宴。</p><br/><p>&emsp;&emsp;“跨越极寒与深渊，连接世界上每一个奇迹。”</p><br/><p>&emsp;&emsp;怡铁坚信，旅途的风景与目的地同等重要。我们致力于突破地形与气候的极限，将安全、舒适与极致的景观体验完美结合，让每一张车票都成为通往未知奇境的通行证。</p><address>&emsp;&emsp;怡铁官网：敬请期待。</address>"
+    "content": "<p>&emsp;&emsp;怡铁(Great Iven Rail)是一家独具特色的特种与观光轨道交通运营商。如果说其他铁路公司是为了缩短两地的时间，那么怡铁则是为了无限延长沿途的惊叹。凭借顶尖的极端环境工程技术，怡铁专注于地质奇观、极地探索与特色工业遗迹的线路开发，将交通运输升华为一场场震撼人心的探险与视觉盛宴。</p><p>&emsp;&emsp;“跨越极寒与深渊，连接世界上每一个奇迹。”</p><p>&emsp;&emsp;怡铁坚信，旅途的风景与目的地同等重要。我们致力于突破地形与气候的极限，将安全、舒适与极致的景观体验完美结合，让每一张车票都成为通往未知奇境的通行证。</p><address>&emsp;&emsp;怡铁官网：敬请期待。</address>"
     },
 
     "service-culture": {

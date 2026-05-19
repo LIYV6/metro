@@ -1,22 +1,19 @@
 {
   // 页面标识
   "pageId": "info",
-  // 页面上的插槽定义：每个键对应 HTML 中的容器 id
+  // 页面上的插槽定义：每个键对应 HTML 中的 section id
   "slots": {
-    "slot-linenews": {
+    "construction-trends": {
       "dataKey": ["line-sigema", "line-11"], // 按顺序渲染
-      "semanticTag": "article",
-      "wrapperClass": "card"
+      "semanticTag": "article"
     },
-    "slot-1": {
+    "notice": {
       "dataKey": "kaifazhong",
-      "semanticTag": "article",
-      "wrapperClass": "card"
+      "semanticTag": "article"
     },
-    "slot-plan": {
+    "line-plan": {
       "dataKey": "jqqd",
-      "semanticTag": "article",
-      "wrapperClass": "card"
+      "semanticTag": "article"
     }
   },
 
