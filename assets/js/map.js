@@ -1,9 +1,34 @@
+// ==================== 统一调试配置 ====================
+const MAP_DEBUG_CONFIG = {
+    // 全局调试开关：true 启用所有调试日志，false 关闭
+    enabled: false,
+    
+    // 模块级开关
+    modules: {
+        data: true           // 数据加载相关日志
+    }
+};
+
+/**
+ * 统一调试日志函数
+ * @param {string} module - 模块名称 ('data')
+ * @param {...*} args - 日志内容
+ */
+function debugLog(module, ...args) {
+    if (!MAP_DEBUG_CONFIG.enabled) return;
+    if (!MAP_DEBUG_CONFIG.modules[module]) return;
+    
+    const prefix = `[Map-${module}]`;
+    console.log(prefix, ...args);
+}
+// ================================================
+
 // DOM加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-    // 检查是否在 源route.html 中（线路图在 tab 内）
+    // 检查是否在 route.html 中（线路图在 tab 内）
     const isRoutePage = document.getElementById('route-map-content') !== null;
     
-    // 如果在 源route.html 中，只有当线路图 tab 被激活时才初始化
+    // 如果在 route.html 中，只有当线路图 tab 被激活时才初始化
     if (isRoutePage) {
         const routeMapTab = document.querySelector('[data-tab="route-map"]');
         const routeMapContent = document.getElementById('route-map-content');
@@ -36,66 +61,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 动态调整地图容器位置（用于处理导航换行）
-// 注意：此函数不依赖 navigate.js，直接通过 getBoundingClientRect 获取实际高度
+// 动态调整地图容器位置（已废弃，现在使用CSS直接定位）
+// 此函数保留以便向后兼容，但不再执行任何操作
 function adjustMapContainerPosition() {
-    const mapContainer = document.getElementById('mapContainer');
-    const mapNavWrapper = document.querySelector('.map-nav-wrapper');
-    const secondaryNavWrapper = document.querySelector('.secondary-nav-wrapper');
-    const navDivider = document.querySelector('.nav-divider');
-    
-    if (!mapContainer || !mapNavWrapper) return;
-    
-    // 使用 requestAnimationFrame 确保在浏览器重排后计算
-    requestAnimationFrame(() => {
-        // ⭐ 关键：直接获取header的实际高度，而不是依赖CSS变量
-        // 这样即使没有 navigate.js 设置 --header-height，也能正常工作
-        const header = document.querySelector('.site-header');
-        
-        // 计算总偏移量：
-        // header高度 + 二级导航高度 + 分割线高度 + 地图导航高度
-        // 因为map-container是fixed定位，相对于视口，所以需要考虑所有在它上面的元素
-        let totalOffset = header ? header.getBoundingClientRect().height : 67;
-        
-        // 加上二级导航高度（如果存在且可见）
-        if (secondaryNavWrapper && secondaryNavWrapper.offsetHeight > 0) {
-            totalOffset += secondaryNavWrapper.offsetHeight;
-        }
-        
-        // 加上红色分割线高度（如果存在且可见）
-        if (navDivider && navDivider.offsetHeight > 0) {
-            totalOffset += navDivider.offsetHeight;
-        }
-        
-        // 加上地图导航高度
-        totalOffset += mapNavWrapper.offsetHeight;
-        
-        // 设置地图容器的top值
-        mapContainer.style.top = totalOffset + 'px';
-        
-        // 调试信息（需要时取消注释）
-        // console.log('=== 地图容器位置调试 ===');
-        // console.log('Header实际高度:', headerHeight, 'px');
-        // console.log('二级导航高度:', secondaryNavWrapper ? secondaryNavWrapper.offsetHeight : 0, 'px');
-        // console.log('分割线高度:', navDivider ? navDivider.offsetHeight : 0, 'px');
-        // console.log('地图导航高度:', mapNavWrapper.offsetHeight, 'px');
-        // console.log('计算的totalOffset:', totalOffset, 'px');
-        // console.log('地图容器实际top:', mapContainer.style.top);
-        // console.log('===');
-    });
+    // 不再需要动态计算位置，CSS已直接设置
+    return;
 }
-
-// 监听窗口大小变化，动态调整地图容器位置
-window.addEventListener('resize', function() {
-    // 使用 debounce 避免频繁调用
-    clearTimeout(window.resizeTimer);
-    window.resizeTimer = setTimeout(adjustMapContainerPosition, 100);
-});
 
 // 将 linemap 初始化逻辑封装为函数
 function initLinemap() {
-    // 调整地图容器位置（处理导航换行）
-    adjustMapContainerPosition();
+    // 不再需要调用adjustMapContainerPosition，CSS已直接定位
     
     // ========== 核心变量定义 ==========
     const mapContainer = document.getElementById('mapContainer');
@@ -108,7 +83,7 @@ function initLinemap() {
     const closeBtn = document.getElementById('closeBtn');
     const infoText = document.getElementById('info-text');
     
-    // 地图导航按钮
+    // 地图导航按钮（支持旧的wrapper结构和新的sub-nav结构）
     const mapNavItems = document.querySelectorAll('.map-nav-item[data-map]');
 
     // 图片状态变量
@@ -142,7 +117,7 @@ function initLinemap() {
         .then(r => r.json())
         .then(data => { lineInfo = data || {}; return lineInfo; })
         .catch(err => {
-            console.warn('无法加载 linemap.json, 已使用内置默认文本:', err);
+            debugLog('data', '无法加载 linemap.json, 已使用内置默认文本:', err);
             lineInfo = defaultLineInfo;
             return lineInfo;
         });
@@ -151,7 +126,9 @@ function initLinemap() {
     // 打开弹窗（注入对应线路说明），使用 class 控制显示以配合 CSS
     infoBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        const currentMap = document.querySelector('.map-nav-item.active[data-map]');
+        // 查找当前激活的地图按钮（可能在sub-nav中）
+        const currentMap = document.querySelector('#route-map-subnav .map-nav-item.active[data-map]') || 
+                          document.querySelector('.map-nav-item.active[data-map]');
         const selectedValue = currentMap ? currentMap.dataset.map : '全图';
         
         // 如果是地图说明按钮，直接显示通用说明
@@ -313,20 +290,10 @@ function initLinemap() {
                 return;
             }
             
-            // 移除所有按钮的 active 类
-            mapNavItems.forEach(nav => nav.classList.remove('active'));
+            // 移除所有按钮的 active 类（包括sub-nav中的）
+            document.querySelectorAll('.map-nav-item[data-map]').forEach(nav => nav.classList.remove('active'));
             // 添加当前按钮的 active 类
             this.classList.add('active');
-            
-            // 调整地图容器位置（处理可能的换行）
-            // 使用延迟确保样式更新后重新计算高度
-            setTimeout(() => {
-                adjustMapContainerPosition();
-            }, 50);
-            // 再次调用确保准确
-            setTimeout(() => {
-                adjustMapContainerPosition();
-            }, 150);
             
             // 设置切换标志
             isSwitchingMap = true;
@@ -376,8 +343,9 @@ function initLinemap() {
         // 提示用户
         alert('当前线路图加载失败，已自动切换为全图，请刷新页面重试');
         // 重置选中状态为全图
-        mapNavItems.forEach(nav => nav.classList.remove('active'));
-        const fullMapBtn = document.querySelector('.map-nav-item[data-map="全图"]');
+        document.querySelectorAll('.map-nav-item[data-map]').forEach(nav => nav.classList.remove('active'));
+        const fullMapBtn = document.querySelector('#route-map-subnav .map-nav-item[data-map="全图"]') || 
+                          document.querySelector('.map-nav-item[data-map="全图"]');
         if (fullMapBtn) fullMapBtn.classList.add('active');
         const defaultItem = lineInfo['全图'] || { zh: '' };
         infoText.textContent = defaultItem.zh || '';

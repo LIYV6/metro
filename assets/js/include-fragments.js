@@ -1,6 +1,32 @@
 /* include-fragments.js重构目标：配置驱动、模块化、可扩展并改进错误处理与加载性能。
    行为说明：在 DOMContentLoaded 时（或之后）查找占位符并注入片段，
    默认保留与原实现兼容的占位符与候选路径。可通过传入配置自定义路径、选择器、缓存策略、去重规则和错误回调。*/
+
+// ==================== 统一调试配置 ====================
+const FRAGMENTS_DEBUG_CONFIG = {
+    // 全局调试开关：true 启用所有调试日志，false 关闭
+    enabled: false,
+    
+    // 模块级开关
+    modules: {
+        fragments: true      // 片段加载相关日志
+    }
+};
+
+/**
+ * 统一调试日志函数
+ * @param {string} module - 模块名称 ('fragments')
+ * @param {...*} args - 日志内容
+ */
+function debugLog(module, ...args) {
+    if (!FRAGMENTS_DEBUG_CONFIG.enabled) return;
+    if (!FRAGMENTS_DEBUG_CONFIG.modules[module]) return;
+    
+    const prefix = `[Fragments-${module}]`;
+    console.log(prefix, ...args);
+}
+// ================================================
+
 (function () {
     'use strict';
 
@@ -45,7 +71,7 @@
         // 运行时机：'dom-ready' 表示在 DOMContentLoaded 时运行（若已完成则立即运行）
         runOn: 'dom-ready',
         // 错误回调：(err, context) => void
-        onError: function (err /*, context */) { console && console.error && console.error(err); }
+        onError: function (err /*, context */) { debugLog('fragments', '错误:', err); }
     };
 
     // ---------- 小型工具函数 ----------
@@ -199,7 +225,7 @@
                 }
             });
         } catch (e) {
-            console && console.warn && console.warn('导航高亮失败:', e);
+            debugLog('fragments', '导航高亮失败:', e);
         }
     }
 
@@ -282,7 +308,7 @@
                 // 不暴露全局时仍然自动加载但不写入全局变量
                 defaultLoader.load().catch(() => {});
             }
-        } catch (e) { console && console.error && console.error(e); }
+        } catch (e) { debugLog('fragments', '错误:', e); }
     }
 
     // ---------- 运行时时机 ----------

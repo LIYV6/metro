@@ -3,7 +3,7 @@
 //新增：将模板移到JS内部，支持反引号多行字符串
 
 // ========== 调试配置 ==========
-const DEBUG_CONFIG = {
+const LOADER_DEBUG_CONFIG = {
     ENABLE_LOADER_LOGS: false,        // 是否开启 loader 模块日志
     ENABLE_CACHE_LOGS: false,        // 是否开启缓存相关日志
     ENABLE_REFRESH_LOGS: false,      // 是否开启自动刷新日志
@@ -16,7 +16,7 @@ const DEBUG_CONFIG = {
  * @param {...*} args - 日志内容（支持多个参数）*/
 function debugLog(level, ...args) {
     // 如果全局关闭日志，直接返回
-    if (!DEBUG_CONFIG.ENABLE_LOADER_LOGS) return;
+    if (!LOADER_DEBUG_CONFIG.ENABLE_LOADER_LOGS) return;
     
     // 根据具体类型检查是否开启
     const message = args[0] || '';
@@ -24,9 +24,9 @@ function debugLog(level, ...args) {
     const isRefreshRelated = message.includes('刷新') || message.includes('refresh');
     const isRenderRelated = message.includes('渲染') || message.includes('render') || message.includes('容器');
     
-    if (isCacheRelated && !DEBUG_CONFIG.ENABLE_CACHE_LOGS) return;
-    if (isRefreshRelated && !DEBUG_CONFIG.ENABLE_REFRESH_LOGS) return;
-    if (isRenderRelated && !DEBUG_CONFIG.ENABLE_RENDER_LOGS) return;
+    if (isCacheRelated && !LOADER_DEBUG_CONFIG.ENABLE_CACHE_LOGS) return;
+    if (isRefreshRelated && !LOADER_DEBUG_CONFIG.ENABLE_REFRESH_LOGS) return;
+    if (isRenderRelated && !LOADER_DEBUG_CONFIG.ENABLE_RENDER_LOGS) return;
     
     // 添加统一前缀
     const prefix = '[Loader]';
@@ -288,7 +288,10 @@ class MultiPageLoader {
                     const tagName = slotConfig.semanticTag || 'div';
                     const wrapper = document.createElement(tagName);
                     if (slotConfig.wrapperClass) wrapper.className = slotConfig.wrapperClass;
-                    wrapper.id = key;
+                    // 只有当容器本身没有 ID 时，才给 wrapper 设置 ID，避免重复
+                    if (!container.id) {
+                        wrapper.id = key;
+                    }
                     
                     const tpl = templates[itemData.type] || templates.article;
                     wrapper.innerHTML = this.render(tpl, itemData, securityRules);

@@ -1,3 +1,30 @@
+// ==================== 统一调试配置 ====================
+const ROUTE_DEBUG_CONFIG = {
+    // 全局调试开关：true 启用所有调试日志，false 关闭
+    enabled: false,
+    
+    // 模块级开关
+    modules: {
+        database: true,      // 数据库加载相关日志
+        render: true,        // 渲染过程日志
+        transfer: true,      // 换乘逻辑日志
+        stationInfo: true    // 站点信息日志
+    }
+};
+
+/**
+ * 统一调试日志函数
+ * @param {string} module - 模块名称 ('database' | 'render' | 'transfer' | 'stationInfo')
+ * @param {...*} args - 日志内容
+ */
+function debugLog(module, ...args) {
+    if (!ROUTE_DEBUG_CONFIG.enabled) return;
+    if (!ROUTE_DEBUG_CONFIG.modules[module]) return;
+    
+    const prefix = `[Route-${module}]`;
+    console.log(prefix, ...args);
+}
+// ================================================
 
 // 判断是否为高铁/高速铁路线路。优先级：mode字段 → type字段 → 名称特征（兜底）
 // @param {string} nameRaw - 线路原始名称
@@ -130,17 +157,17 @@ let routesData = []; // 保持全局变量名不变，兼容后续逻辑
 // 加载路线数据并初始化页面。从 metro.db 获取数据，渲染路线并初始化事件监听器
 async function loadRoutesData() {
     try {
-        console.log('正在初始化 SQL.js...');
+        debugLog('database', '正在初始化 SQL.js...');
         // const config = { locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${filename}` };
         const config = { locateFile: filename => `../assets/js/libs/${filename}` };
         const SQL = await initSqlJs(config);
         
-        console.log('正在加载 metro.db...');
+        debugLog('database', '正在加载 metro.db...');
         const response = await fetch('../assets/data/metro.db');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         db = new SQL.Database(new Uint8Array(await response.arrayBuffer()));
-        console.log('数据库加载成功！');
+        debugLog('database', '数据库加载成功！');
 
         // 1. 获取所有线路基础信息
         const routesRes = db.exec("SELECT * FROM routes");
@@ -303,8 +330,9 @@ async function loadRoutesData() {
         window.metroDB = db;
         window.routesData = routesData;
 
-        console.log(`已加载 ${routesData.length} 条线路数据，开始渲染...`);
+        debugLog('render', `已加载 ${routesData.length} 条线路数据，开始渲染...`);
         renderRoutes();
+        renderStationBlocks(); // 渲染站点色块
         initializeEventListeners();
 
     } catch (error) {
@@ -942,7 +970,7 @@ function ensureBidirectionalNearbyTransfers(station, currentStationName) {
     }
     
     if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
-        console.log('[ensureBidirectional] Checking bidirectional nearby transfers for:', currentStationName);
+        debugLog('transfer', '[ensureBidirectional] Checking bidirectional nearby transfers for:', currentStationName);
     }
     
     // 遍历当前站点的所有就近换乘目标
@@ -983,7 +1011,7 @@ function ensureBidirectionalNearbyTransfers(station, currentStationName) {
         
         if (!foundTargetStation) {
             if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
-                console.warn(`[ensureBidirectional] Target station not found in routesData: ${targetName}`);
+                debugLog('transfer', `[ensureBidirectional] Target station not found in routesData: ${targetName}`);
             }
             return;
         }
@@ -1001,7 +1029,7 @@ function ensureBidirectionalNearbyTransfers(station, currentStationName) {
         if (!hasReverseLink) {
             // 缺少反向链接，需要补充
             if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
-                console.log(`[ensureBidirectional] Adding reverse link: ${targetName} -> ${currentStationName}`);
+                debugLog('transfer', `[ensureBidirectional] Adding reverse link: ${targetName} -> ${currentStationName}`);
             }
             
             // 构建反向的就近换乘信息
@@ -1020,11 +1048,11 @@ function ensureBidirectionalNearbyTransfers(station, currentStationName) {
             foundTargetStation.nearbyTransfers.push(reverseNearby);
             
             if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
-                console.log(`[ensureBidirectional] ✓ Symmetric link established`);
+                debugLog('transfer', `[ensureBidirectional] ✓ Symmetric link established`);
             }
         } else {
             if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
-                console.log(`[ensureBidirectional] ✓ Reverse link already exists: ${targetName} -> ${currentStationName}`);
+                debugLog('transfer', `[ensureBidirectional] ✓ Reverse link already exists: ${targetName} -> ${currentStationName}`);
             }
         }
     });
@@ -1310,7 +1338,7 @@ function getStationGlobalInfo(stationName, stationEn) {
         allExits = bestMatchExits;
         
         if (DEBUG_CONFIG.ENABLE_STATION_INFO_LOGS) {
-            console.log('[getStationGlobalInfo] Matched station:', {
+            debugLog('stationInfo', '[getStationGlobalInfo] Matched station:', {
                 nameCn: foundStation.nameCn,
                 nameEn: foundStation.nameEn,
                 matchScore: bestMatchScore,
@@ -1396,12 +1424,13 @@ function getStationGlobalInfo(stationName, stationEn) {
 // @param {string} nameEn - 站点英文名
 // @param {string} transfersJsonEscaped - URL编码的换乘信息JSON
 // @param {string} exitsJsonEscaped - URL编码的出口信息JSON
-function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJsonEscaped) {
+// @param {string} tooltipId - tooltip容器ID，默认为'tooltip'
+function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJsonEscaped, tooltipId = 'tooltip') {
     if (window.event) window.event.stopPropagation();
     
-    const tooltip = document.getElementById('tooltip');
+    const tooltip = document.getElementById(tooltipId);
     if (!tooltip) {
-        console.error('[showStationInfo] Tooltip element not found');
+        console.error('[showStationInfo] Tooltip element not found:', tooltipId);
         return;
     }
     
@@ -1611,10 +1640,14 @@ function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJso
 function openLineDetail(lineNameEncoded) {
     const lineName = decodeURIComponent(lineNameEncoded);
     
-    // Close the tooltip first
-    const tooltip = document.getElementById('tooltip');
-    if (tooltip) {
-        tooltip.style.display = 'none';
+    // Close both tooltips
+    const lineInfoTooltip = document.getElementById('tooltip');
+    const stationInfoTooltip = document.getElementById('station-tooltip');
+    if (lineInfoTooltip) {
+        lineInfoTooltip.style.display = 'none';
+    }
+    if (stationInfoTooltip) {
+        stationInfoTooltip.style.display = 'none';
     }
     
     // Find the matching route in groupedRoutesData
@@ -1686,7 +1719,7 @@ function openLineDetail(lineNameEncoded) {
     } else {
         console.warn('[openLineDetail] Line not found:', lineName);
         // Show a friendly error message
-        showErrorTooltip(tooltip, `未找到线路 "${lineName}"`);
+        showErrorTooltip(lineInfoTooltip, `未找到线路 "${lineName}"`);
     }
 }
 
@@ -1753,59 +1786,128 @@ function filterRoutes() {
     }
 }
 
+// ========== Tab切换管理器（参考server-nav.js实现） ==========
+/**
+ * 初始化Tab切换功能
+ * 支持URL hash管理、浏览器前进/后退、平滑过渡
+ */
+function initRouteTabSwitcher() {
+    const tabLinks = document.querySelectorAll('.category-tab[data-tab]');
+    
+    /**
+     * 激活指定tab
+     * @param {string} targetTab - 目标tab名称（不含#）
+     */
+    function activateTab(targetTab) {
+        if (!targetTab) return;
+        
+        // 1. 更新导航激活状态（同时处理category-tab和secondary-nav-item）
+        document.querySelectorAll('.category-tab[data-tab]').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.tab === targetTab);
+        });
+        document.querySelectorAll('.secondary-nav-item[data-tab]').forEach(item => {
+            item.classList.toggle('active', item.dataset.tab === targetTab);
+        });
+        
+        // 2. 隐藏所有内容区域
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.style.display = 'none';
+            content.classList.remove('active');
+        });
+        
+        // 3. 显示目标内容区域
+        const targetContent = document.getElementById(`${targetTab}-content`);
+        if (targetContent) {
+            targetContent.style.display = 'block';
+            targetContent.classList.add('active');
+        }
+        
+        // 4. 切换子选项区域
+        document.querySelectorAll('.sub-nav-content').forEach(subnav => {
+            subnav.classList.remove('active');
+        });
+        const targetSubnav = document.getElementById(`${targetTab}-subnav`);
+        if (targetSubnav) {
+            targetSubnav.classList.add('active');
+        }
+        
+        // 5. 特殊业务逻辑：切换tooltip显示
+        const lineInfoTooltip = document.getElementById('tooltip');
+        const stationInfoTooltip = document.getElementById('station-tooltip');
+        
+        if (targetTab === 'line-info') {
+            // 线路信息页面：显示line tooltip，隐藏station tooltip
+            if (lineInfoTooltip) lineInfoTooltip.style.display = 'block';
+            if (stationInfoTooltip) stationInfoTooltip.style.display = 'none';
+        } else if (targetTab === 'station-info') {
+            // 车站信息页面：显示station tooltip，隐藏line tooltip
+            if (stationInfoTooltip) stationInfoTooltip.style.display = 'block';
+            if (lineInfoTooltip) lineInfoTooltip.style.display = 'none';
+        } else {
+            // 其他页面：隐藏所有tooltip
+            if (lineInfoTooltip) lineInfoTooltip.style.display = 'none';
+            if (stationInfoTooltip) stationInfoTooltip.style.display = 'none';
+        }
+    }
+    
+    /**
+     * 处理tab点击事件
+     */
+    function handleTabClick(e) {
+        const tab = e.target.closest('.category-tab[data-tab]');
+        if (!tab) return;
+        
+        // 阻止默认跳转（避免页面滚动）
+        e.preventDefault();
+        
+        const targetTab = tab.dataset.tab;
+        
+        // 更新URL hash（不触发滚动）
+        if (history.pushState) {
+            history.pushState(null, null, `#${targetTab}`);
+        } else {
+            window.location.hash = `#${targetTab}`;
+        }
+        
+        // 激活对应tab
+        activateTab(targetTab);
+    }
+    
+    /**
+     * 处理hash变化（支持浏览器前进/后退）
+     */
+    function handleHashChange() {
+        // 获取当前hash（去掉#）
+        const hash = window.location.hash.slice(1);
+        
+        // 如果有hash且对应tab存在，激活该tab
+        if (hash && document.querySelector(`.category-tab[data-tab="${hash}"]`)) {
+            activateTab(hash);
+        } else {
+            // 否则激活第一个tab
+            const firstTab = document.querySelector('.category-tab[data-tab]');
+            if (firstTab) {
+                activateTab(firstTab.dataset.tab);
+            }
+        }
+    }
+    
+    // 绑定tab点击事件
+    tabLinks.forEach(tab => {
+        tab.addEventListener('click', handleTabClick);
+    });
+    
+    // 监听hash变化（支持浏览器前进/后退）
+    window.addEventListener('hashchange', handleHashChange);
+    
+    // 页面加载时处理初始hash
+    handleHashChange();
+}
+
 // 初始化所有事件监听器。包括分类标签、返回顶部按钮等
 function initializeEventListeners() {
-    // 二级导航tab切换
-    document.querySelectorAll('.category-tab[data-tab]').forEach(tab => {
-        tab.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetTab = this.dataset.tab;
-            
-            // 移除所有二级导航的active类（同时移除category-tab和secondary-nav-item上的active类）
-            document.querySelectorAll('.category-tab[data-tab]').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.secondary-nav-item[data-tab]').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            // 隐藏所有内容区域
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.style.display = 'none';
-                content.classList.remove('active');
-            });
-            
-            // 显示目标内容区域
-            const targetContent = document.getElementById(`${targetTab}-content`);
-            if (targetContent) {
-                targetContent.style.display = 'block';
-                targetContent.classList.add('active');
-            }
-            
-            // 切换到其他视图时隐藏tooltip，仅限在线路信息页面显示
-            const tooltip = document.getElementById('tooltip');
-            if (tooltip && targetTab !== 'line-info') {
-                tooltip.style.display = 'none';
-            }
-            
-            // 线路图页面隐藏页脚，其他页面显示页脚
-            if (targetTab === 'route-map') {
-                document.body.classList.add('route-map-active');
-                // 延迟调整地图容器位置，确保DOM已完全更新
-                // 使用多个延迟时间多次调用，确保换行后的高度计算正确
-                setTimeout(() => {
-                    if (typeof adjustMapContainerPosition === 'function') {
-                        adjustMapContainerPosition();
-                    }
-                }, 100);
-                // 再次调用，确保万无一失
-                setTimeout(() => {
-                    if (typeof adjustMapContainerPosition === 'function') {
-                        adjustMapContainerPosition();
-                    }
-                }, 300);
-            } else {
-                document.body.classList.remove('route-map-active');
-            }
-        });
-    });
+    // 初始化Tab切换功能（支持URL hash管理）
+    initRouteTabSwitcher();
     
     // 原有的分类过滤标签
     document.querySelectorAll('.category-tabs .category-tab[data-category]').forEach(tab => {
@@ -1814,6 +1916,23 @@ function initializeEventListeners() {
             this.closest('.category-tabs').querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
             this.classList.add('active');
             filterRoutes();
+        });
+    });
+    
+    // 车站信息的分类过滤标签
+    document.querySelectorAll('#station-info-subnav .category-tab[data-station-category]').forEach(tab => {
+        tab.addEventListener('click', function() {
+            // 只移除当前容器内的分类标签active状态
+            this.closest('.category-tabs').querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            const category = this.dataset.stationCategory;
+            renderStationBlocks(category);
+            
+            // 清空tooltip显示
+            const stationTooltip = document.getElementById('station-tooltip');
+            if (stationTooltip) {
+                stationTooltip.innerHTML = '<div class="empty-state"><p>请点击上方站点色块查看详情</p></div>';
+            }
         });
     });
 
@@ -1843,6 +1962,17 @@ function initializeEventListeners() {
             const groupIndex = firstBlock.dataset.groupIndex;
             selectLine(parseInt(groupIndex));
         }
+        
+        // Auto-select first station after rendering
+        const firstStationBlock = document.querySelector('.station-block');
+        if (firstStationBlock) {
+            const stationName = firstStationBlock.dataset.stationName;
+            const uniqueStations = collectUniqueStations();
+            const firstStation = uniqueStations.find(s => s.nameCn === stationName);
+            if (firstStation) {
+                selectStation(firstStation);
+            }
+        }
     }, 300);
 }
 
@@ -1855,22 +1985,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const tab = urlParams.get('tab');
     const map = urlParams.get('map');
     
+    // 处理tab参数：通过hash切换tab（优先使用hash）
+    if (tab && !window.location.hash) {
+        // 如果URL中有tab参数但没有hash，设置hash
+        setTimeout(() => {
+            history.replaceState(null, null, `#${tab}`);
+            // 触发hashchange事件
+            window.dispatchEvent(new Event('hashchange'));
+        }, 500);
+    }
+    
     // 处理地图参数：切换到线路图tab并选择对应地图
     if (tab === 'route-map' && map) {
         setTimeout(() => {
-            // 1. 切换到线路图tab
-            const mapTabBtn = document.querySelector('[data-tab="route-map"]');
-            if (mapTabBtn) {
-                mapTabBtn.click();
+            // 选择对应地图
+            const mapBtn = document.querySelector(`.map-nav-item[data-map="${map}"]`);
+            if (mapBtn) {
+                mapBtn.click();
             }
-            // 2. 选择对应地图
-            setTimeout(() => {
-                const mapBtn = document.querySelector(`.map-nav-item[data-map="${map}"]`);
-                if (mapBtn) {
-                    mapBtn.click();
-                }
-            }, 200);
-        }, 500);
+        }, 600);
     }
     
     // 处理分类参数：切换到对应线路分类
@@ -1886,9 +2019,389 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('resize', scheduleRouteRedraw);
 
 
-/**调试配置*/
-const DEBUG_CONFIG = {
-    ENABLE_BIDIRECTIONAL_LOGS: false, // 是否开启就近换乘双向对称性日志
-    ENABLE_STATION_INFO_LOGS: false,  // 是否开启站点信息匹配日志
-    ENABLE_TRANSFER_LOGS: false       // 是否开启换乘去重日志
-};
+// ========== 车站信息功能 ==========
+
+// 收集所有唯一站点。从所有线路中提取不重复的站点
+function collectUniqueStations() {
+    const stationMap = new Map(); // 使用Map来去重，key为站点中文名
+    
+    routesData.forEach(route => {
+        const processStations = (stations) => {
+            if (!stations || !Array.isArray(stations)) return;
+            
+            stations.forEach(station => {
+                const key = station.nameCn;
+                if (!stationMap.has(key)) {
+                    // 第一次遇到这个站点，保存完整信息
+                    stationMap.set(key, {
+                        nameCn: station.nameCn,
+                        nameEn: station.nameEn || '',
+                        nameEnAll: station.nameEnAll || '',
+                        transfers: station.transfers || [],
+                        nearbyTransfers: station.nearbyTransfers || [],
+                        exits: station.exits || [],
+                        lines: [] // 记录经过该站点的所有线路
+                    });
+                }
+                
+                // 添加当前线路到站点的线路列表
+                const stationInfo = stationMap.get(key);
+                const lineKey = `${route.mode}::${route.nameCn}::${route.color}`;
+                
+                // 检查是否已经添加过这条线路
+                const existingLine = stationInfo.lines.find(l => 
+                    l.mode === route.mode && l.nameCn === route.nameCn && l.color === route.color
+                );
+                
+                if (!existingLine) {
+                    stationInfo.lines.push({
+                        mode: route.mode,
+                        type: route.type || '', // 保存type字段
+                        nameCn: route.nameCn,
+                        nameEn: route.nameEn,
+                        color: route.color,
+                        platformName: station.platformName || ''
+                    });
+                } else if (station.platformName && !existingLine.platformName) {
+                    // 更新站台信息
+                    existingLine.platformName = station.platformName;
+                }
+            });
+        };
+        
+        processStations(route.forwardStations);
+        processStations(route.reverseStations);
+    });
+    
+    return Array.from(stationMap.values());
+}
+
+// 显示站点色块容器的loading动画
+function showStationBlocksLoading() {
+    const container = document.getElementById('stationBlocksContainer');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="station-blocks-loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在加载站点数据...</div>
+        </div>
+    `;
+}
+
+// 隐藏站点色块容器的loading动画
+function hideStationBlocksLoading() {
+    const container = document.getElementById('stationBlocksContainer');
+    if (!container) return;
+    
+    const loadingElement = container.querySelector('.station-blocks-loading');
+    if (loadingElement) {
+        loadingElement.remove();
+    }
+}
+
+// 渲染站点色块容器。在页面上显示所有站点的色块
+// @param {string} category - 线路类型过滤（可选）
+function renderStationBlocks(category = 'all') {
+    const container = document.getElementById('stationBlocksContainer');
+    if (!container) return;
+    
+    // 显示loading动画
+    showStationBlocksLoading();
+    
+    // 使用setTimeout让loading动画有机会显示
+    setTimeout(() => {
+        const uniqueStations = collectUniqueStations();
+        
+        // 按站点名称排序（中文拼音顺序）
+        uniqueStations.sort((a, b) => a.nameCn.localeCompare(b.nameCn, 'zh-CN'));
+        
+        container.innerHTML = '';
+        
+        let visibleCount = 0;
+        uniqueStations.forEach((station, index) => {
+            // 根据线路类型过滤
+            if (category !== 'all') {
+                const hasMatchingLine = station.lines.some(line => {
+                    if (category === 'HIGH_SPEED' || category === 'NORMAL') {
+                        // 地铁和铁路都需要 mode === 'TRAIN'，然后检查type
+                        return line.mode === 'TRAIN' && (line.type === category || line.type === '');
+                    }
+                    return line.mode === category;
+                });
+                
+                if (!hasMatchingLine) return; // 跳过不匹配的站点
+            }
+            
+            const block = createStationBlock(station, visibleCount);
+            container.appendChild(block);
+            visibleCount++;
+        });
+        
+        // 隐藏loading动画
+        hideStationBlocksLoading();
+        
+        // 如果没有匹配的站点，显示提示
+        if (visibleCount === 0) {
+            container.innerHTML = '<div class="empty-state"><p>该分类下暂无站点</p></div>';
+        }
+    }, 100);
+}
+
+// 创建单个站点色块元素
+// @param {Object} station - 站点对象
+// @param {number} index - 索引
+// @returns {HTMLElement} 站点色块元素
+function createStationBlock(station, index) {
+    const block = document.createElement('div');
+    block.className = 'station-block';
+    block.dataset.stationName = station.nameCn;
+    block.dataset.index = index;
+    
+    // 根据经过线路数量设置颜色深浅
+    const lineCount = station.lines.length;
+    const hue = (index * 137.508) % 360; // 黄金角度分布，确保颜色区分度
+    const saturation = 60 + (lineCount * 5); // 线路越多，饱和度越高
+    const lightness = 45 + (lineCount * 2); // 线路越多，亮度越高
+    
+    block.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    
+    // 添加站点名称标签
+    const label = document.createElement('div');
+    label.className = 'station-block-label';
+    label.textContent = station.nameCn;
+    block.appendChild(label);
+    
+    // 创建tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = 'station-block-tooltip';
+    
+    // 构建tooltip内容
+    let tooltipText = `${station.nameCn}\n`;
+    if (station.nameEnAll) {
+        tooltipText += `${station.nameEnAll}\n`;
+    }
+    tooltipText += `经过线路: ${lineCount}条`;
+    
+    tooltip.textContent = tooltipText;
+    block.appendChild(tooltip);
+    
+    // 添加点击事件
+    block.addEventListener('click', () => selectStation(station));
+    
+    return block;
+}
+
+// 选择并显示指定站点。高亮对应的色块，在统一展示区渲染该站点的详细信息
+// @param {Object} station - 站点对象
+function selectStation(station) {
+    // Remove active class from all blocks
+    document.querySelectorAll('.station-block').forEach(block => {
+        block.classList.remove('active');
+    });
+    
+    // Add active class to selected block
+    const selectedBlock = document.querySelector(`.station-block[data-station-name="${station.nameCn}"]`);
+    if (selectedBlock) {
+        selectedBlock.classList.add('active');
+    }
+    
+    // 渲染站点详细信息
+    renderStationInfo(station);
+}
+
+// 在统一展示区渲染站点详情。包括站点标题、经过线路、换乘信息、出口信息等
+// @param {Object} station - 站点对象
+function renderStationInfo(station) {
+    const container = document.getElementById('station-tooltip');
+    if (!container) return;
+    
+    // 构建完整的线路列表用于showStationInfo
+    const allLines = station.lines.map(line => ({
+        name: line.nameCn,
+        nameRaw: line.nameCn,
+        nameAll: line.nameCn,
+        nameCn: line.nameCn,
+        nameEn: line.nameEn || '',
+        color: line.color,
+        mode: line.mode,
+        platformName: line.platformName
+    }));
+    
+    // 合并换乘线路
+    if (station.transfers && station.transfers.length > 0) {
+        station.transfers.forEach(t => {
+            if (t) allLines.push(t);
+        });
+    }
+    
+    // 合并就近换乘
+    if (station.nearbyTransfers && station.nearbyTransfers.length > 0) {
+        station.nearbyTransfers.forEach(n => {
+            if (n) allLines.push({...n, isNearby: true});
+        });
+    }
+    
+    const allTransfersData = encodeURIComponent(JSON.stringify(allLines));
+    const exitsData = encodeURIComponent(JSON.stringify(station.exits || []));
+    
+    // 直接渲染站点信息到tooltip容器
+    renderStationTooltip(station, allLines, exitsData);
+}
+
+// 渲染站点信息到tooltip容器。与showStationInfoForStationPage类似，但直接渲染到容器
+// @param {Object} station - 站点对象
+// @param {Array} allLines - 所有线路列表
+// @param {string} exitsData - 出口数据
+function renderStationTooltip(station, allLines, exitsData) {
+    const container = document.getElementById('station-tooltip');
+    if (!container) return;
+    
+    let exits = [];
+    try {
+        exits = exitsData ? JSON.parse(decodeURIComponent(exitsData)) : [];
+    } catch (e) {
+        console.warn('[renderStationTooltip] Failed to parse exits data:', e.message);
+    }
+
+    let transferHTML = '';
+    
+    // 处理站内线路信息（始终显示）
+    const stationLines = [];
+    
+    if (allLines && allLines.length > 0) {
+        const seen = new Set();
+        const lineModeMap = new Map();
+        
+        allLines.forEach(t => {
+            if (!t || t.isNearby) return;
+            
+            const rawName = String(t.nameRaw || t.nameAll || t.nameCn || t.nameEn || t.name || '');
+            const cleanedName = cleanLineDisplayName(rawName);
+            const color = String(t.color || '');
+            const mode = t.mode || 'TRAIN';
+            const unifiedMode = getModeLabel(mode, t);
+            const key = `${cleanedName}::${color}`;
+            
+            if (!seen.has(key)) {
+                seen.add(key);
+                lineModeMap.set(key, { mode: mode, unifiedMode: unifiedMode });
+                stationLines.push({
+                    name: cleanedName,
+                    color: t.color || '#607d8b',
+                    mode: mode,
+                    platformName: t.platformName || ''
+                });
+            }
+        });
+    }
+
+    const renderGroup = (title, list) => {
+        let html = `<div class="tooltip-section"><strong class="tooltip-section-title">${title}</strong>`;
+        
+        if (list.length === 0) {
+            html += `<div class="tooltip-section-empty">无</div>`;
+        } else {
+            html += `<div class="tooltip-lines-container">`;
+            list.forEach(item => {
+                const modeLabelText = getModeLabel(item.mode, item);
+                const modeLabel = modeLabelText ? ` [${modeLabelText}]` : '';
+                const tColor = item.color || '#999';
+                const platformBadge = item.platformName ? `<span style="background:rgba(0,0,0,0.2); border-radius:2px; padding:0 4px; margin-left:4px; font-size:10px;">站台 ${item.platformName}</span>` : '';
+                const lineNameForClick = escapeJsString(encodeURIComponent(item.name));
+                
+                html += `<span class="tooltip-line-badge" style="--line-color: ${tColor};" onclick="openLineDetail('${lineNameForClick}')" title="点击查看线路详情">${item.name}${platformBadge}${modeLabel}</span>`;
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+        return html;
+    };
+
+    transferHTML += renderGroup('站内线路：', stationLines);
+    
+    const nearbyTransfers = [];
+    if (allLines && allLines.length > 0) {
+        allLines.forEach(t => {
+            if (t && t.isNearby) {
+                nearbyTransfers.push(t);
+            }
+        });
+    }
+    
+    const renderNearbyGroup = (title, list) => {
+        let html = `<div class="tooltip-section"><strong class="tooltip-section-title">${title}</strong>`;
+        
+        if (list.length === 0) {
+            html += `<div class="tooltip-section-empty">无</div>`;
+        } else {
+            html += `<div class="tooltip-nearby-container">`;
+            list.forEach(t => {
+                const targetName = (t.targetStationCn || t.lineName || '');
+                const targetInfo = getStationGlobalInfo(t.targetStationCn || targetName, t.targetStationEn);
+                let targetEn = t.targetStationEn || '';
+                let targetTransfers = [];
+                let targetExits = [];
+                if (targetInfo) {
+                    if (targetInfo.nameEn) targetEn = targetInfo.nameEn;
+                    if (targetInfo.transfers) targetTransfers = targetInfo.transfers;
+                    if (targetInfo.nearbyTransfers) {
+                        targetInfo.nearbyTransfers.forEach(nt => {
+                            targetTransfers.push({ ...nt, isNearby: true });
+                        });
+                    }
+                    if (targetInfo.exits) targetExits = targetInfo.exits;
+                }
+                
+                const transfersJsonEscaped = escapeJsString(encodeURIComponent(JSON.stringify(targetTransfers)));
+                const exitsJsonEscaped = escapeJsString(encodeURIComponent(JSON.stringify(targetExits)));
+                
+                html += `<a class="tooltip-nearby-link" onclick="showStationInfo(this, '${escapeJsString(t.targetStationCn || targetName)}', '${escapeJsString(targetEn)}', '${transfersJsonEscaped}', '${exitsJsonEscaped}', 'station-tooltip')" title="查看 ${targetName} 站的所有线路"><i class="fas fa-info-circle"></i>${targetName}</a>`;
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+        return html;
+    };
+    
+    transferHTML += renderNearbyGroup('就近换乘的车站', nearbyTransfers);
+
+    let exitHTML = '';
+    if (exits && exits.length > 0) {
+        exitHTML = '<div class="exit-section">';
+        exitHTML += '<div class="exit-section-title">出口信息 (Exits)</div>';
+        exitHTML += '<div class="exits-grid">';
+        exits.forEach(exit => {
+            const exitName = escapeHtml(exit.name || '');
+            const destinations = exit.destinations || [];
+            exitHTML += '<div class="exit-card">';
+            exitHTML += `<div class="exit-name">${exitName}</div>`;
+            if (destinations.length > 0) {
+                exitHTML += '<div class="exit-destinations">';
+                destinations.forEach(dest => {
+                    const destText = escapeHtml(dest);
+                    exitHTML += `<div class="exit-destination-item">${destText}</div>`;
+                });
+                exitHTML += '</div>';
+            }
+            exitHTML += '</div>';
+        });
+        exitHTML += '</div></div>';
+    }
+
+    const titleMain = station.nameCn;
+    const titleSub = station.nameEnAll || station.nameEn || '';
+    const subHTML = (titleSub && titleSub !== titleMain) ? `<div class="tooltip-subtitle">${titleSub}</div>` : '';
+
+    container.innerHTML = `
+        <div class="tooltip-header">
+            <div class="tooltip-title">${titleMain}</div>
+            ${subHTML}
+        </div>
+        ${exitHTML}
+        ${transferHTML}
+    `;
+
+    container.style.display = 'block';
+}
+
