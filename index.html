@@ -23,166 +23,173 @@
     <div data-include="header"></div>
 
 <!--主视觉横幅区-->
-<main id="snap-container"><!--第一节-->
-    <section id="first-screen" class="snap-page">
-            <div class="hero-banner" id="section-banner">
-                    <!-- 将首页图片改为背景图：可通过 CSS 或行内 style 修改 background-image -->
-                    <div class="banner-bg" role="img" aria-label="站点横幅" style="background-image: url('assets/images/abcd.png');">
-                        <!-- 文字使用 data-text 属性以便生成倒影 -->
-                        <div class="hero-title" data-text="欢迎访问鲤铁官网">欢迎访问鲤铁官网</div>
+<main id="snap-container">
+    <!-- 第一节：首页图 -->
+    <section id="section-1" class="snap-page">
+        <div class="hero-banner" id="section-banner">
+            <!-- 将首页图片改为背景图：可通过 CSS 或行内 style 修改 background-image -->
+            <div class="banner-bg" role="img" aria-label="站点横幅" style="background-image: url('assets/images/abcd.png');">
+                <!-- 文字使用 data-text 属性以便生成倒影 -->
+                <div class="hero-title" data-text="欢迎访问鲤铁官网">欢迎访问鲤铁官网</div>
+            </div>
+
+            <div class="hero-inner">
+                <div class="banner-label">
+                    <span>首页图</span>
+                </div>
+            </div>
+        </div><!-- .snap-content-wrapper -->
+    </section>
+
+    <!-- 第二节：数据面板 + 交通枢纽总览 -->
+    <section id="section-2" class="snap-page">
+        <div class="snap-content-wrapper">
+            <!-- 数据展示面板 -->
+            <div class="stats-panel animate-on-scroll">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-number">2025</div>
+                    <div class="stat-label">年正式运营</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">🚇</div>
+                    <div class="stat-number" id="stat-routes">--</div>
+                    <div class="stat-label">运营线路</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">📍</div>
+                    <div class="stat-number" id="stat-stations">--</div>
+                    <div class="stat-label">车站站点</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">🛡️</div>
+                    <div class="stat-number" id="stat-safety">--</div>
+                    <div class="stat-label">安全运行</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 交通枢纽总观 -->
+        <div class="quick-access-section animate-on-scroll">
+            <div class="qa-header">
+                <h2 class="qa-title">经典车站</h2>
+                <span class="qa-subtitle">Classic Station</span>
+            </div>
+            <div class="qa-grid">
+                <a href="#" class="qa-card animate-on-scroll" style="--card-color: #333;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">📍</span>
                     </div>
-
-                    <div class="hero-inner">
-                        <div class="banner-label">
-                            <span>首页图</span>
-                        </div>
+                    <div class="qa-text">
+                        <h3>鲤城火车站</h3>
+                        <p>鲤城大型综合交通枢纽</p>
                     </div>
-            </div>
-            <!-- 预留底部功能区 -->
-    </section>
-<!-- 数据展示面板 -->
-    <section class="stats-panel">
-        <div class="stats-container">
-            <div class="stat-item">
-                <div class="stat-icon">📅</div>
-                <div class="stat-number">2025</div>
-                <div class="stat-label">年正式运营</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-icon">🚇</div>
-                <div class="stat-number" id="stat-routes">--</div>
-                <div class="stat-label">运营线路</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-icon">📍</div>
-                <div class="stat-number" id="stat-stations">--</div>
-                <div class="stat-label">车站站点</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-icon">🛡️</div>
-                <div class="stat-number" id="stat-safety">--</div>
-                <div class="stat-label">安全运行</div>
+                </a>
+                <a href="#" class="qa-card animate-on-scroll" style="--card-color: #ffcc00;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">📍</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>鲤城机场站</h3>
+                        <p>快速直达机场</p>
+                    </div>
+                </a>
+                <a href="#" class="qa-card animate-on-scroll" style="--card-color: #0ef494;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">📍</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>豫园</h3>
+                        <p>鲤湖湾州重要交通节点</p>
+                    </div>
+                </a>
+                <a href="#" class="qa-card animate-on-scroll" style="--card-color: #246edc;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">📍</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>平安屯</h3>
+                        <p>多线地铁换乘枢纽，通达四方</p>
+                    </div>
+                </a>
+                <a href="#" class="qa-card animate-on-scroll" style="--card-color: #9324f3;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">📍</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>龙门寨</h3>
+                        <p>在这里欣赏冰原奇景</p>
+                    </div>
+                </a>
             </div>
         </div>
-    </section>
-
-<!-- 交通枢纽总观 -->
-    <section class="quick-access-section">
-        <div class="qa-header">
-            <h2 class="qa-title">经典车站</h2>
-            <span class="qa-subtitle">Classic Station</span>
-        </div>
-        <div class="qa-grid">
-            <a href="#" class="qa-card" style="--card-color: #333;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">📍</span>
-                </div>
-                <div class="qa-text">
-                    <h3>鲤城火车站</h3>
-                    <p>鲤城大型综合交通枢纽</p>
-                </div>
-            </a>
-            <a href="#" class="qa-card" style="--card-color: #ffcc00;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">📍</span>
-                </div>
-                <div class="qa-text">
-                    <h3>鲤城机场站</h3>
-                    <p>快速直达机场</p>
-                </div>
-            </a>
-            <a href="#" class="qa-card" style="--card-color: #0ef494;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">📍</span>
-                </div>
-                <div class="qa-text">
-                    <h3>豫园</h3>
-                    <p>鲤湖湾州重要交通节点</p>
-                </div>
-            </a>
-            <a href="#" class="qa-card" style="--card-color: #246edc;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">📍</span>
-                </div>
-                <div class="qa-text">
-                    <h3>平安屯</h3>
-                    <p>多线地铁换乘枢纽，通达四方</p>
-                </div>
-            </a>
-            <a href="#" class="qa-card" style="--card-color: #9324f3;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">📍</span>
-                </div>
-                <div class="qa-text">
-                    <h3>龙门寨</h3>
-                    <p>在这里欣赏冰原奇景</p>
-                </div>
-            </a>
         </div>
     </section>
 
-<!-- 交通类型查看 -->
-    <section class="quick-access-section">
-        <div class="qa-header">
-            <h2 class="qa-title">花样交通类型</h2>
-            <span class="qa-subtitle">Various types of transportation</span>
+    <!-- 第三节：花样交通类型 + 运营地区 -->
+    <section id="section-3" class="snap-page">
+        <div class="snap-content-wrapper">
+            <!-- 交通类型查看 -->
+            <div class="quick-access-section animate-on-scroll">
+            <div class="qa-header">
+                <h2 class="qa-title">花样交通类型</h2>
+                <span class="qa-subtitle">Various types of transportation</span>
+            </div>
+            <div class="qa-grid">
+                <a href="views/route.html?category=NORMAL" class="qa-card animate-on-scroll" style="--card-color: #212121;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">🚇</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>地铁</h3>
+                        <p>城市轨道交通</p>
+                    </div>
+                </a>
+                <a href="views/route.html?category=HIGH_SPEED" class="qa-card animate-on-scroll" style="--card-color: #3f51b5;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">🚄</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>铁路</h3>
+                        <p>跨城市出行的首选</p>
+                    </div>
+                </a>
+                <a href="views/route.html?category=BOAT" class="qa-card animate-on-scroll" style="--card-color: #0288d1;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">⛴️</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>轮渡</h3>
+                        <p>水上客运</p>
+                    </div>
+                </a>
+                <a href="views/route.html?category=AIRPLANE" class="qa-card animate-on-scroll" style="--card-color: #1976d2;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">✈️</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>航空航线</h3>
+                        <p>尽情自由飞翔</p>
+                    </div>
+                </a>
+                <a href="views/route.html?category=CABLE_CAR" class="qa-card animate-on-scroll" style="--card-color: #ff9800;">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">🚌</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>缆车</h3>
+                        <p>沿途风光无限好</p>
+                    </div>
+                </a>
+            </div>
+            <div class="qa-footer">
+                <a href="views/route.html" class="qa-btn-all">☰ 查看全部线路 View All Routes</a>
+            </div>
         </div>
-        <div class="qa-grid">
-            <a href="views/route.html?category=NORMAL" class="qa-card" style="--card-color: #212121;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">🚇</span>
-                </div>
-                <div class="qa-text">
-                    <h3>地铁</h3>
-                    <p>城市轨道交通</p>
-                </div>
-            </a>
-            <a href="views/route.html?category=HIGH_SPEED" class="qa-card" style="--card-color: #3f51b5;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">🚄</span>
-                </div>
-                <div class="qa-text">
-                    <h3>铁路</h3>
-                    <p>跨城市出行的首选</p>
-                </div>
-            </a>
-            <a href="views/route.html?category=BOAT" class="qa-card" style="--card-color: #0288d1;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">⛴️</span>
-                </div>
-                <div class="qa-text">
-                    <h3>轮渡</h3>
-                    <p>水上客运</p>
-                </div>
-            </a>
-            <a href="views/route.html?category=AIRPLANE" class="qa-card" style="--card-color: #1976d2;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">✈️</span>
-                </div>
-                <div class="qa-text">
-                    <h3>航空航线</h3>
-                    <p>尽情自由飞翔</p>
-                </div>
-            </a>
-            <a href="views/route.html?category=CABLE_CAR" class="qa-card" style="--card-color: #ff9800;">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">🚌</span>
-                </div>
-                <div class="qa-text">
-                    <h3>缆车</h3>
-                    <p>沿途风光无限好</p>
-                </div>
-            </a>
-        </div>
-        <div class="qa-footer">
-            <a href="views/route.html" class="qa-btn-all">☰ 查看全部线路 View All Routes</a>
-        </div>
-    </section>
 
-<!--第二节开始-->
-    <section id="second-screen" class="snap-page">
         <!-- 运营地区 -->
-        <div class="region-section">
+        <div class="region-section animate-on-scroll">
             <div class="qa-header">
                 <h2 class="qa-title">运营地区</h2>
                 <span class="qa-subtitle">Operating Areas</span>
@@ -193,7 +200,7 @@
                 <h3 class="region-subtitle">主营区域</h3>
                 <span class="region-subtitle-en">Main Operating Areas</span>
                 <div class="qa-grid">
-                    <a href="views/route.html?tab=route-map&map=鲤湖湾州及鲤城" class="qa-card" style="--card-color: #e53935;">
+                    <a href="views/route.html?tab=route-map&map=鲤湖湾州及鲤城" class="qa-card animate-on-scroll" style="--card-color: #e53935;">
                         <div class="qa-icon-circle">
                             <span class="qa-icon">🏙️</span>
                         </div>
@@ -202,7 +209,7 @@
                             <p>核心运营区域</p>
                         </div>
                     </a>
-                    <a href="views/route.html?tab=route-map&map=鲤湖湾州及鲤城" class="qa-card" style="--card-color: #00897b;">
+                    <a href="views/route.html?tab=route-map&map=鲤湖湾州及鲤城" class="qa-card animate-on-scroll" style="--card-color: #00897b;">
                         <div class="qa-icon-circle">
                             <span class="qa-icon">🌊</span>
                         </div>
@@ -219,7 +226,7 @@
                 <h3 class="region-subtitle">其他地区</h3>
                 <span class="region-subtitle-en">Other Areas</span>
                 <div class="qa-grid">
-                    <a href="views/route.html?tab=route-map&map=大都会辖地" class="qa-card" style="--card-color: #7b1fa2;">
+                    <a href="views/route.html?tab=route-map&map=大都会辖地" class="qa-card animate-on-scroll" style="--card-color: #7b1fa2;">
                         <div class="qa-icon-circle">
                             <span class="qa-icon">🌐</span>
                         </div>
@@ -228,7 +235,7 @@
                             <p>Greater Politan</p>
                         </div>
                     </a>
-                    <a href="views/route.html?tab=route-map&map=第三城" class="qa-card" style="--card-color: #1976d2;">
+                    <a href="views/route.html?tab=route-map&map=第三城" class="qa-card animate-on-scroll" style="--card-color: #1976d2;">
                         <div class="qa-icon-circle">
                             <span class="qa-icon">🌆</span>
                         </div>
@@ -237,7 +244,7 @@
                             <p>City Three</p>
                         </div>
                     </a>
-                    <a href="views/route.html?tab=route-map&map=铜钿城" class="qa-card" style="--card-color: #f57c00;">
+                    <a href="views/route.html?tab=route-map&map=铜钿城" class="qa-card animate-on-scroll" style="--card-color: #f57c00;">
                         <div class="qa-icon-circle">
                             <span class="qa-icon">🏘️</span>
                         </div>
@@ -249,58 +256,65 @@
                 </div>
             </div>
         </div>
-
-        <!-- 信息总览等四个功能入口 -->
-        <div class="qa-header">
-            <h2 class="qa-title">快速导航</h2>
-            <span class="qa-subtitle">Quick Navigation</span>
         </div>
-        <div class="second-grid">
-            <a href="views/info.html" class="qa-card" style="--card-color: var(--secondary-color);">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">📋</span>
-                </div>
-                <div class="qa-text">
-                    <h3>信息总览</h3>
-                    <p>一站式浏览最新信息</p>
-                    <span class="page-link">查看全部信息 &gt;</span>
-                </div>
-            </a>
+    </section>
 
-            <a href="views/route.html" class="qa-card" style="--card-color: var(--secondary-color);">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">🗺️</span>
-                </div>
-                <div class="qa-text">
-                    <h3>线路服务</h3>
-                    <p>线路站点的信息和导航</p>
-                    <span class="page-link">查看线路服务 &gt;</span>
-                </div>
-            </a>
+    <!-- 第四节：快速导航 -->
+    <section id="section-4" class="snap-page">
+        <div class="snap-content-wrapper">
+            <div class="quick-access-section animate-on-scroll">
+            <div class="qa-header">
+                <h2 class="qa-title">快速导航</h2>
+                <span class="qa-subtitle">Quick Navigation</span>
+            </div>
+            <div class="second-grid">
+                <a href="views/info.html" class="qa-card animate-on-scroll" style="--card-color: var(--secondary-color);">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">📋</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>信息总览</h3>
+                        <p>一站式浏览最新信息</p>
+                        <span class="page-link">查看全部信息 &gt;</span>
+                    </div>
+                </a>
 
-            <a href="views/server.html" class="qa-card" style="--card-color: var(--secondary-color);">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">🎫</span>
-                </div>
-                <div class="qa-text">
-                    <h3>乘客服务</h3>
-                    <p>乘客条例和使用指南</p>
-                    <span class="page-link">查看使用指南 &gt;</span>
-                </div>
-            </a>
+                <a href="views/route.html" class="qa-card animate-on-scroll" style="--card-color: var(--secondary-color);">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">🗺️</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>线路服务</h3>
+                        <p>线路站点的信息和导航</p>
+                        <span class="page-link">查看线路服务 &gt;</span>
+                    </div>
+                </a>
 
-            <a href="views/moreinfo.html" class="qa-card" style="--card-color: var(--secondary-color);">
-                <div class="qa-icon-circle">
-                    <span class="qa-icon">ℹ️</span>
-                </div>
-                <div class="qa-text">
-                    <h3>更多信息</h3>
-                    <p>鲤鱼铁路简介与详细资料</p>
-                    <span class="page-link">了解更多 &gt;</span>
-                </div>
-            </a>
+                <a href="views/server.html" class="qa-card animate-on-scroll" style="--card-color: var(--secondary-color);">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">🎫</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>乘客服务</h3>
+                        <p>乘客条例和使用指南</p>
+                        <span class="page-link">查看使用指南 &gt;</span>
+                    </div>
+                </a>
+
+                <a href="views/moreinfo.html" class="qa-card animate-on-scroll" style="--card-color: var(--secondary-color);">
+                    <div class="qa-icon-circle">
+                        <span class="qa-icon">ℹ️</span>
+                    </div>
+                    <div class="qa-text">
+                        <h3>更多信息</h3>
+                        <p>鲤鱼铁路简介与详细资料</p>
+                        <span class="page-link">了解更多 &gt;</span>
+                    </div>
+                </a>
+            </div>
         </div>
-    </section><!-- 第二节结束 -->
+        </div><!-- snap-content-wrapper end -->
+    </section>
 </main>
 
 <!--网站页脚-->
