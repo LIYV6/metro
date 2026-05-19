@@ -25,8 +25,6 @@ body {
 }
 @media (max-width: 768px) {
     h1 { font-size: 24px;}
-}
-@media (max-width: 768px) {
     body { padding: 16px;}
 }
 
@@ -35,22 +33,197 @@ body {
     margin: 0 auto;
 }
 
-/* ========== 二级导航通用样式==========
-适用于：二级导航(.secondary-nav)、线路分类标签(.category-tabs)、地图导航(.map-nav) */
-.secondary-nav-wrapper,
-.category-tabs-wrapper,
-.map-nav-wrapper {
-    width: 100vw; /* 与视口同宽，不受container限制 */
-    margin-left: calc(-50vw + 50%); /* 居中定位 */
-    background: #00000066; /* 半透明灰色背景，与图片一致 */
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    border-radius: 0; /* 矩形，无圆角 */
-    overflow: hidden;
+/* ========== 新的两栏布局 ========= */
+.route-layout {
+    display: flex;
+    gap: 0;
+    min-height: calc(100vh - var(--header-height));
+    background: #FFFCF7F5;
 }
 
-.secondary-nav,
+/* ========== 左侧导航栏 ========= */
+.left-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    z-index: 10;
+}
+
+/* 二级导航区域 */
+.secondary-nav-section {
+    padding: 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.secondary-nav-section .secondary-nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.secondary-nav-section .secondary-nav-item {
+    width: 100%;
+    padding: 16px 20px;
+    border: none;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    white-space: normal;
+    word-break: keep-all;
+}
+
+.secondary-nav-section .secondary-nav-item:hover {
+    background: #f5f5f5;
+}
+
+.secondary-nav-section .secondary-nav-item.active {
+    background: #e60012 !important;
+    color: #ffffff !important;
+}
+
+.secondary-nav-section .secondary-nav-item.info-style {
+    background: #003366;
+    color: #ffffff;
+}
+
+.secondary-nav-section .secondary-nav-item.info-style:hover {
+    background: #004080;
+    color: #ffffff;
+}
+
+/* 外部链接样式（乘车导航） */
+.secondary-nav-section .secondary-nav-item.external-link {
+    background: transparent;
+    color: #0066cc;
+}
+
+.secondary-nav-section .secondary-nav-item.external-link:hover {
+    background: #f0f8ff;
+    color: #0052a3;
+}
+
+.secondary-nav-section .secondary-nav-item.external-link a {
+    color: inherit;
+}
+
+.secondary-nav-section .secondary-nav-item a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* 子选项区域 */
+.sub-nav-section {
+    flex: 1;
+    padding: 35px 0;
+    overflow-y: auto;
+    background: #FFFCF7; /* 作业本纸的温暖米黄色 */
+}
+
+.sub-nav-content {
+    display: none;
+}
+
+.sub-nav-content.active {
+    display: block;
+}
+
+/* 子选项容器布局 */
+.sub-nav-content .category-tabs,
+.sub-nav-content .map-nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* 子选项按钮基础样式 */
+.sub-nav-content .category-tab,
+.sub-nav-content .map-nav-item {
+    flex: none;
+    min-width: auto;
+    max-width: none;
+    padding: 14px 20px;
+    background: transparent;
+    color: #333;
+    text-align: left;
+    justify-content: flex-start;
+    border-left: 4px solid transparent;
+    font-weight: 500;
+}
+
+.sub-nav-content .category-tab:hover,
+.sub-nav-content .map-nav-item:hover {
+    background: #ebebeb;
+    color: #c00000;
+}
+
+.sub-nav-content .category-tab.active,
+.sub-nav-content .map-nav-item.active {
+    background: #ffffff;
+    color: #c00000 !important;
+    border-left-color: #c00000;
+    font-weight: 600 !important;
+}
+
+/* 地图说明按钮保持蓝色样式 */
+.sub-nav-content .map-nav-item.info-style {
+    background: #003366;
+    color: #ffffff;
+    font-weight: 600;
+    border-left: 4px solid transparent;
+}
+
+.sub-nav-content .map-nav-item.info-style:hover {
+    background: #004080;
+    color: #ffffff;
+    padding-left: 24px;
+}
+
+.sub-nav-content .map-nav-item.info-style.active {
+    background: #003366;
+    color: #ffffff;
+}
+
+
+
+/* ========== 右侧内容区域 ========= */
+.right-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: #FFFCF7F5;
+    overflow-y: auto;
+}
+
+/* Tab内容区域默认隐藏 */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ========== 二级导航通用样式==========
+适用于：线路分类标签(.category-tabs)、地图导航(.map-nav) */
 .category-tabs,
 .map-nav {
     display: flex;
@@ -95,12 +268,16 @@ body {
     transform: none;
 }
 
-.secondary-nav-item.active,
-.category-tab.active,
-.map-nav-item.active {
-    background: #e60012 !important; /* 选中时背景变红，与图片一致 */
+.secondary-nav-item.active {
+    background: #e60012 !important; /* 二级导航选中时背景变红 */
     color: #ffffff !important;
     font-weight: 600 !important;
+}
+
+/* 选中的二级导航项悬停时变白 */
+.secondary-nav-item.active:hover {
+    background: #ffffff !important;
+    color: #e60012 !important;
 }
 
 .secondary-nav-item a,
@@ -141,21 +318,79 @@ body {
         font-size: 14px;
     }
 }
+
+/* ========== 响应式：窄屏适配 ========= */
+@media (max-width: 1024px) {
+    .left-sidebar {
+        width: 220px;
+    }
+    
+    .secondary-nav-section .secondary-nav-item {
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+    
+    .sub-nav-content .category-tab,
+    .sub-nav-content .map-nav-item {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .route-layout {
+        flex-direction: column;
+    }
+    
+    .left-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        top: 0;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .secondary-nav-section .secondary-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .secondary-nav-section .secondary-nav-item {
+        flex: 1 1 auto;
+        min-width: 120px;
+        text-align: center;
+        justify-content: center;
+        border-bottom: none;
+        border-right: 1px solid #e0e0e0;
+    }
+    
+    .secondary-nav-section .secondary-nav-item:last-child {
+        border-right: none;
+    }
+    
+    .sub-nav-section {
+        max-height: 300px;
+    }
+    
+    .right-content {
+        min-height: calc(100vh - var(--header-height) - 200px);
+    }
+}
 /*线路色块容器样式*/
 
 .line-blocks-container {
-    width: 100vw; /* 与视口同宽，与二级导航对齐 */
-    margin-left: calc(-50vw + 50%); /* 居中定位 */
+    width: 100%; /* 与右侧内容区域同宽 */
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     align-items: center;
-    max-height: calc(5 * (48px + 12px)); /* 5行色块高度 */
+    max-height: calc(5 * (52px + 12px)); /* 5行色块高度 */
     overflow-y: auto;
     /* 增加上下内边距，减少黑色背景影响 为滚动条留出空间 */
     padding: 32px 48px 32px 40px;
-    /* 修改背景色与展示容器一致 */
-    background: #FFFCF7F5;
+    /* 修改背景色与展示容器一致，增加渐变 */
+    background: linear-gradient(180deg, #FFFCF7 0%, #FFF9F0 100%);
     /* 移除边框，使视觉上连起来 */
     border-radius: 0; /* 矩形，无圆角 */
     margin-bottom: 22px; /* 恢复底部边距，与黑色标题区域增加间距 */
@@ -163,6 +398,7 @@ body {
     backdrop-filter: blur(14px);
     /* 移除顶部边框，与分类标签无缝连接 */
     border-style: none;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
 /* 自定义滚动条样式 */
@@ -187,74 +423,75 @@ body {
 
 
 .line-block {
-    min-width: 48px;
-    height: 48px;
-    border-radius: 8px;
+    min-width: 52px;
+    height: 52px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: 3px solid transparent;
     box-shadow: var(--shadow-md);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px 12px;
+    padding: 4px 14px;
     width: auto;
 }
 
 .line-block-label {
     color: white;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     text-align: center;
     white-space: nowrap;
-    text-shadow: 0 1px 2px #0000004D;
+    text-shadow: 0 1px 3px #00000066;
     z-index: 1;
+    letter-spacing: 0.3px;
 }
 
 .line-block:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 16px 36px #251C1033;
-    border-color: #FFFFFFCC;
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 18px 40px #251C1040;
+    border-color: #FFFFFFDD;
 }
 
 .line-block.active {
-    transform: scale(1.1);
+    transform: scale(1.12);
     border-color: white;
-    box-shadow: 0 20px 40px #251C1047;
+    box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
+    z-index: 5;
 }
 
-.line-block-tooltip {
+/* 选中的线路色块增加对勾标识 */
+.line-block.active::after {
+    content: '✓';
     position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #162033F2;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: #ffffff;
+    color: #162033;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    border: 2px solid rgba(255,255,255,0.9);
     z-index: 10;
-    box-shadow: 0 8px 16px #00000033;
 }
 
-.line-block-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #162033F2;
+/* 线路色块tooltip - 已禁用悬停显示 */
+.line-block-tooltip {
+    display: none !important;
 }
 
-.line-block:hover .line-block-tooltip {
-    opacity: 1;
+/* 站点色块tooltip - 已禁用悬停显示 */
+.station-block-tooltip {
+    display: none !important;
 }
 
 @media (max-width: 768px) {
@@ -279,8 +516,7 @@ body {
 /*.direction-label-forward, .direction-label-reverse已移动到unuse.css中*/
 
 #routesContainer {
-    width: 100vw; /* 与视口同宽，与二级导航对齐 */
-    margin-left: calc(-50vw + 50%); /* 居中定位 */
+    width: 100%; /* 与右侧内容区域同宽 */
     /* 添加背景色与色块容器一致 */
     background: #FFFCF7F5;
     border: none; /* 移除边框 */
@@ -346,6 +582,12 @@ body {
     margin-bottom: 2px;
     font-weight: 700;
     letter-spacing: 0.3px;
+    /* 增强立体感：多层阴影 + 内发光效果 */
+    text-shadow: 
+        0 1px 0 rgba(0,0,0,0.3),
+        0 2px 4px rgba(0,0,0,0.4),
+        0 4px 8px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.15);
 }
 .route-title p {
     color: #FFFFFFB3;
@@ -416,16 +658,6 @@ body {
 .station-list::-webkit-scrollbar-thumb:hover {
     background: #0000004D;
 }
-.station-main-line {
-    display: none;
-}
-.station-main-line-dual {
-    display: block !important;
-    position: absolute;
-    background: linear-gradient(90deg, #1e88e5 0 50%, #111 50% 100%);
-    z-index: 2;
-}
-
 .station-item {
     display: flex;
     flex-direction: column;
@@ -512,10 +744,6 @@ body {
     margin-top: 2px;
 }
 /*换乘信息*/
-.other-mode-transfer {
-    display: none;
-}
-
 .transfer-badges-container {
     position: absolute;
     left: 50%;
@@ -529,9 +757,6 @@ body {
     margin-bottom: 8px;
     margin-left: 8px;
     z-index: 10;
-}
-.transfer-badges-container.side-unified {
-    left: 50%;
 }
 .transfer-badges {
     display: flex;
@@ -594,73 +819,34 @@ body {
     font-size: 9px;
 }
 
-/*支线系统*/
-.branch-container {
-    border-top: 1px solid #ececec;
-}
-.branch-container:first-child {
-    border-top: none;
-}
-.branch-label {
-    padding: 8px 20px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #444;
-    background: #f8f8f8;
-    border-bottom: 1px solid #e5e5e5;
-}
-.branch-section {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none;
-}
-.branch-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-    padding: 12px 20px;
-    color: #1a1a1a;
-    font-size: 14px;
-    font-weight: 700;
-    background: #f5f5f5;
-    border-bottom: 1px solid #e0e0e0;
-}
-.branch-header {
-    display: flex;
-    align-items: center;
-    margin: 0;
-    padding: 12px 20px;
-    background: #f5f5f5;
-    border-bottom: 1px solid #e0e0e0;
-}
-.branch-header .route-color {
-    width: 16px;
-    height: 16px;
-}
-/*其他辅助*/
 .hidden {
     display: none !important;
-}
-.route-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
-.route-content.expanded {
-    max-height: 10000px;
 }
 
 .empty-state {
     text-align: center;
-    padding: 80px 40px;
-    color: var(--ink-soft);
-    font-size: 15px;
-    line-height: 1.8;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #dee2e6;
+    border-radius: 16px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.empty-state::before {
+    content: '🚇';
+    display: block;
+    font-size: 56px;
+    margin-bottom: 16px;
+    opacity: 0.6;
 }
 
 .empty-state p {
     margin: 0;
+    color: #6c757d;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 /*站点信息*/
@@ -744,18 +930,47 @@ body {
 
 /* Tooltip 样式（从 JS 中提取）*/
 .tooltip-header {
-    background: linear-gradient(135deg, rgba(11, 19, 36, 0.96) 0%, rgba(30, 41, 59, 0.94) 100%);
-    padding: 18px 22px;
-    margin-bottom: 12px;
+    background: linear-gradient(135deg, 
+        rgba(11, 19, 36, 0.98) 0%, 
+        rgba(30, 41, 59, 0.96) 50%,
+        rgba(45, 55, 72, 0.94) 100%);
+    padding: 20px 24px;
+    margin-bottom: 16px;
     width: 100%;
     box-sizing: border-box;
+    border-radius: 14px 14px 0 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 20px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Tooltip头部装饰性背景图案 */
+.tooltip-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
 }
 
 .tooltip-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
     color: #ffffff;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
+    /* 增强立体感：多层阴影 + 内发光 + 浮雕效果 */
+    text-shadow: 
+        0 1px 0 rgba(0,0,0,0.4),
+        0 2px 4px rgba(0,0,0,0.5),
+        0 4px 10px rgba(0,0,0,0.4),
+        0 6px 16px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.2),
+        inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
 .tooltip-subtitle {
@@ -791,44 +1006,61 @@ body {
 .tooltip-line-badge {
     background: var(--line-color, #999);
     color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 2px 6px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    position: relative;
+    letter-spacing: 0.2px;
 }
 
 .tooltip-line-badge:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 
+        0 4px 12px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.3);
 }
 
 .tooltip-nearby-container {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
 .tooltip-nearby-link {
     text-decoration: none;
-    background: #e0f7fa;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
     color: #006064;
     border: 1px solid #00acc1;
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
     font-size: 14px;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    letter-spacing: 0.2px;
+}
+
+.tooltip-nearby-link:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #b2ebf2 0%, #80deea 100%);
 }
 
 .tooltip-nearby-link i {
-    margin-right: 4px;
+    margin-right: 6px;
+    font-size: 14px;
 }
 
 .tooltip-error {
@@ -886,7 +1118,7 @@ body {
     transform: translateY(-3px);
 }
 /*线路信息页面样式结束*/
-/* =====源route.html-map页面专属样式开始=====*/
+/* =====route.html-map页面专属样式开始=====*/
 /*图片展示区域样式*/
 .map-container {
     width: 100%;
@@ -1007,14 +1239,23 @@ body.route-map-active .main-footer {
     display: none !important;
 }
 
-/* 调整地图容器位置，使其位于地图选择导航下方 */
+/* 调整地图容器位置，使其位于右侧内容区域 */
 #route-map-content .map-container {
-    position: fixed; /* 保持固定定位 */
-    top: calc(var(--header-height) * 2); /* 初始top值，与style.css一致 */
-    left: 0;
+    position: fixed; /* 固定定位 */
+    top: var(--header-height); /* 紧贴顶部导航栏下方 */
+    left: 260px; /* 紧贴左侧导航栏右侧 */
     right: 0;
-    bottom: 0; /* 延伸到底部 */
-    height: auto; /* 自动高度，由top和bottom决定 */
+    bottom: 0;
+    width: auto; /* 由left和right决定 */
+    height: auto; /* 由top和bottom决定 */
+    overflow: hidden;
+}
+
+/* 响应式：窄屏下地图容器调整 */
+@media (max-width: 768px) {
+    #route-map-content .map-container {
+        left: 0; /* 窄屏时左侧导航变为顶部，地图全宽 */
+    }
 }
 /* 电脑端：弹窗改为正方形 */
 @media (min-width: 769px) {
@@ -1024,4 +1265,347 @@ body.route-map-active .main-footer {
         max-height: 90vh;
     }
 }
-/* =====源route.html-map页面专属样式结束=====*/
+/* =====route.html-map页面专属样式结束=====*/
+
+/* ========== 车站信息功能样式 ========= */
+
+/* 站点选择容器 */
+.station-selector-container {
+    width: 100%;
+    background: #FFFCF7F5;
+}
+
+/* 站点色块容器 */
+.station-blocks-container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    max-height: calc(6 * (52px + 10px)); /* 6行色块高度 */
+    overflow-y: auto;
+    padding: 32px 48px 32px 40px;
+    background: linear-gradient(180deg, #FFFCF7 0%, #FFF9F0 100%);
+    border-radius: 0;
+    margin-bottom: 0;
+    box-shadow: none;
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* 自定义滚动条样式 */
+.station-blocks-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.station-blocks-container::-webkit-scrollbar-track {
+    background: #0000000D;
+    border-radius: 4px;
+}
+
+.station-blocks-container::-webkit-scrollbar-thumb {
+    background: #00000033;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.station-blocks-container::-webkit-scrollbar-thumb:hover {
+    background: #0000004D;
+}
+
+/* 站点色块 */
+.station-block {
+    min-width: 64px;
+    height: 52px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 3px solid transparent;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 14px;
+    width: auto;
+}
+
+.station-block-label {
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px #00000066;
+    z-index: 1;
+    letter-spacing: 0.3px;
+}
+
+.station-block:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 18px 40px #251C1040;
+    border-color: #FFFFFFDD;
+}
+
+.station-block.active {
+    transform: scale(1.12);
+    border-color: white;
+    box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
+    z-index: 5;
+    animation: stationPulse 2.5s ease-in-out infinite;
+}
+
+/* 选中态脉冲动画 */
+@keyframes stationPulse {
+    0%, 100% { 
+        box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
+    }
+    50% { 
+        box-shadow: 0 24px 50px #251C1070, 0 0 0 6px rgba(255,255,255,0.2);
+    }
+}
+
+/* 选中的站点色块增加对勾标识 */
+.station-block.active::after {
+    content: '✓';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: #ffffff;
+    color: #162033;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    border: 2px solid rgba(255,255,255,0.9);
+    z-index: 10;
+}
+
+
+
+/* 站点信息显示容器 */
+.station-info-container {
+    width: 100%;
+    background: #FFFCF7F5;
+    border: none;
+    box-shadow: none;
+    padding: 0 40px 40px;
+    min-height: 300px;
+}
+
+/* 站点详情容器 */
+.station-detail-container {
+    background: #FFFCF7EB;
+    border: 1px solid #FFFFFFA3;
+    border-radius: 26px;
+    padding: 0;
+    margin-top: 22px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px #251C1014;
+    backdrop-filter: blur(14px);
+}
+
+/* 站点详情头部 */
+.station-detail-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 24px 22px;
+    background: linear-gradient(135deg, #0B1324F5 0%, #1E293BEF 100%);
+    color: white;
+    text-align: center;
+}
+
+.station-detail-header h2 {
+    color: white;
+    font-size: 28px;
+    margin: 0 0 8px 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    /* 增强立体感：多层阴影 + 内发光效果 */
+    text-shadow: 
+        0 1px 0 rgba(0,0,0,0.35),
+        0 2px 5px rgba(0,0,0,0.45),
+        0 4px 12px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+.station-en-name {
+    color: #FFFFFFB3;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 12px 0;
+}
+
+/* 站点统计信息 */
+.station-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.stat-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+}
+
+.stat-item i {
+    font-size: 14px;
+}
+
+/* 站点详情内容 */
+.station-detail-content {
+    padding: 24px;
+}
+
+/* 站点区块 */
+.station-section {
+    margin-bottom: 24px;
+}
+
+.station-section:last-child {
+    margin-bottom: 0;
+}
+
+.station-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.station-section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: #c00000;
+    border-radius: 2px;
+}
+
+/* 站点线路容器 */
+.station-lines-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+/* 站点线路徽章 */
+.station-line-badge {
+    background: var(--line-color, #999);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.station-line-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 站点出口区块 */
+.station-exits-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 2px solid #e0e0e0;
+}
+
+/* 响应式：移动端适配 */
+@media (max-width: 768px) {
+    .station-block {
+        min-width: 50px;
+        height: 40px;
+        padding: 4px 10px;
+    }
+
+    .station-block-label {
+        font-size: 12px;
+    }
+
+    .station-blocks-container {
+        gap: 8px;
+        max-height: calc(6 * (40px + 8px)); /* 6行色块高度（移动端） */
+        padding: 18px;
+        border-radius: 0;
+    }
+
+    .station-detail-header h2 {
+        font-size: 22px;
+    }
+
+    .station-en-name {
+        font-size: 12px;
+    }
+
+    .stat-item {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+    .station-section-title {
+        font-size: 16px;
+    }
+
+    .station-line-badge {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
+
+/* ========== 站点色块Loading动画样式 ========== */
+.station-blocks-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    width: 100%;
+    gap: 16px;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #c00000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
