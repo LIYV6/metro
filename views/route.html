@@ -11,11 +11,18 @@
     <meta property="og:title" content="线路图 - 鲤鱼铁路">
     <meta property="og:description" content="浏览鲤鱼铁路全部交通线路与站点信息。">
     <meta property="og:type" content="website">
-    <title>线路图 - 鲤鱼铁路</title>
+    <title>线路服务 - 鲤鱼铁路</title>
     <link rel="stylesheet" href="../assets/css/base.css">
     <link rel="stylesheet" href="../assets/css/part.css">
     <link rel="stylesheet" href="../assets/css/route.css">
-<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>-->
+    <!--suppress CssUnusedSymbol -->
+    <style>
+        /* route.html 页面始终隐藏页脚 */
+        /* 使用更具体的选择器以匹配动态加载的页脚 */
+        .main-footer {
+            display: none !important;
+        }
+    </style>
     <script src="../assets/js/libs/sql-wasm.js"></script>
 </head>
 <body>
@@ -23,92 +30,124 @@
     <div data-include="header"></div>
 
 <main class="route-page">
-    <div class="container">
-<!--二级导航开始-->
-    <div class="secondary-nav-wrapper">
-        <div class="category-tabs secondary-nav">
-            <button class="category-tab secondary-nav-item active" data-tab="line-info">线路信息Info</button>
-            <button class="category-tab secondary-nav-item" data-tab="route-map">线路图Map</button>
-            <button class="category-tab secondary-nav-item" data-tab="timetable">首末班车时间表TimeTable</button>
-            <button class="category-tab secondary-nav-item info-style"><a href="https://routeguide.liyv.me" target="_blank">乘车导航Navigate</a></button>
+    <div class="route-layout">
+        <!-- 左侧导航栏 -->
+        <aside class="left-sidebar">
+            <div class="secondary-nav-section">
+                <div class="category-tabs secondary-nav">
+                    <button class="category-tab secondary-nav-item active" data-tab="line-info">线路信息Info</button>
+                    <button class="category-tab secondary-nav-item" data-tab="route-map">线路图Map</button>
+                    <button class="category-tab secondary-nav-item" data-tab="station-info">车站信息Stations</button>
+                    <button class="category-tab secondary-nav-item external-link"><a href="https://routeguide.liyv.me" target="_blank">乘车导航Navigate ↗</a></button>
+                </div>
+            </div>
+            <div class="sub-nav-section">
+
+                <div id="line-info-subnav" class="sub-nav-content active">
+                    <div class="category-tabs">
+                        <button class="category-tab active" data-category="all">全部<br/>All</button>
+                        <button class="category-tab" data-category="NORMAL">地铁<br/>Metro</button>
+                        <button class="category-tab" data-category="HIGH_SPEED">铁路<br/>Rail</button>
+                        <button class="category-tab" data-category="BOAT">轮船<br/>Boat</button>
+                        <button class="category-tab" data-category="AIRPLANE">飞机<br/>Plane</button>
+                        <button class="category-tab" data-category="CABLE_CAR">索道<br/>Cableway</button>
+                    </div>
+                </div>
+
+                <div id="route-map-subnav" class="sub-nav-content">
+                    <div class="map-nav secondary-nav">
+                        <button class="map-nav-item active" data-map="全图">全图<br/>Full Map</button>
+                        <button class="map-nav-item" data-map="鲤湖湾州及鲤城">鲤湖湾州及鲤城<br/>Leehowae&LiCity</button>
+                        <button class="map-nav-item" data-map="大都会辖地">大都会辖地<br/>Greater Politan</button>
+                        <button class="map-nav-item" data-map="第三城">第三城<br/>City Three</button>
+                        <button class="map-nav-item" data-map="铜钿城">铜钿城<br/>Doodee City</button>
+                        <button class="map-nav-item" data-map="铁路">铁路<br/>Railway</button>
+                        <button class="map-nav-item info-style" data-map="info" id="infoBtn">地图说明<br/>Map Info</button>
+                    </div>
+                </div>
+
+                <div id="station-info-subnav" class="sub-nav-content">
+                    <!-- 按线路类型筛选的次级导航 -->
+                    <div class="category-tabs">
+                        <button class="category-tab active" data-station-category="all">全部<br/>All</button>
+                        <button class="category-tab" data-station-category="NORMAL">地铁<br/>Metro</button>
+                        <button class="category-tab" data-station-category="HIGH_SPEED">铁路<br/>Rail</button>
+                        <button class="category-tab" data-station-category="BOAT">轮船<br/>Boat</button>
+                        <button class="category-tab" data-station-category="AIRPLANE">飞机<br/>Plane</button>
+                        <button class="category-tab" data-station-category="CABLE_CAR">索道<br/>Cableway</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 右侧内容区域 -->
+        <div class="right-content">
+            <!--线路信息内容区域-->
+            <div id="line-info-content" class="tab-content active">
+                <div class="selector-divider"></div><!--分割线-->
+                <div id="lineBlocksContainer" class="line-blocks-container">
+                </div>
+                <div class="content-divider"></div>
+                <div id="routesContainer">
+                    <div class="empty-state">
+                        <p>请点击上方线路方块查看详情</p>
+                    </div>
+                </div>
+                
+                <!-- 线路信息页面的tooltip -->
+                <div id="tooltip" class="tooltip-container"></div>
+            </div>
+            
+            <!----------线路图内容区域开始----------->
+            <div id="route-map-content" class="tab-content">
+                <!--地图和控制按钮-->
+                <div class="map-container" id="mapContainer">
+                    <img src="../assets/images/全图.png" alt="服务器轨道交通线网图" class="subway-map" id="subwayMap">
+                    <div class="control-buttons">
+                        <button class="control-btn" id="zoomIn">+</button>
+                        <button class="control-btn" id="zoomOut">-</button>
+                        <button class="control-btn" id="reset">⟳</button>
+                    </div>
+                </div>
+                <!-- 信息弹窗-->
+                <div class="info-modal" id="infoModal">
+                    <div class="modal-content">
+                        <button class="close-btn" id="closeBtn">&times;</button>
+                        <h2 id="modal-title">地图说明</h2>
+                        <div class="modal-body" id="info-text"><!-- Content injected via JS --></div>
+
+                        <div class="modal-footer">
+                            <p data-i18n="contact">信息提供: 
+                                <a href="https://github.com/LIYV6" target="_blank" class="page-link">
+                                    Yv Li</a> + 
+                                <a href="https://github.com/frankniubi" target="_blank" class="page-link">
+                                    Frank Lau</a>
+                            </p>
+                        </div>
+
+                    </div>
+                </div><!--信息弹窗结束-->
+            </div><!----------线路图内容区域结束----------->
+
+            <!--车站信息内容区域-->
+            <div id="station-info-content" class="tab-content">
+                <!-- 站点选择容器 -->
+                <div class="station-selector-container">
+                    <div id="stationBlocksContainer" class="station-blocks-container">
+                        <!-- 站点色块将由JS动态生成 -->
+                    </div>
+                </div>
+                <div class="selector-divider"></div><!--分割线-->
+                
+                <!-- 车站信息页面的tooltip（直接显示站点详细信息） -->
+                <div id="station-tooltip" class="tooltip-container">
+                    <div class="empty-state">
+                        <p>请点击上方站点色块查看详情</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-<!--二级导航结束-->
-    <div class="nav-divider"></div><!--红色分割线-->
-        <!--线路信息内容区域-->
-        <div id="line-info-content" class="tab-content active">
-
-                    <div class="category-tabs-wrapper">
-                        <div class="category-tabs">
-                            <button class="category-tab active" data-category="all">全部<br/>All</button>
-                            <button class="category-tab" data-category="NORMAL">地铁<br/>Metro</button>
-                            <button class="category-tab" data-category="HIGH_SPEED">铁路<br/>Rail</button>
-                            <button class="category-tab" data-category="BOAT">轮船<br/>Boat</button>
-                            <button class="category-tab" data-category="AIRPLANE">飞机<br/>Plane</button>
-                            <button class="category-tab" data-category="CABLE_CAR">索道<br/>Cableway</button>
-                        </div>
-                    </div>
-                    <div class="selector-divider"></div><!--分割线-->
-                    <div id="lineBlocksContainer" class="line-blocks-container">
-                    </div>
-                    <div class="content-divider"></div>
-                    <div id="routesContainer">
-                        <div class="empty-state">
-                            <p>请点击上方线路方块查看详情</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-    <div id="tooltip" class="tooltip-container"></div>
-    
-    <!----------线路图内容区域开始----------->
-        <div id="route-map-content" class="tab-content" style="display: none;">
-<!-- 地图选择导航：采用与线路分类标签相同的样式-->
-            <div class="map-nav-wrapper">
-                <div class="map-nav secondary-nav">
-                    <button class="map-nav-item secondary-nav-item active" data-map="全图">全图<br/>Full Map</button>
-                    <button class="map-nav-item secondary-nav-item" data-map="鲤湖湾州及鲤城">鲤湖湾州及鲤城<br/>Leehowae&LiCity</button>
-                    <button class="map-nav-item secondary-nav-item" data-map="大都会辖地">大都会辖地<br/>Greater Politan</button>
-                    <button class="map-nav-item secondary-nav-item" data-map="第三城">第三城<br/>City Three</button>
-                    <button class="map-nav-item secondary-nav-item" data-map="铜钿城">铜钿城<br/>Doodee City</button>
-                    <button class="map-nav-item secondary-nav-item" data-map="铁路">铁路<br/>Railway</button>
-                    <button class="map-nav-item secondary-nav-item info-style" data-map="info" id="infoBtn">地图说明<br/>Map Info</button>
-                </div>
-            </div>
-<!--地图和控制按钮-->
-            <div class="map-container" id="mapContainer">
-                <img src="../assets/images/全图.png" alt="服务器轨道交通线网图" class="subway-map" id="subwayMap">
-                <div class="control-buttons">
-                    <button class="control-btn" id="zoomIn">+</button>
-                    <button class="control-btn" id="zoomOut">-</button>
-                    <button class="control-btn" id="reset">⟳</button>
-                </div>
-            </div>
-<!-- 信息弹窗-->
-            <div class="info-modal" id="infoModal">
-                <div class="modal-content">
-                    <button class="close-btn" id="closeBtn">&times;</button>
-                    <h2 id="modal-title">地图说明</h2>
-                    <div class="modal-body" id="info-text"><!-- Content injected via JS --></div>
-
-                    <div class="modal-footer">
-                        <p data-i18n="contact">信息提供: 
-                            <a href="https://github.com/LIYV6" target="_blank" class="page-link">
-                                Yv Li</a> + 
-                            <a href="https://github.com/frankniubi" target="_blank" class="page-link">
-                                Frank Lau</a>
-                        </p>
-                    </div>
-
-                </div>
-            </div><!--信息弹窗结束-->
-        </div><!----------线路图内容区域结束----------->
-
-<!--首末班车时间表内容区域-->
-        <div id="timetable-content" class="tab-content" style="display: none;">
-            <p style="text-align: center; padding: 40px; color: #666;">首末班车时间表功能开发中，敬请期待！</p>
-        </div>
 
     <button id="backToTop" class="back-to-top" title="返回顶部">↑</button>
 </main><!--主体区域结束-->

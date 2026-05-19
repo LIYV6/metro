@@ -23,25 +23,41 @@
 <!-- 页顶部 -->
     <div data-include="header"></div>
 
-<main class="news-page">
+<main class="server-page">
+    <!-- 左侧导航菜单 -->
+    <nav class="server-nav">
+        <ul class="server-nav-list">
+            <li class="server-nav-item"><a class="server-nav-link active" href="#construction-trends">建设动态</a></li>
+            <li class="server-nav-item"><a class="server-nav-link" href="#notice">通知公告</a></li>
+            <li class="server-nav-item"><a class="server-nav-link" href="#line-plan">线路规划</a></li>
+        </ul>
+    </nav>
 
-    <h1 class="page-title" id="construction-trends">建设动态</h1>
-    <div class="news-list" id="slot-linenews">
-        <!-- loader.js 将把 line-sigema 与 line-11 注入到此处 -->
+    <!-- 右侧内容区域 -->
+    <div class="server-content">
+        <!-- 建设动态 -->
+        <section class="server-section is-active" id="construction-trends">
+            <!-- loader.js 将把 line-sigema 与 line-11 注入到此处 -->
+        </section>
+
+        <!-- 通知公告 -->
+        <section class="server-section" id="notice">
+            <!-- 内容由 loader.js 从 JSON5 注入 -->
+        </section>
+
+        <!-- 线路规划 -->
+        <section class="server-section" id="line-plan">
+            <!-- 内容由 loader.js 从 JSON5 注入 -->
+        </section>
     </div>
-
-    <h1 class="page-title">通知公告</h1>
-    <div class="news-list" id="slot-1"></div>
-
-    <h1 class="page-title">线路规划</h1>
-    <div class="news-list" id="slot-plan"></div>
 </main><!--主体区域结束-->
 
-<!--网站页脚由 fragments 注入 -->
-        <div data-include="footer"></div>
+<!--网站页脚 -->
+<div data-include="footer"></div>
 <!-- 引入外部交互脚本，统一管理逻辑 -->
-    <script src="../assets/js/include-fragments.js"></script>
-    <script src="../assets/js/loader.js"></script>
+<script src="../assets/js/include-fragments.js"></script>
+<script src="../assets/js/loader.js"></script>
+<script src="../assets/js/server-nav.js"></script>
 
 </body>
 </html>

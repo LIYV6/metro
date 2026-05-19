@@ -20,27 +20,56 @@
     <!--新增：引入JSON5解析库-->
     <script src="../assets/js/libs/json5.min.js"></script>
 </head>
-<body class="moreinfo-page">
-    <script>window.PAGE_ID = 'moreinfo';</script>
+<body>
+<script>window.PAGE_ID = 'moreinfo';</script>
+<!-- 页顶部 -->
+<div data-include="header"></div>
 
-    <div data-include="header"></div>
+<main class="server-page">
+    <!-- 左侧导航菜单 -->
+    <nav class="server-nav">
+        <ul class="server-nav-list">
+            <li class="server-nav-item"><a class="server-nav-link active" href="#lyrail">鲤鱼铁路</a></li>
+            <li class="server-nav-item"><a class="server-nav-link" href="#furail">傅量铁路</a></li>
+            <li class="server-nav-item"><a class="server-nav-link" href="#yirail">怡文铁路</a></li>
+            <li class="server-nav-item"><a class="server-nav-link" href="#service-culture">服务与文化</a></li>
+            <li class="server-nav-item"><a class="server-nav-link" href="#service">服务声明</a></li>
+            <li class="server-nav-item"><a class="server-nav-link" href="#privacy">隐私政策</a></li>
+            <li class="server-nav-item"><a class="server-nav-link" href="#copyright">版权声明</a></li>
+        </ul>
+    </nav>
 
-    <main class="news-page">
-        <h1 class="page-title">简介</h1>
-        <div class="news-list" id="slot-introduce-list">
-<!--介绍-->
-        </div>
+    <!-- 右侧内容区域 -->
+    <div class="server-content">
+        <section class="server-section" id="lyrail">
+            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
+        </section>
+        <section class="server-section" id="furail">
+            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
+        </section>
+        <section class="server-section" id="yirail">
+            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
+        </section>
+        <section class="server-section" id="service-culture">
+            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
+        </section>
+        <section class="server-section" id="service">
+            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
+        </section>
+        <section class="server-section" id="privacy">
+            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
+        </section>
+        <section class="server-section" id="copyright">
+            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
+        </section>
+    </div>
+</main>
 
-        <h1 class="page-title">声明</h1>
-        <div class="news-list" id="slot-statement-list">
-<!--声明-->
-        </div>
-    </main>
-
-<!--页脚-->
-    <div data-include="footer"></div>
-
-    <script src="../assets/js/include-fragments.js"></script>
-    <script src="../assets/js/loader.js"></script>
+<!--网站页脚 -->
+<div data-include="footer"></div>
+<!-- 引入外部交互脚本，统一管理逻辑 -->
+<script src="../assets/js/include-fragments.js"></script>
+<script src="../assets/js/loader.js"></script>
+<script src="../assets/js/server-nav.js"></script>
 </body>
 </html>
