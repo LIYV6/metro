@@ -1,6 +1,5 @@
 /* partials.css通用组件样式
     header与footer的样式,loader.js 生成的文章卡片样式,通用组件（card, news-list, content-card 等）*/
-
 /* fragments 加载时隐藏主体以避免闪烁 */
 .site-header {
     width: 100%;
@@ -10,7 +9,7 @@
     left: 0;
     z-index: 1200;
     background: #ffffff; /* 白色背景 */
-    color: var(--white-color);
+    color: var(--text-on-dark);
     transition: height 220ms ease, background 220ms ease;
 }
 
@@ -304,7 +303,7 @@ height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高
     font-size:16px;
     font-weight:600;
     margin-bottom:18px;
-    color:var(--mtr-text-white);
+    color:var(--mtr-accent-purple);
 }
 .footer-nav-column ul {
     display:flex;
@@ -318,7 +317,7 @@ height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高
     transition:color .2s ease;
 }
 .footer-nav-column ul li a:hover {
-    color:var(--mtr-text-white);
+    color:var(--mtr-accent-purple);
     text-decoration:underline;
 }
 
@@ -345,7 +344,7 @@ height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高
     margin:0;
     font-size:16px;
     font-weight:600;
-    color:var(--mtr-text-white);
+    color:var(--mtr-accent-purple);
 }
 .footer-address .address-lines p {
     margin:0 0 6px;
@@ -369,7 +368,7 @@ height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高
     font-size:13px; color:#999; transition:color .2s ease;
 }
 .copyright-links a:hover {
-    color:var(--mtr-text-white); 
+    color:var(--mtr-accent-purple); 
     text-decoration:underline;
 }
 /* ============= 响应式合并（所有768px样式合并在一起）============= */
@@ -398,51 +397,6 @@ height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高
     }
 }
 
-/* ========== Loader / fragments spinner & compatibility ==========
-     说明:此处为 fragments-loading(片段异步加载)使用的本地 spinner。
-     - .loading 用于局部加载状态（使用 position: absolute）
-     - html.fragments-loading 用于全局 fragment 加载（使用 position: fixed）
-*/
-.loading { 
-    position: relative; 
-    min-height: 220px; 
-}
-
-/* 局部加载 spinner */
-.loading::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 36px;
-    height: 36px;
-    border: 3px solid #f0f0f0;
-    border-top-color: #409eff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-/* 全局 fragment 加载 spinner */
-html.fragments-loading::after {
-    content: "";
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 36px;
-    height: 36px;
-    border: 3px solid #f0f0f0;
-    border-top-color: #409eff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    pointer-events: none;
-    z-index: 10000;
-}
-
-@keyframes spin { 
-    to { transform: translate(-50%,-50%) rotate(360deg); } 
-}
 
 /* ========== 全站通用链接样式 ==========
    适用于：index.html 的 .page-link 和 info/moreinfo.html 的正文链接
@@ -503,7 +457,7 @@ html.fragments-loading::after {
     top: 0;
     bottom: 0;
     width: 6px;
-    background: var(--secondary-color); /* 导航栏深蓝色 */
+    background: var(--nav-bg-color); /* 导航栏深蓝色 */
     border-radius: 12px 0 0 12px;
 }
 
@@ -566,6 +520,11 @@ html.fragments-loading::after {
     font-size: 16px;
     color: #333333;
     line-height: 1.8;
+}
+
+/* 空内容卡片保持最小高度，布局与有内容卡片一致 */
+.card-body:empty {
+    min-height: 40px;
 }
 
 /* 声明类(statement) 标题强调为红色，兼容模板渲染 */
@@ -652,7 +611,7 @@ html.fragments-loading::after {
     top: 0;
     bottom: 0;
     width: 6px;
-    background: var(--secondary-color); /* 导航栏深蓝色 */
+    background: var(--nav-bg-color); /* 导航栏深蓝色 */
     border-radius: 12px 0 0 12px;
 }
 
@@ -670,7 +629,7 @@ html.fragments-loading::after {
 }
 /*小节通用标题样式*/
 .page-title {
-    font-size: var(--h1-size);
+    font-size: var(--heading-h1-size);
     color: #003366;
     margin-bottom: 12px;
     text-align: center;
@@ -681,8 +640,8 @@ html.fragments-loading::after {
     max-width: 1200px;
     margin: 30px auto 20px; /* 上边距30px，下边距20px，水平居中 */
     padding: 0 20px; /* 与 news-list 保持一致的两侧留白 */
-    font-size: var(--h1-size);
-    color: var(--secondary-color);
+    font-size: var(--heading-h1-size);
+    color: var(--nav-bg-color);
     text-align: center;
     font-weight: 600;
 }
@@ -704,7 +663,7 @@ html.fragments-loading::after {
 
 /* 文章正文字体*/
 .content-card, .card-body, .card {
-    font-family: var(--article-font), sans-serif; }
+    font-family: var(--article-text-font), sans-serif; }
 
 /* ========== 通用垂直导航选项样式 ==========
    适用于：moreinfo.html, server.html, route.html 的子选项
@@ -968,7 +927,8 @@ body:not(.js-loaded) .server-section {
 @media (max-width: 768px) {
     .server-page {
         flex-direction: column;
-        padding: 0 10px;
+        padding: 0;
+        width: 100%;
     }
 
     .server-nav {
@@ -976,6 +936,9 @@ body:not(.js-loaded) .server-section {
         border: 1px solid #e0e0e0;
         border-bottom: none;
         padding: 10px 0;
+        position: static;
+        max-height: none;
+        overflow-y: visible;
     }
 
     .server-nav-list {
@@ -983,6 +946,11 @@ body:not(.js-loaded) .server-section {
         overflow-x: auto;
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;          /* Firefox */
+        -ms-overflow-style: none;       /* IE/Edge */
+    }
+    .server-nav-list::-webkit-scrollbar {
+        display: none;                  /* Chrome/Safari */
     }
 
     .server-nav-item {
@@ -994,6 +962,9 @@ body:not(.js-loaded) .server-section {
         font-size: 16px;
         border-left: none;
         border-bottom: 3px solid transparent;
+        display: block;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .server-nav-link.active {
@@ -1002,8 +973,27 @@ body:not(.js-loaded) .server-section {
     }
 
     .server-content {
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
+        flex: 1 0 0;
+        overflow: visible;
         padding: 20px;
         border: 1px solid #e0e0e0;
+    }
+
+    /* 防止内容区内部元素撑出容器导致水平滚动 */
+    .server-content article,
+    .server-content section {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    /* 图片自适应 */
+    .server-content img {
+        max-width: 100%;
+        height: auto;
     }
 
     .server-section-title {
@@ -1015,6 +1005,7 @@ body:not(.js-loaded) .server-section {
     .server-nav-link {
         padding: 10px 12px;
         font-size: 15px;
+        white-space: nowrap;
     }
 
     .server-content {
@@ -1027,5 +1018,159 @@ body:not(.js-loaded) .server-section {
 
     .server-section article {
         font-size: 15px;
+    }
+}
+
+/* ========== 汉堡菜单样式（仅移动端显示）========== */
+
+/* 汉堡按钮 - 默认隐藏，仅在移动端显示 */
+.nav-toggle {
+    display: none; /* 桌面端隐藏 */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 28px;
+    color: #000000;
+    line-height: 1;
+    transition: color 0.2s ease;
+    z-index: 1200;
+    position: relative;
+}
+
+.nav-toggle:hover {
+    color: #c00000;
+}
+
+.nav-toggle span {
+    display: block;
+    font-weight: bold;
+}
+
+/* 移动端导航面板 */
+.mobile-nav-panel {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ffffff;
+    z-index: 1199;
+    overflow-y: auto;
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.6s ease, opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.mobile-nav-panel.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 关闭时的特殊样式 - 向上收起 */
+.mobile-nav-panel.closing {
+    animation: slideUpClose 0.6s ease forwards !important;
+}
+
+@keyframes slideUpClose {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+    100% {
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.mobile-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-nav-item {
+    position: relative;
+}
+
+/* 菜单项之间的分割线（最后一个除外） */
+.mobile-nav-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+.mobile-nav-item a {
+    display: block;
+    padding: 18px 24px;
+    font-size: 18px;
+    color: #000000;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mobile-nav-item a:hover,
+.mobile-nav-item a.active {
+    background: #f5f5f5;
+    color: #c00000;
+}
+
+/* 遮罩层 */
+.mobile-nav-overlay {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1198;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.mobile-nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 移动端显示汉堡按钮，隐藏导航链接 */
+@media (max-width: 768px) {
+    /* 使用更强的选择器确保按钮显示 */
+    .header-container .main-nav .nav-inner .nav-toggle,
+    .nav-toggle {
+        display: block !important; /* 移动端显示，使用!important防止被覆盖 */
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* 确保 nav-inner 使用 flex 布局，让按钮和导航并排 */
+    .header-container .main-nav .nav-inner,
+    .nav-inner {
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* 移动端隐藏原始导航链接和渐变遮罩，只保留汉堡按钮 */
+    .main-nav .nav-scroll {
+        display: none !important;
+    }
+
+    .main-nav .nav-fade {
+        display: none !important;
+    }
+
+    /* 隐藏后导航栏高度回缩 */
+    .main-nav {
+        height: auto !important;
     }
 }

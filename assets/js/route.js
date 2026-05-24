@@ -1,14 +1,14 @@
 // ==================== 统一调试配置 ====================
 const ROUTE_DEBUG_CONFIG = {
     // 全局调试开关：true 启用所有调试日志，false 关闭
-    enabled: false,
+    enabled: false,  // 问题已修复，关闭调试模式
     
     // 模块级开关
     modules: {
-        database: true,      // 数据库加载相关日志
-        render: true,        // 渲染过程日志
-        transfer: true,      // 换乘逻辑日志
-        stationInfo: true    // 站点信息日志
+        database: false,      // 数据库加载相关日志
+        render: false,        // 渲染过程日志
+        transfer: false,      // 换乘逻辑日志
+        stationInfo: false    // 站点信息日志
     }
 };
 
@@ -429,11 +429,11 @@ function getRouteDirectionDescriptor(route, preferThreePoint = false) {
     if (preferThreePoint || route?.nameCn?.includes('電車') || route?.nameEn?.includes('LITRAM')) {
         const middle = uniqueNames[Math.floor(uniqueNames.length / 2)];
         if (middle && middle !== start && middle !== end) {
-            return `${start} - ${middle} - ${end}`;
+            return `${start} <--> ${middle} <--> ${end}`;
         }
     }
 
-    return `${start}-${end}方向`;
+    return `${start} <--> ${end}`;
 }
 
 // 获取环形线路的方向标签。根据线路名称和方向返回特定的标签（如"北环内圈"）
@@ -625,17 +625,25 @@ function renderRouteInUnifiedDisplay(primaryRoute, branches, groupIndex) {
                 const end = getName(st[st.length - 1]);
                 let mid = '';
                 if (st.length > 2) {
-                    mid = ' -> ' + getName(st[Math.floor(st.length / 2)]);
+                    mid = ' <--> ' + getName(st[Math.floor(st.length / 2)]);
                 }
-                branchLabelText = getRouteDirectionDescriptor(route, true) || `${start}${mid} -> ${end}`;
+                branchLabelText = getRouteDirectionDescriptor(route, true) || `${start}${mid} <--> ${end}`;
             }
         }
         
         // If only one route with reverse, use direction selector instead of branch label
         const useDirectionSelector = branches.length === 1 && hasReverse;
-        let branchLabel = (!useDirectionSelector)
-            ? `<div class="branch-label">${branchLabelText}</div>`
-            : '';
+
+        // 计算该分支的站点总数
+        const stationCount = (route.forwardStations ? route.forwardStations.length : 0) +
+                             ((hasReverse && route.reverseStations) ? route.reverseStations.length : 0);
+
+        let branchLabel = '';
+        if (!useDirectionSelector && branches.length > 1) {
+            branchLabel = `<div class="branch-label" onclick="toggleBranch(this)" role="button" aria-expanded="${branchIndex === 0}">
+                <span>${branchLabelText}<span class="branch-station-count">(${stationCount}站)</span></span>
+            </div>`;
+        }
         
         let directionLabelForward = '';
         let directionLabelReverse = '';
@@ -647,7 +655,7 @@ function renderRouteInUnifiedDisplay(primaryRoute, branches, groupIndex) {
             } else {
                 const endStation = st[st.length - 1];
                 const endName = endStation.nameCn;
-                directionLabelForward = `往${endName}方向`;
+                directionLabelForward = `往${endName}`;
             }
         }
 
@@ -658,7 +666,7 @@ function renderRouteInUnifiedDisplay(primaryRoute, branches, groupIndex) {
             } else {
                 const endStation = st[st.length - 1];
                 const endName = endStation.nameCn;
-                directionLabelReverse = `往${endName}方向`;
+                directionLabelReverse = `往${endName}`;
             }
         }
         
@@ -674,8 +682,9 @@ function renderRouteInUnifiedDisplay(primaryRoute, branches, groupIndex) {
             `;
         }
         
+        const isCollapsed = branches.length > 1 && branchIndex > 0;
         branchesHTML += `
-            <div class="branch-container">
+            <div class="branch-container${isCollapsed ? ' collapsed' : ''}" data-branch-index="${branchIndex}">
                 ${branchLabel}
                 ${directionSelector}
                 <div class="station-list" id="stations-${groupIndex}-${branchIndex}-forward"></div>
@@ -706,6 +715,20 @@ function renderRouteInUnifiedDisplay(primaryRoute, branches, groupIndex) {
         redrawVisibleLines();
         attachStationListScrollRedraw();
     });
+}
+
+// 手风琴切换：展开/折叠分支
+function toggleBranch(labelElement) {
+    const container = labelElement.closest('.branch-container');
+    if (!container) return;
+    const isCollapsing = !container.classList.contains('collapsed');
+    container.classList.toggle('collapsed');
+    labelElement.setAttribute('aria-expanded', String(!isCollapsing));
+
+    // 展开时重绘连接线
+    if (isCollapsing) {
+        requestAnimationFrame(() => redrawVisibleLines());
+    }
 }
 
 // 转义 JavaScript 字符串。处理反斜杠、单引号和换行符
@@ -969,7 +992,7 @@ function ensureBidirectionalNearbyTransfers(station, currentStationName) {
         return;
     }
     
-    if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
+    if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
         debugLog('transfer', '[ensureBidirectional] Checking bidirectional nearby transfers for:', currentStationName);
     }
     
@@ -1010,7 +1033,7 @@ function ensureBidirectionalNearbyTransfers(station, currentStationName) {
         }
         
         if (!foundTargetStation) {
-            if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
+            if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
                 debugLog('transfer', `[ensureBidirectional] Target station not found in routesData: ${targetName}`);
             }
             return;
@@ -1028,7 +1051,7 @@ function ensureBidirectionalNearbyTransfers(station, currentStationName) {
         
         if (!hasReverseLink) {
             // 缺少反向链接，需要补充
-            if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
+            if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
                 debugLog('transfer', `[ensureBidirectional] Adding reverse link: ${targetName} -> ${currentStationName}`);
             }
             
@@ -1047,11 +1070,11 @@ function ensureBidirectionalNearbyTransfers(station, currentStationName) {
             // 直接添加到目标站点的就近换乘列表
             foundTargetStation.nearbyTransfers.push(reverseNearby);
             
-            if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
+            if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
                 debugLog('transfer', `[ensureBidirectional] ✓ Symmetric link established`);
             }
         } else {
-            if (DEBUG_CONFIG.ENABLE_BIDIRECTIONAL_LOGS) {
+            if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
                 debugLog('transfer', `[ensureBidirectional] ✓ Reverse link already exists: ${targetName} -> ${currentStationName}`);
             }
         }
@@ -1337,7 +1360,7 @@ function getStationGlobalInfo(stationName, stationEn) {
         allNearbyTransfers = bestMatchNearbyTransfers;
         allExits = bestMatchExits;
         
-        if (DEBUG_CONFIG.ENABLE_STATION_INFO_LOGS) {
+        if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
             debugLog('stationInfo', '[getStationGlobalInfo] Matched station:', {
                 nameCn: foundStation.nameCn,
                 nameEn: foundStation.nameEn,
@@ -1460,8 +1483,10 @@ function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJso
         const seen = new Set();
         const lineModeMap = new Map(); // 记录每条线路首次遇到的mode
         
-        transfers.forEach(t => {
-            if (!t || t.isNearby) return; // 跳过就近换乘
+        // 使用 filter 方法提取站内换乘（非就近换乘）
+        const normalTransfers = transfers.filter(t => t && !t.isNearby);
+        
+        normalTransfers.forEach(t => {
             
             // 使用清理后的名称
             const rawName = String(t.nameRaw || t.nameAll || t.nameCn || t.nameEn || t.name || '');
@@ -1474,8 +1499,8 @@ function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJso
             // 因为同一条线路在数据中可能有不同的mode定义
             const key = `${cleanedName}::${color}`;
             
-            if (DEBUG_CONFIG.ENABLE_TRANSFER_LOGS) {
-                console.log('Transfer:', {
+            if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
+                debugLog('transfer', 'Transfer:', {
                     rawName: rawName,
                     cleanedName: cleanedName,
                     mode: mode,
@@ -1491,8 +1516,8 @@ function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJso
                 // 第一次遇到这条线路，记录它的mode
                 seen.add(key);
                 lineModeMap.set(key, { mode: mode, unifiedMode: unifiedMode });
-                if (DEBUG_CONFIG.ENABLE_TRANSFER_LOGS) {
-                    console.log(' 添加:', cleanedName, '[', unifiedMode, ']');
+                if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
+                    debugLog('transfer', ' 添加:', cleanedName, '[', unifiedMode, ']');
                 }
                 stationLines.push({
                     name: cleanedName,
@@ -1503,13 +1528,13 @@ function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJso
                 // 已经见过这条线路，检查mode是否一致
                 const firstMode = lineModeMap.get(key);
                 if (firstMode.mode !== mode) {
-                    if (DEBUG_CONFIG.ENABLE_TRANSFER_LOGS) {
+                    if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
                         console.warn(' 跳过重复（mode冲突）:', cleanedName, 
                             '首次mode:', firstMode.unifiedMode, 
                             '当前mode:', unifiedMode);
                     }
                 } else {
-                    if (DEBUG_CONFIG.ENABLE_TRANSFER_LOGS) {
+                    if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.transfer) {
                         console.warn(' 跳过重复:', cleanedName, '[', unifiedMode, ']');
                     }
                 }
@@ -1541,15 +1566,8 @@ function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJso
     // 显示站内线路
     transferHTML += renderGroup('站内线路：', stationLines);
     
-    // 处理就近换乘
-    const nearbyTransfers = [];
-    if (transfers && transfers.length > 0) {
-        transfers.forEach(t => {
-            if (t && t.isNearby) {
-                nearbyTransfers.push(t);
-            }
-        });
-    }
+    // 处理就近换乘 - 使用 filter 方法提取
+    const nearbyTransfers = (transfers || []).filter(t => t && t.isNearby);
     
     const renderNearbyGroup = (title, list) => {
         let html = `<div class="tooltip-section"><strong class="tooltip-section-title">${title}</strong>`;
@@ -1630,8 +1648,8 @@ function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJso
 
     tooltip.style.display = 'block';
     
-    if (DEBUG_CONFIG.ENABLE_STATION_INFO_LOGS) {
-        console.log('Tooltip shown for:', nameCn, 'transfers:', transfers?.length || 0, 'exits:', exits?.length || 0);
+    if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+        debugLog('stationInfo', 'Tooltip shown for:', nameCn, 'transfers:', transfers?.length || 0, 'exits:', exits?.length || 0);
     }
 }
 
@@ -2158,6 +2176,10 @@ function createStationBlock(station, index) {
     block.dataset.stationName = station.nameCn;
     block.dataset.index = index;
     
+    if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+        debugLog('stationInfo', '[createStationBlock] 创建站点色块:', station.nameCn, '线路数:', station.lines.length);
+    }
+    
     // 根据经过线路数量设置颜色深浅
     const lineCount = station.lines.length;
     const hue = (index * 137.508) % 360; // 黄金角度分布，确保颜色区分度
@@ -2187,7 +2209,12 @@ function createStationBlock(station, index) {
     block.appendChild(tooltip);
     
     // 添加点击事件
-    block.addEventListener('click', () => selectStation(station));
+    block.addEventListener('click', () => {
+        if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+            debugLog('stationInfo', '[createStationBlock] 点击事件触发:', station.nameCn);
+        }
+        selectStation(station);
+    });
     
     return block;
 }
@@ -2195,6 +2222,10 @@ function createStationBlock(station, index) {
 // 选择并显示指定站点。高亮对应的色块，在统一展示区渲染该站点的详细信息
 // @param {Object} station - 站点对象
 function selectStation(station) {
+    if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+        debugLog('stationInfo', '[selectStation] 选中站点:', station.nameCn);
+    }
+    
     // Remove active class from all blocks
     document.querySelectorAll('.station-block').forEach(block => {
         block.classList.remove('active');
@@ -2204,6 +2235,13 @@ function selectStation(station) {
     const selectedBlock = document.querySelector(`.station-block[data-station-name="${station.nameCn}"]`);
     if (selectedBlock) {
         selectedBlock.classList.add('active');
+        if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+            console.log('[selectStation] 已高亮色块');
+        }
+    } else {
+        if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+            console.warn('[selectStation] 未找到对应色块:', station.nameCn);
+        }
     }
     
     // 渲染站点详细信息
@@ -2214,7 +2252,16 @@ function selectStation(station) {
 // @param {Object} station - 站点对象
 function renderStationInfo(station) {
     const container = document.getElementById('station-tooltip');
-    if (!container) return;
+    if (!container) {
+        if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+            console.error('[renderStationInfo] 未找到 station-tooltip 容器');
+        }
+        return;
+    }
+    
+    if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+        debugLog('stationInfo', '[renderStationInfo] 开始渲染站点:', station.nameCn, '线路数:', station.lines.length);
+    }
     
     // 构建完整的线路列表用于showStationInfo
     const allLines = station.lines.map(line => ({
@@ -2255,7 +2302,16 @@ function renderStationInfo(station) {
 // @param {string} exitsData - 出口数据
 function renderStationTooltip(station, allLines, exitsData) {
     const container = document.getElementById('station-tooltip');
-    if (!container) return;
+    if (!container) {
+        if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+            console.error('[renderStationTooltip] 未找到 station-tooltip 容器');
+        }
+        return;
+    }
+    
+    if (ROUTE_DEBUG_CONFIG.enabled && ROUTE_DEBUG_CONFIG.modules.stationInfo) {
+        debugLog('stationInfo', '[renderStationTooltip] 开始渲染:', station.nameCn, '线路数:', allLines?.length || 0, '出口数:', exitsData ? JSON.parse(decodeURIComponent(exitsData)).length : 0);
+    }
     
     let exits = [];
     try {
@@ -2320,14 +2376,8 @@ function renderStationTooltip(station, allLines, exitsData) {
 
     transferHTML += renderGroup('站内线路：', stationLines);
     
-    const nearbyTransfers = [];
-    if (allLines && allLines.length > 0) {
-        allLines.forEach(t => {
-            if (t && t.isNearby) {
-                nearbyTransfers.push(t);
-            }
-        });
-    }
+    // 处理就近换乘 - 使用 filter 方法提取
+    const nearbyTransfers = (allLines || []).filter(t => t && t.isNearby);
     
     const renderNearbyGroup = (title, list) => {
         let html = `<div class="tooltip-section"><strong class="tooltip-section-title">${title}</strong>`;

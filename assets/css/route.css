@@ -129,6 +129,17 @@ body {
     height: 100%;
 }
 
+/* 二级导航中英文双行：默认隐藏英文行 */
+.secondary-nav-section .secondary-nav-item .nav-label-en {
+    display: none;
+    font-size: 11px;
+    opacity: 0.75;
+}
+
+.secondary-nav-section .secondary-nav-item .nav-label-cn {
+    display: block;
+}
+
 /* 子选项区域 */
 .sub-nav-section {
     flex: 1;
@@ -309,9 +320,8 @@ body {
     color: #ffffff;
 }
 
-/* 响应式：小屏幕下调整二级导航样式 */
+/* 响应式：小屏幕下调整导航样式 */
 @media (max-width: 768px) {
-    .secondary-nav-item,
     .category-tab,
     .map-nav-item {
         padding: 12px 16px;
@@ -353,28 +363,148 @@ body {
     
     .secondary-nav-section .secondary-nav {
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
     }
     
     .secondary-nav-section .secondary-nav-item {
-        flex: 1 1 auto;
-        min-width: 120px;
+        flex: 1 1 0;
+        min-width: 0;
         text-align: center;
         justify-content: center;
+        align-items: center;
         border-bottom: none;
         border-right: 1px solid #e0e0e0;
+        padding: 12px 6px;
+        font-size: 14px;
+        /* 移动端显示英文小字 */
+        flex-direction: column;
+    }
+    
+    .secondary-nav-section .secondary-nav-item .nav-label-cn {
+        font-size: 14px;
+        line-height: 1.3;
+    }
+    
+    .secondary-nav-section .secondary-nav-item .nav-label-en {
+        display: block;
+        font-size: 10px;
+        line-height: 1.2;
+        margin-top: 2px;
     }
     
     .secondary-nav-section .secondary-nav-item:last-child {
         border-right: none;
     }
     
+    /* 移动端二级导航 active 状态 */
+    .secondary-nav-section .secondary-nav-item.active {
+        background: #e60012 !important;
+        color: #ffffff !important;
+    }
+    .secondary-nav-section .secondary-nav-item.active .nav-label-cn,
+    .secondary-nav-section .secondary-nav-item.active .nav-label-en {
+        color: #ffffff !important;
+    }
+    
+    /* 移动端乘车导航改为蓝色（与地图说明一致） */
+    .secondary-nav-section .secondary-nav-item.external-link {
+        background: #003366;
+        color: #ffffff;
+        border-right: none;
+    }
+    .secondary-nav-section .secondary-nav-item.external-link .nav-label-cn,
+    .secondary-nav-section .secondary-nav-item.external-link .nav-label-en {
+        color: #ffffff !important;
+    }
+    .secondary-nav-section .secondary-nav-item.external-link:hover {
+        background: #004080;
+        color: #ffffff;
+    }
+    
     .sub-nav-section {
-        max-height: 300px;
+        max-height: none;
+        padding: 0;
+    }
+
+    /* 移动端子导航：横向滚动 */
+    .sub-nav-content .category-tabs,
+    .sub-nav-content .map-nav {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .sub-nav-content .category-tabs::-webkit-scrollbar,
+    .sub-nav-content .map-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sub-nav-content .category-tab,
+    .sub-nav-content .map-nav-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        min-width: auto;
+        flex-shrink: 0;
+        padding: 8px 14px;
+        background: #f0f0f0;
+        color: #333;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+        border-radius: 0;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.4;
+        word-break: keep-all;
+        white-space: nowrap;
+    }
+
+    .sub-nav-content .category-tab:hover,
+    .sub-nav-content .map-nav-item:hover {
+        background: #e8e8e8;
+        color: #c00000;
+        padding-left: 14px;
+    }
+
+    .sub-nav-content .category-tab.active,
+    .sub-nav-content .map-nav-item.active {
+        background: #c00000;
+        color: #ffffff !important;
+        border-color: #c00000;
+        font-weight: 600 !important;
+    }
+
+    /* 地图说明：sticky 固定右侧，不参与滚动 */
+    .sub-nav-content .map-nav-item.info-style {
+        background: #003366;
+        color: #ffffff;
+        border-color: #003366;
+        position: sticky;
+        right: 0;
+        z-index: 1;
+        flex-shrink: 0;
+        margin-left: 8px;
+    }
+
+    .sub-nav-content .map-nav-item.info-style:hover {
+        background: #004080;
+        color: #ffffff;
+        border-color: #004080;
+        padding-left: 14px;
+    }
+
+    .sub-nav-content .map-nav-item.info-style.active {
+        background: #003366;
+        color: #ffffff;
+        border-color: #003366;
     }
     
     .right-content {
         min-height: calc(100vh - var(--header-height) - 200px);
+        overflow: visible;
     }
 }
 /*线路色块容器样式*/
@@ -422,8 +552,9 @@ body {
 }
 
 
-.line-block {
-    min-width: 52px;
+/* 线路/站点色块公共样式 */
+.line-block,
+.station-block {
     height: 52px;
     border-radius: 10px;
     cursor: pointer;
@@ -438,8 +569,11 @@ body {
     padding: 4px 14px;
     width: auto;
 }
+.line-block { min-width: 52px; }
+.station-block { min-width: 64px; }
 
-.line-block-label {
+.line-block-label,
+.station-block-label {
     color: white;
     font-size: 13px;
     font-weight: 700;
@@ -450,21 +584,37 @@ body {
     letter-spacing: 0.3px;
 }
 
-.line-block:hover {
+.line-block:hover,
+.station-block:hover {
     transform: translateY(-4px) scale(1.08);
     box-shadow: 0 18px 40px #251C1040;
     border-color: #FFFFFFDD;
 }
 
-.line-block.active {
+.line-block.active,
+.station-block.active {
     transform: scale(1.12);
     border-color: white;
     box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
     z-index: 5;
 }
+.station-block.active {
+    animation: stationPulse 2.5s ease-in-out infinite;
+}
 
-/* 选中的线路色块增加对勾标识 */
-.line-block.active::after {
+/* 选中态脉冲动画 */
+@keyframes stationPulse {
+    0%, 100% { 
+        box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
+    }
+    50% { 
+        box-shadow: 0 24px 50px #251C1070, 0 0 0 6px rgba(255,255,255,0.2);
+    }
+}
+
+/* 选中的色块增加对勾标识 */
+.line-block.active::after,
+.station-block.active::after {
     content: '✓';
     position: absolute;
     top: -8px;
@@ -484,12 +634,8 @@ body {
     z-index: 10;
 }
 
-/* 线路色块tooltip - 已禁用悬停显示 */
-.line-block-tooltip {
-    display: none !important;
-}
-
-/* 站点色块tooltip - 已禁用悬停显示 */
+/* 色块tooltip - 已禁用悬停显示 */
+.line-block-tooltip,
 .station-block-tooltip {
     display: none !important;
 }
@@ -669,7 +815,199 @@ body {
 }
 
 @media (max-width: 768px) {
-    .station-item { padding: 10px 16px; }
+    /* 移动端站点列表：竖向布局
+       左侧：线+站点圆点  中间：站名  右侧：换乘徽章
+       --line-x: 竖线中心点的 x 坐标，靠左放置 */
+    .station-list {
+        flex-direction: column !important;
+        padding: 0 !important;
+        overflow-x: visible;
+        overflow-y: visible;
+        min-height: auto;
+        align-items: stretch;
+        --line-x: 24px;
+    }
+
+    .station-item {
+        display: grid !important;
+        grid-template-columns: calc(var(--line-x) + 20px) 1fr;
+        align-items: start;
+        min-width: 0 !important;
+        width: 100%;
+        padding: 10px 16px 10px calc(var(--line-x) + 20px) !important;
+        border-bottom: 1px solid #f0f0f0;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    /* 隐藏桌面端水平连接线 */
+    .station-item::before {
+        display: none !important;
+    }
+
+    /* 竖向连接线：以 --line-x 为中心 */
+    .station-item::after {
+        content: '';
+        position: absolute;
+        left: calc(var(--line-x) - 2px);
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--route-color, #1a1a1a);
+        z-index: 0;
+    }
+    .station-item:first-child::after {
+        top: 50%;
+    }
+    .station-item:last-child::after {
+        bottom: 50%;
+    }
+    .station-item:only-child::after {
+        display: none;
+    }
+
+    /* 站点圆点 & 换乘圆点：统一以 --line-x 为中心 */
+    .station-dot {
+        position: absolute !important;
+        left: var(--line-x) !important;
+        top: 50%;
+        transform: translate(-50%, -50%) !important;
+        z-index: 2;
+        flex-shrink: 0;
+        margin-top: 0 !important;
+        transition: transform 0.15s;
+    }
+    .station-item:hover .station-dot,
+    .station-item:active .station-dot {
+        transform: translate(-50%, -50%) scale(1.2) !important;
+    }
+    .station-dot.transfer {
+        margin-top: 0;
+    }
+
+    /* 换乘徽章：站名下方，与站名左对齐 */
+    .transfer-badges-container {
+        position: static !important;
+        transform: none !important;
+        width: auto !important;
+        max-width: none;
+        margin: 4px 0 0 0 !important;
+        grid-column: 2;
+    }
+    .transfer-badges {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        gap: 4px 8px;
+        align-items: center;
+    }
+    .transfer-link-item {
+        display: inline-flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        white-space: nowrap;
+        margin-top: 0;
+    }
+    .transfer-link-text {
+        font-size: 12px;
+        max-width: 110px;
+    }
+    .transfer-link-item.nearby-item .transfer-link-text {
+        font-size: 11px;
+    }
+
+    /* 站点信息：中间列 */
+    .station-info {
+        position: static !important;
+        transform: none !important;
+        width: auto !important;
+        text-align: left !important;
+        white-space: normal !important;
+        margin: 0;
+        padding: 0;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: baseline;
+        gap: 8px;
+        grid-column: 2;
+    }
+    .station-name {
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+    .station-name-en {
+        font-size: 12px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* 连接线不需要在竖向模式使用 */
+    .station-main-line {
+        display: none !important;
+    }
+    /* 移动端手风琴适配 */
+    .branch-label {
+        padding: 10px 12px;
+        font-size: 14px;
+        background: #f5f5f5;
+        border-radius: 4px;
+        margin: 4px 8px;
+    }
+}
+
+/* ========== 手风琴：多分支折叠 ========== */
+.branch-container {
+    border-bottom: 1px solid rgba(22, 32, 51, 0.08);
+}
+.branch-container:last-child {
+    border-bottom: none;
+}
+
+/* 手风琴头部 */
+.branch-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    user-select: none;
+    background: var(--paper-bg);
+    transition: background 0.2s ease;
+    position: relative;
+}
+.branch-label:hover {
+    background: rgba(22, 32, 51, 0.04);
+}
+.branch-label::after {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid var(--ink-soft);
+    border-bottom: 2px solid var(--ink-soft);
+    transform: rotate(45deg);
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+/* 折叠状态：隐藏站点列表和方向选择器 */
+.branch-container.collapsed .station-list,
+.branch-container.collapsed .direction-selector {
+    display: none !important;
+}
+.branch-container.collapsed .branch-label::after {
+    transform: rotate(-45deg);
+}
+
+/* 折叠时的站点数量提示 */
+.branch-label .branch-station-count {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    margin-left: 6px;
 }
 
 .station-item::before {
@@ -1313,82 +1651,6 @@ body.route-map-active .main-footer {
     background: #0000004D;
 }
 
-/* 站点色块 */
-.station-block {
-    min-width: 64px;
-    height: 52px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 3px solid transparent;
-    box-shadow: var(--shadow-md);
-    position: relative;
-    overflow: visible;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 14px;
-    width: auto;
-}
-
-.station-block-label {
-    color: white;
-    font-size: 13px;
-    font-weight: 700;
-    text-align: center;
-    white-space: nowrap;
-    text-shadow: 0 1px 3px #00000066;
-    z-index: 1;
-    letter-spacing: 0.3px;
-}
-
-.station-block:hover {
-    transform: translateY(-4px) scale(1.08);
-    box-shadow: 0 18px 40px #251C1040;
-    border-color: #FFFFFFDD;
-}
-
-.station-block.active {
-    transform: scale(1.12);
-    border-color: white;
-    box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
-    z-index: 5;
-    animation: stationPulse 2.5s ease-in-out infinite;
-}
-
-/* 选中态脉冲动画 */
-@keyframes stationPulse {
-    0%, 100% { 
-        box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
-    }
-    50% { 
-        box-shadow: 0 24px 50px #251C1070, 0 0 0 6px rgba(255,255,255,0.2);
-    }
-}
-
-/* 选中的站点色块增加对勾标识 */
-.station-block.active::after {
-    content: '✓';
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 22px;
-    height: 22px;
-    background: #ffffff;
-    color: #162033;
-    border-radius: 50%;
-    font-size: 13px;
-    font-weight: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-    border: 2px solid rgba(255,255,255,0.9);
-    z-index: 10;
-}
-
-
-
 /* 站点信息显示容器 */
 .station-info-container {
     width: 100%;
@@ -1588,20 +1850,6 @@ body.route-map-active .main-footer {
     min-height: 200px;
     width: 100%;
     gap: 16px;
-}
-
-.loading-spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid #e0e0e0;
-    border-top: 4px solid #c00000;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }
 
 .loading-text {

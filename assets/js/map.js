@@ -61,13 +61,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 动态调整地图容器位置（已废弃，现在使用CSS直接定位）
-// 此函数保留以便向后兼容，但不再执行任何操作
-function adjustMapContainerPosition() {
-    // 不再需要动态计算位置，CSS已直接设置
-    return;
-}
-
 // 将 linemap 初始化逻辑封装为函数
 function initLinemap() {
     // 不再需要调用adjustMapContainerPosition，CSS已直接定位
@@ -90,9 +83,13 @@ function initLinemap() {
     let scale = 1; // 缩放比例
     let posX = 0;  // 图片X偏移
     let posY = 0;  // 图片Y偏移
-    let isDragging = false; // 是否拖拽中
+    let isDragging = false; // 是否拖拽中（鼠标）
     let startX, startY; // 拖拽起始坐标
     let startPosX, startPosY; // 拖拽起始偏移
+
+    // 触摸状态变量（移动端适配）
+    let touchStartX, touchStartY;       // 触摸起始坐标
+    let touchStartPosX, touchStartPosY; // 触摸起始偏移
 
     // 缩放限制：增大最大放大倍数，允许更小最小值
     const MIN_SCALE = 0.3;
@@ -211,6 +208,35 @@ function initLinemap() {
     // 鼠标松开：结束拖拽
     window.addEventListener('mouseup', function() {
         isDragging = false;
+    });
+
+// ========== 触摸拖拽（移动端适配） ==========
+    mapContainer.addEventListener('touchstart', function(e) {
+        if (e.target.closest('button, a, input, select, textarea, .control-btn, .info-btn, .map-select')) return;
+        if (e.touches.length !== 1) return;
+
+        isDragging = true;
+        const rect = mapContainer.getBoundingClientRect();
+        touchStartX = e.touches[0].clientX - rect.left;
+        touchStartY = e.touches[0].clientY - rect.top;
+        touchStartPosX = posX;
+        touchStartPosY = posY;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', function(e) {
+        if (!isDragging || e.touches.length !== 1) return;
+        const rect = mapContainer.getBoundingClientRect();
+        const currentX = e.touches[0].clientX - rect.left;
+        const currentY = e.touches[0].clientY - rect.top;
+        posX = touchStartPosX + (currentX - touchStartX);
+        posY = touchStartPosY + (currentY - touchStartY);
+        updateMapTransform();
+    }, { passive: true });
+
+    window.addEventListener('touchend', function(e) {
+        if (e.touches.length === 0) {
+            isDragging = false;
+        }
     });
 
 // ========== 图片缩放功能（滚轮+按钮） ==========
@@ -483,5 +509,5 @@ function initLinemap() {
             }
         }
     });
-    console.log('线网示意页面脚本加载完成');
+    debugLog('data', '线网示意页面脚本加载完成');
 }

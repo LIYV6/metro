@@ -23,9 +23,9 @@
             display: none !important;
         }
     </style>
-    <script src="../assets/js/libs/sql-wasm.js"></script>
+
 </head>
-<body>
+<body class="is-loading">
 <!-- 页顶部 -->
     <div data-include="header"></div>
 
@@ -35,10 +35,10 @@
         <aside class="left-sidebar">
             <div class="secondary-nav-section">
                 <div class="category-tabs secondary-nav">
-                    <button class="category-tab secondary-nav-item active" data-tab="line-info">线路信息Info</button>
-                    <button class="category-tab secondary-nav-item" data-tab="route-map">线路图Map</button>
-                    <button class="category-tab secondary-nav-item" data-tab="station-info">车站信息Stations</button>
-                    <button class="category-tab secondary-nav-item external-link"><a href="https://routeguide.liyv.me" target="_blank">乘车导航Navigate ↗</a></button>
+                    <button class="category-tab secondary-nav-item active" data-tab="line-info"><span class="nav-label-cn">线路信息</span><span class="nav-label-en">Info</span></button>
+                    <button class="category-tab secondary-nav-item" data-tab="route-map"><span class="nav-label-cn">线路图</span><span class="nav-label-en">Map</span></button>
+                    <button class="category-tab secondary-nav-item" data-tab="station-info"><span class="nav-label-cn">车站信息</span><span class="nav-label-en">Stations</span></button>
+                    <button class="category-tab secondary-nav-item external-link"><a href="https://routeguide.liyv.me" target="_blank"><span class="nav-label-cn">乘车导航</span><span class="nav-label-en">Navigate ↗</span></a></button>
                 </div>
             </div>
             <div class="sub-nav-section">
@@ -156,47 +156,9 @@
         <div data-include="footer" id="site-footer"></div>
 <!-- 引入外部交互脚本，统一管理逻辑 -->
     <script src="../assets/js/include-fragments.js"></script>
-    <script>
-        // 动态调整 body 的 padding-top，确保内容不被固定导航遮挡
-        // 此脚本在 header 加载完成后执行，直接获取实际高度
-        (function() {
-            function adjustBodyPadding() {
-                var header = document.querySelector('.site-header');
-                if (header) {
-                    var headerHeight = header.getBoundingClientRect().height;
-                    document.body.style.paddingTop = headerHeight + 'px';
-                }
-            }
-            
-            // 立即执行一次
-            adjustBodyPadding();
-            
-            // 监听窗口大小变化
-            window.addEventListener('resize', function() {
-                clearTimeout(window.__resizeTimer);
-                window.__resizeTimer = setTimeout(adjustBodyPadding, 100);
-            });
-            
-            // 监听 DOM 变化（等待 fragments 加载完成）
-            if (window.MutationObserver) {
-                var observer = new MutationObserver(function() {
-                    var header = document.querySelector('.site-header');
-                    if (header && header.offsetHeight > 0) {
-                        adjustBodyPadding();
-                        observer.disconnect();
-                    }
-                });
-                observer.observe(document.body, { childList: true, subtree: true });
-                
-                // 5秒后停止监听，避免无限等待
-                setTimeout(function() {
-                    observer.disconnect();
-                }, 5000);
-            }
-        })();
-    </script>
+
+    <script src="../assets/js/libs/sql-wasm.js"></script>
     <script src="../assets/js/route.js"></script>
     <script src="../assets/js/map.js"></script>
-
 </body>
 </html>

@@ -249,10 +249,7 @@ function initScrollReveal() {
     animatedElements.forEach(el => observer.observe(el));
 }
 
-// ================================================
 // ==================== 初始化入口 ===================
-// ================================================
-
 document.addEventListener('DOMContentLoaded', () => {
     debugLog('stats', 'DOM 加载完成，初始化模块...');
     

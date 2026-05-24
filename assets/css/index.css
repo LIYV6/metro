@@ -134,8 +134,8 @@
     justify-content: center;
 }
 .hero-title {
-    color: var(--white-color);
-    font-size: calc(var(--hero-title-size) * 2);
+    color: var(--text-on-dark);
+    font-size: calc(var(--hero-banner-title-size) * 2);
     font-weight: 800;
     text-align: center;
     /* 去掉文字阴影，保持清爽 */
@@ -186,8 +186,8 @@
     /* Hero banner 的基础布局与 banner-img 已移入 part.css。
         本文件保留页面特定的 hero-title / hero-inner 等微调规则。 */
     right: 40px;
-    bottom: calc(var(--function-height) + 30px);
-    color: var(--white-color);
+    bottom: calc(var(--function-bar-height) + 30px);
+    color: var(--text-on-dark);
     font-size: 14px;
     background: #0000004D;
     padding: 6px 12px;

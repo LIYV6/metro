@@ -1,6 +1,3 @@
-/* include-fragments.js重构目标：配置驱动、模块化、可扩展并改进错误处理与加载性能。
-   行为说明：在 DOMContentLoaded 时（或之后）查找占位符并注入片段，
-   默认保留与原实现兼容的占位符与候选路径。可通过传入配置自定义路径、选择器、缓存策略、去重规则和错误回调。*/
 
 // ==================== 统一调试配置 ====================
 const FRAGMENTS_DEBUG_CONFIG = {
@@ -182,11 +179,71 @@ function debugLog(module, ...args) {
         } catch (e) { /* ignore overall link-fix errors */ }
     }
 
-    // 管理 loading class
-    function setLoadingState(isLoading) {
-        try {
-            document.documentElement.classList.toggle('fragments-loading', !!isLoading);
-        } catch (e) {}
+    // 管理 loading state（已统一由 page-loading-overlay 处理）
+    
+    // ⭐ 新增：创建和移除页面loading遮罩
+    let _loadingSlowTimer = null;
+    let _loadingVerySlowTimer = null;
+
+    function createPageLoadingOverlay() {
+        // 如果已经存在，直接返回
+        if (document.querySelector('.page-loading-overlay')) return;
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'page-loading-overlay';
+        overlay.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">加载中...</div>';
+        document.body.appendChild(overlay);
+        
+        // 添加body的loading类，隐藏main内容
+        document.body.classList.add('is-loading');
+        
+        // 超过5秒提示加载缓慢
+        _loadingSlowTimer = setTimeout(function() {
+            const textEl = document.querySelector('.page-loading-overlay .loading-text');
+            if (textEl) textEl.textContent = '加载缓慢，请耐心等待';
+        }, 5000);
+
+        // 超过15秒提示尝试刷新
+        _loadingVerySlowTimer = setTimeout(function() {
+            const textEl = document.querySelector('.page-loading-overlay .loading-text');
+            if (textEl) textEl.textContent = '加载超时，请尝试刷新页面或换用更好的网络重试';
+        }, 15000);
+        
+        // ⭐ 尝试设置 padding-top（如果 header 已加载）
+        setBodyPaddingTop();
+    }
+    
+    // ⭐ 新增：设置 body 的 padding-top
+    function setBodyPaddingTop() {
+        const header = document.querySelector('.site-header');
+        if (header) {
+            // 强制重排确保获取到正确的高度
+            void header.offsetHeight;
+            const headerHeight = header.getBoundingClientRect().height;
+            if (headerHeight > 0) {
+                document.body.style.paddingTop = headerHeight + 'px';
+                debugLog('fragments', '设置 padding-top:', headerHeight + 'px');
+            }
+        }
+    }
+    
+    function removePageLoadingOverlay() {
+        clearTimeout(_loadingSlowTimer);
+        clearTimeout(_loadingVerySlowTimer);
+
+        const overlay = document.querySelector('.page-loading-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+            // 等待动画完成后移除元素
+            setTimeout(function() {
+                if (overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+            }, 300);
+        }
+        
+        // 移除body的loading类，显示main内容
+        document.body.classList.remove('is-loading');
     }
 
     // ⭐ 新增：导航链接自动高亮功能
@@ -242,7 +299,9 @@ function debugLog(module, ...args) {
         async load() {
             if (this._loadedPromise) return this._loadedPromise;
             const cfg = this.config;
-            setLoadingState(true);
+            
+            // ⭐ 创建页面loading遮罩
+            createPageLoadingOverlay();
 
             this._loadedPromise = (async () => {
                 const tasks = [];
@@ -275,14 +334,19 @@ function debugLog(module, ...args) {
 
                     // ⭐ 新增：导航链接自动高亮
                     try { highlightActiveNav(); } catch (e) { cfg.onError && cfg.onError(e, { step: 'highlightNav' }); }
+                    
+                    // ⭐ header/footer 加载完成后，重新设置 padding-top
+                    setBodyPaddingTop();
 
                     // 等待一帧以便样式重算（单层 rAF 即可）
                     await new Promise(r => requestAnimationFrame(r));
 
-                    setLoadingState(false);
+                    // ⭐ 注意：不在这里移除loading遮罩，等待window.load事件
+                    // 这样可以确保loader.js等异步内容也加载完成
                     return true;
                 } catch (err) {
-                    setLoadingState(false);
+                    // 出错时也要移除loading遮罩，避免一直转圈
+                    removePageLoadingOverlay();
                     cfg.onError && cfg.onError(err, { step: 'overall' });
                     throw err;
                 }
@@ -308,6 +372,30 @@ function debugLog(module, ...args) {
                 // 不暴露全局时仍然自动加载但不写入全局变量
                 defaultLoader.load().catch(() => {});
             }
+            
+            // ⭐ 监听窗口大小变化，动态调整padding-top
+            window.addEventListener('resize', function() {
+                clearTimeout(window.__resizeTimer);
+                window.__resizeTimer = setTimeout(function() {
+                    setBodyPaddingTop();
+                }, 100);
+            });
+            
+            // ⭐ 等待所有资源加载完成后才隐藏loading遮罩
+            // 这样可以确保loader.js等异步内容也加载完成
+            if (document.readyState === 'complete') {
+                // 如果已经加载完成，延迟一点再隐藏（给其他脚本执行时间）
+                setTimeout(function() {
+                    removePageLoadingOverlay();
+                }, 300);
+            } else {
+                // 否则等待window.load事件
+                window.addEventListener('load', function() {
+                    setTimeout(function() {
+                        removePageLoadingOverlay();
+                    }, 300);
+                });
+            }
         } catch (e) { debugLog('fragments', '错误:', e); }
     }
 
@@ -323,6 +411,162 @@ function debugLog(module, ...args) {
         // 未来可扩展其他生命周期选项
         bootDefault();
     }
+
+    // ========== 移动端汉堡菜单（从 mobile-menu.js 合并） ==========
+    let _menuOpen = false;
+    let _menuPanel = null;
+    let _menuOverlay = null;
+    let _menuToggleBtn = null;
+
+    function createMobileMenu() {
+        _menuOverlay = document.createElement('div');
+        _menuOverlay.className = 'mobile-nav-overlay';
+        _menuOverlay.setAttribute('aria-hidden', 'true');
+
+        _menuPanel = document.createElement('nav');
+        _menuPanel.className = 'mobile-nav-panel';
+        _menuPanel.setAttribute('aria-hidden', 'true');
+
+        const ul = document.createElement('ul');
+        ul.className = 'mobile-nav-list';
+        _menuPanel.appendChild(ul);
+
+        document.body.appendChild(_menuOverlay);
+        document.body.appendChild(_menuPanel);
+
+        return { panel: _menuPanel, overlay: _menuOverlay, list: ul };
+    }
+
+    function populateMobileMenu(ul) {
+        setTimeout(function() {
+            const navLinks = document.querySelectorAll('.main-nav .nav-list a');
+            if (!navLinks || navLinks.length === 0) return;
+
+            for (let i = 0; i < navLinks.length; i++) {
+                const link = navLinks[i];
+                const li = document.createElement('li');
+                li.className = 'mobile-nav-item';
+
+                const a = document.createElement('a');
+                a.href = link.href;
+                a.innerHTML = link.innerHTML;
+                a.className = link.className || '';
+
+                a.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const targetUrl = this.href;
+                    closeMobileMenu();
+                    setTimeout(function() { window.location.href = targetUrl; }, 150);
+                }, false);
+
+                li.appendChild(a);
+                ul.appendChild(li);
+            }
+        }, 100);
+    }
+
+    function openMobileMenu() {
+        if (_menuOpen) return;
+        _menuOpen = true;
+
+        _menuPanel.classList.add('active');
+        _menuPanel.setAttribute('aria-hidden', 'false');
+        _menuOverlay.classList.add('active');
+        _menuOverlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        if (_menuToggleBtn) {
+            _menuToggleBtn.querySelector('span').textContent = '✕';
+            _menuToggleBtn.setAttribute('aria-expanded', 'true');
+            _menuToggleBtn.setAttribute('aria-label', '关闭导航菜单');
+        }
+    }
+
+    function closeMobileMenu() {
+        if (!_menuOpen) return;
+        _menuOpen = false;
+
+        if (_menuToggleBtn) {
+            _menuToggleBtn.querySelector('span').textContent = '≡';
+            _menuToggleBtn.setAttribute('aria-expanded', 'false');
+            _menuToggleBtn.setAttribute('aria-label', '打开导航菜单');
+        }
+
+        _menuPanel.classList.remove('active');
+        _menuPanel.setAttribute('aria-hidden', 'true');
+        _menuOverlay.classList.remove('active');
+        _menuOverlay.setAttribute('aria-hidden', 'true');
+
+        void _menuPanel.offsetHeight;
+        _menuPanel.classList.add('closing');
+
+        const onAnimEnd = function() {
+            _menuPanel.classList.remove('closing');
+            _menuPanel.removeEventListener('animationend', onAnimEnd);
+            document.body.style.overflow = '';
+        };
+        _menuPanel.addEventListener('animationend', onAnimEnd);
+
+        setTimeout(function() {
+            document.body.style.overflow = '';
+            _menuPanel.classList.remove('closing');
+        }, 600);
+    }
+
+    function toggleMobileMenu() {
+        if (_menuOpen) { closeMobileMenu(); } else { openMobileMenu(); }
+    }
+
+    function initMobileMenu() {
+        try {
+            const menu = createMobileMenu();
+            _menuPanel = menu.panel;
+            _menuOverlay = menu.overlay;
+            populateMobileMenu(menu.list);
+
+            // 等待 header 加载后绑定按钮
+            let retryCount = 0;
+            const maxRetries = 10;
+            function tryBind() {
+                _menuToggleBtn = document.querySelector('.nav-toggle');
+                if (_menuToggleBtn) {
+                    _menuToggleBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleMobileMenu();
+                    }, false);
+                    // 确保菜单项已填充
+                    const ul = _menuPanel.querySelector('.mobile-nav-list');
+                    if (ul && ul.children.length === 0) populateMobileMenu(ul);
+                } else if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(tryBind, 200);
+                }
+            }
+            tryBind();
+
+            _menuOverlay.addEventListener('click', function(e) { e.preventDefault(); closeMobileMenu(); }, false);
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeMobileMenu();
+            }, false);
+            document.addEventListener('click', function(e) {
+                if (!_menuOpen || !e.target) return;
+                if (_menuPanel.contains(e.target) || (_menuToggleBtn && _menuToggleBtn.contains(e.target))) return;
+                closeMobileMenu();
+            }, false);
+        } catch (e) { debugLog('fragments', '移动端菜单初始化失败:', e); }
+    }
+
+    // DOM 就绪后初始化移动端菜单
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileMenu, { once: true });
+    } else {
+        initMobileMenu();
+    }
+
+    // 暴露接口
+    window.__MOBILE_MENU = { open: openMobileMenu, close: closeMobileMenu, toggle: toggleMobileMenu };
 
     // 可选：将 FragmentLoader 类暴露在 window 下（仅当配置要求时）
     // 注意：此处不默认暴露以避免污染全局命名空间。

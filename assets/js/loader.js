@@ -1,7 +1,4 @@
 // loader.js 全功能+动态自动刷新+JSON5支持版
-// assets/js/loader.js
-//新增：将模板移到JS内部，支持反引号多行字符串
-
 // ========== 调试配置 ==========
 const LOADER_DEBUG_CONFIG = {
     ENABLE_LOADER_LOGS: false,        // 是否开启 loader 模块日志
@@ -211,7 +208,7 @@ class MultiPageLoader {
             title: this.escapeHtml(renderData.title || ''),
             date: this.escapeHtml(renderData.date || ''),
             author: this.escapeHtml(renderData.author || ''),
-            content: renderData.content || ''  // ✅ 正文不转义！
+            content: renderData.content || ''  // 空内容由 CSS .card-body:empty 处理布局
         };
 
         // 图片占位符处理

@@ -11,7 +11,6 @@
     <meta property="og:title" content="鲤鱼铁路 - 官方网站">
     <meta property="og:description" content="鲤鱼铁路官方网站，提供全交通线路信息、经典车站查询及乘客服务指南。">
     <meta property="og:type" content="website">
-    <meta name="msvalidate.01" content="10395D6BB88106AF4E26B3D292621EED" />
     <title>鲤鱼铁路 - 官方网站</title>
 <!--引入外部样式文件，统一管理页面样式-->
     <link rel="stylesheet" href="assets/css/base.css">
@@ -19,7 +18,7 @@
     <link rel="stylesheet" href="assets/css/index.css">
     <script src="assets/js/libs/sql-wasm.js"></script>
 </head>
-<body>
+<body class="is-loading">
 <!--header 由 fragments 注入-->
     <div data-include="header"></div>
 
@@ -269,7 +268,7 @@
                 <span class="qa-subtitle">Quick Navigation</span>
             </div>
             <div class="second-grid">
-                <a href="views/info.html" class="qa-card animate-on-scroll" style="--card-color: var(--secondary-color);">
+                <a href="views/info.html" class="qa-card animate-on-scroll" style="--card-color: var(--nav-bg-color);">
                     <div class="qa-icon-circle">
                         <span class="qa-icon">📋</span>
                     </div>
@@ -280,7 +279,7 @@
                     </div>
                 </a>
 
-                <a href="views/route.html" class="qa-card animate-on-scroll" style="--card-color: var(--secondary-color);">
+                <a href="views/route.html" class="qa-card animate-on-scroll" style="--card-color: var(--nav-bg-color);">
                     <div class="qa-icon-circle">
                         <span class="qa-icon">🗺️</span>
                     </div>
@@ -291,7 +290,7 @@
                     </div>
                 </a>
 
-                <a href="views/server.html" class="qa-card animate-on-scroll" style="--card-color: var(--secondary-color);">
+                <a href="views/server.html" class="qa-card animate-on-scroll" style="--card-color: var(--nav-bg-color);">
                     <div class="qa-icon-circle">
                         <span class="qa-icon">🎫</span>
                     </div>
@@ -302,7 +301,7 @@
                     </div>
                 </a>
 
-                <a href="views/moreinfo.html" class="qa-card animate-on-scroll" style="--card-color: var(--secondary-color);">
+                <a href="views/moreinfo.html" class="qa-card animate-on-scroll" style="--card-color: var(--nav-bg-color);">
                     <div class="qa-icon-circle">
                         <span class="qa-icon">ℹ️</span>
                     </div>
@@ -322,6 +321,7 @@
         <div data-include="footer"></div>
 
     <script src="assets/js/include-fragments.js"></script>
+    
     <script src="assets/js/stats.js"></script>
 </body>
 </html>

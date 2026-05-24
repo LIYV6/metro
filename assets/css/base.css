@@ -2,30 +2,30 @@
 
 /* 根变量：全局主题配置 */
 :root {
-    /*红色 */
-    --primary-color: #e60012;
-    /*功能区背景主色：深蓝色 */
-    --secondary-color: #003366;
-    /*辅助色白色文字/图标*/
-    --white-color: #ffffff;
-    /*页脚导航白色文字（MTR主题）*/
-    --mtr-text-white: #540a5e;
-    /*正文默认色：深灰色*/
-    --text-color: #333333;
-    /*导航hover高亮色*/
-    --nav-hover-color: #ffcc00;
-    /*全局字体字体策略：英文字母/数字优先使用 Arial，其次 Times New Roman；中文优先使用黑体，其次微软雅黑 */
-    --font-family: "Arial", "Times New Roman", "SimHei", "Microsoft YaHei", sans-serif;
-    /*头部固定高度，方便布局计算*/
+    /* 导航栏背景色（深蓝色）*/
+    --nav-bg-color: #003366;
+    /* 深色背景上的白色文字/图标 */
+    --text-on-dark: #ffffff;
+    /* MTR 主题强调色（紫色）*/
+    --mtr-accent-purple: #540a5e;
+    /* 正文默认色：深灰色 */
+    --body-text-color: #333333;
+    /* 品牌红色（用于按钮、强调等）*/
+    --brand-red: #e60012;
+    /* 全局字体策略：英文字母/数字优先使用 Arial，其次 Times New Roman；中文优先使用黑体，其次微软雅黑 */
+    --body-font: "Arial", "Times New Roman", "SimHei", "Microsoft YaHei", sans-serif;
+    /* 头部固定高度，方便布局计算 */
     --header-height: 64px;
-    /* 页面文章/声明/新闻正文字体*/
-    --article-font: "KaiTi", "STKaiti",sans-serif;
-    /* 标题尺寸（h1）全局变量：统一页面主标题样式 */
-    --h1-size: 2rem;
-    /*功能区固定高度*/
-    --function-height: 120px;
-    /*首页英雄区大字（可直接修改）*/
-    --hero-title-size: 40px;
+    /* 页面文章/声明/新闻正文字体 */
+    --article-text-font: "KaiTi", "STKaiti", sans-serif;
+    /* h1 标题尺寸：统一页面主标题样式 */
+    --heading-h1-size: 2rem;
+    /* 功能区固定高度 */
+    --function-bar-height: 120px;
+    /* 首页英雄区大字尺寸（可直接修改）*/
+    --hero-banner-title-size: 40px;
+    /* 导航高亮色（黄色，暂未使用）*/
+    --nav-highlight-color: #ffcc00;
 }
 
 /* 全局样式重置 */
@@ -36,7 +36,7 @@
 }
 
 /* 主标题（h1）全局样式，.page-title 使用该尺寸以保证与 h1 等价 */
-h1 { font-size: var(--h1-size); }
+h1 { font-size: var(--heading-h1-size); }
 
 html, body {height: 100%;}
 
@@ -51,10 +51,10 @@ body {
     background-color: #f5f5f5;
     flex-direction: column;
     min-height: 100vh;
-    font-family: var(--font-family), sans-serif;
-    color: var(--text-color);
+    font-family: var(--body-font), sans-serif;
+    color: var(--body-text-color);
     overflow-x: hidden;
-    padding-top: max(var(--header-height), calc(var(--nav-rows, 1) * var(--nav-row-height, 64px)));
+    /* padding-top 由 JavaScript 动态设置，确保与 header 实际高度一致 */
 }
 
 /* 列表重置 */
@@ -95,4 +95,59 @@ input {
     font-family: inherit;
     outline: none;
     border: none;
+}
+
+/* ========== 页面加载动画 ==========
+ * 加载时：header和footer显示，main区域显示loading动画
+ * 加载完成后：移除loading类，显示实际内容
+ */
+
+/* Loading遮罩层 */
+.page-loading-overlay {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f5f5f5;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.page-loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.page-loading-overlay .loading-text {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #999;
+}
+
+/* Loading旋转动画（全站通用） */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #c00000;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 加载时隐藏main内容 */
+body.is-loading main {
+    opacity: 0;
+    visibility: hidden;
 }
