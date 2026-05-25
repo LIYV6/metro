@@ -634,9 +634,8 @@ function renderRouteInUnifiedDisplay(primaryRoute, branches, groupIndex) {
         // If only one route with reverse, use direction selector instead of branch label
         const useDirectionSelector = branches.length === 1 && hasReverse;
 
-        // 计算该分支的站点总数
-        const stationCount = (route.forwardStations ? route.forwardStations.length : 0) +
-                             ((hasReverse && route.reverseStations) ? route.reverseStations.length : 0);
+        // 计算该分支的站点总数（取单方向站点数）
+        const stationCount = route.forwardStations ? route.forwardStations.length : 0;
 
         let branchLabel = '';
         if (!useDirectionSelector && branches.length > 1) {

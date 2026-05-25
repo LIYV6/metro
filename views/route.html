@@ -35,10 +35,10 @@
         <aside class="left-sidebar">
             <div class="secondary-nav-section">
                 <div class="category-tabs secondary-nav">
-                    <button class="category-tab secondary-nav-item active" data-tab="line-info"><span class="nav-label-cn">线路信息</span><span class="nav-label-en">Info</span></button>
-                    <button class="category-tab secondary-nav-item" data-tab="route-map"><span class="nav-label-cn">线路图</span><span class="nav-label-en">Map</span></button>
-                    <button class="category-tab secondary-nav-item" data-tab="station-info"><span class="nav-label-cn">车站信息</span><span class="nav-label-en">Stations</span></button>
-                    <button class="category-tab secondary-nav-item external-link"><a href="https://routeguide.liyv.me" target="_blank"><span class="nav-label-cn">乘车导航</span><span class="nav-label-en">Navigate ↗</span></a></button>
+                    <button class="category-tab secondary-nav-item active" data-tab="line-info">线路信息<br/>Info</button>
+                    <button class="category-tab secondary-nav-item" data-tab="route-map">线路图<br/>Map</button>
+                    <button class="category-tab secondary-nav-item" data-tab="station-info">车站信息<br/>Stations</button>
+                    <button class="category-tab secondary-nav-item external-link"><a href="https://routeguide.liyv.me" target="_blank">乘车导航<br/>Navigate ↗</a></button>
                 </div>
             </div>
             <div class="sub-nav-section">
@@ -152,13 +152,12 @@
     <button id="backToTop" class="back-to-top" title="返回顶部">↑</button>
 </main><!--主体区域结束-->
 
-<!--网站页脚由 fragments 注入 -->
+<!--网站页脚-->
         <div data-include="footer" id="site-footer"></div>
-<!-- 引入外部交互脚本，统一管理逻辑 -->
-    <script src="../assets/js/include-fragments.js"></script>
 
-    <script src="../assets/js/libs/sql-wasm.js"></script>
-    <script src="../assets/js/route.js"></script>
-    <script src="../assets/js/map.js"></script>
+<script src="../assets/js/include-fragments.js"></script>
+<script src="../assets/js/libs/sql-wasm.js"></script>
+<script src="../assets/js/route.js"></script>
+<script src="../assets/js/map.js"></script>
 </body>
 </html>

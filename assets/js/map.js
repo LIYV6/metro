@@ -22,7 +22,6 @@ function debugLog(module, ...args) {
     console.log(prefix, ...args);
 }
 // ================================================
-
 // DOM加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
     // 检查是否在 route.html 中（线路图在 tab 内）

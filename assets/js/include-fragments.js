@@ -1,12 +1,12 @@
 
 // ==================== 统一调试配置 ====================
 const FRAGMENTS_DEBUG_CONFIG = {
-    // 全局调试开关：true 启用所有调试日志，false 关闭
+    // 全局调试开关
     enabled: false,
-    
     // 模块级开关
     modules: {
-        fragments: true      // 片段加载相关日志
+        fragments: true,       // 片段加载相关日志
+        mobileMenu: true       // 移动端汉堡菜单日志
     }
 };
 
@@ -22,10 +22,12 @@ function debugLog(module, ...args) {
     const prefix = `[Fragments-${module}]`;
     console.log(prefix, ...args);
 }
-// ================================================
 
 (function () {
     'use strict';
+
+    // 捕获当前文件的 debugLog，防止被后加载脚本覆盖
+    const _debugLog = debugLog;
 
     // ---------- 默认配置（可通过构造器覆盖） ----------
     const DEFAULT_CONFIG = {
@@ -68,7 +70,7 @@ function debugLog(module, ...args) {
         // 运行时机：'dom-ready' 表示在 DOMContentLoaded 时运行（若已完成则立即运行）
         runOn: 'dom-ready',
         // 错误回调：(err, context) => void
-        onError: function (err /*, context */) { debugLog('fragments', '错误:', err); }
+        onError: function (err /*, context */) { _debugLog('fragments', '错误:', err); }
     };
 
     // ---------- 小型工具函数 ----------
@@ -222,7 +224,7 @@ function debugLog(module, ...args) {
             const headerHeight = header.getBoundingClientRect().height;
             if (headerHeight > 0) {
                 document.body.style.paddingTop = headerHeight + 'px';
-                debugLog('fragments', '设置 padding-top:', headerHeight + 'px');
+                _debugLog('fragments', '设置 padding-top:', headerHeight + 'px');
             }
         }
     }
@@ -282,7 +284,7 @@ function debugLog(module, ...args) {
                 }
             });
         } catch (e) {
-            debugLog('fragments', '导航高亮失败:', e);
+            _debugLog('fragments', '导航高亮失败:', e);
         }
     }
 
@@ -396,7 +398,7 @@ function debugLog(module, ...args) {
                     }, 300);
                 });
             }
-        } catch (e) { debugLog('fragments', '错误:', e); }
+        } catch (e) { _debugLog('fragments', '错误:', e); }
     }
 
     // ---------- 运行时时机 ----------
@@ -417,6 +419,41 @@ function debugLog(module, ...args) {
     let _menuPanel = null;
     let _menuOverlay = null;
     let _menuToggleBtn = null;
+    let _populating = false; // 填充锁，防止并发轮询导致重复菜单
+    const _isViewsPage = /\/views\//.test(location.pathname); // 标记当前是否在 views 目录下
+
+    /**
+     * 将导航链接填充到移动端菜单列表
+     * @param {HTMLUListElement} ul - 目标 <ul>
+     * @param {NodeList} navLinks - .main-nav .nav-list a 集合
+     */
+    function _fillMenuItems(ul, navLinks) {
+        for (let i = 0; i < navLinks.length; i++) {
+            const link = navLinks[i];
+            const li = document.createElement('li');
+            li.className = 'mobile-nav-item';
+
+            const a = document.createElement('a');
+            a.href = link.href;
+            // 在非 views 页面时，修正相对路径（header.html 中的 href 基于_views/解析，导致缺少 views/ 前缀）
+            if (!_isViewsPage && !a.pathname.includes('/views/') && !a.pathname.endsWith('index.html')) {
+                a.href = 'views/' + link.getAttribute('href');
+            }
+            a.innerHTML = link.innerHTML;
+            a.className = link.className || '';
+
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const targetUrl = this.href;
+                closeMobileMenu();
+                setTimeout(function() { window.location.href = targetUrl; }, 150);
+            }, false);
+
+            li.appendChild(a);
+            ul.appendChild(li);
+        }
+    }
 
     function createMobileMenu() {
         _menuOverlay = document.createElement('div');
@@ -438,36 +475,38 @@ function debugLog(module, ...args) {
     }
 
     function populateMobileMenu(ul) {
-        setTimeout(function() {
+        if (ul.children.length > 0 || _populating) return; // 已有内容或正在填充，跳过
+        _populating = true;
+        let retries = 0;
+        const maxRetries = 15;
+        function tryPopulate() {
             const navLinks = document.querySelectorAll('.main-nav .nav-list a');
-            if (!navLinks || navLinks.length === 0) return;
-
-            for (let i = 0; i < navLinks.length; i++) {
-                const link = navLinks[i];
-                const li = document.createElement('li');
-                li.className = 'mobile-nav-item';
-
-                const a = document.createElement('a');
-                a.href = link.href;
-                a.innerHTML = link.innerHTML;
-                a.className = link.className || '';
-
-                a.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const targetUrl = this.href;
-                    closeMobileMenu();
-                    setTimeout(function() { window.location.href = targetUrl; }, 150);
-                }, false);
-
-                li.appendChild(a);
-                ul.appendChild(li);
+            if (navLinks && navLinks.length > 0) {
+                _populating = false;
+                _debugLog('mobileMenu', '✅ 菜单填充成功，' + navLinks.length + ' 项，耗时 ' + (retries * 100) + 'ms');
+                _fillMenuItems(ul, navLinks);
+            } else if (retries < maxRetries) {
+                retries++;
+                setTimeout(tryPopulate, 100);
+            } else {
+                _populating = false;
+                _debugLog('mobileMenu', '⚠️ 移动端菜单填充超时：导航链接未找到');
             }
-        }, 100);
+        }
+        tryPopulate();
     }
 
     function openMobileMenu() {
         if (_menuOpen) return;
+        // 防御性填充：用户点击时 header 必然已加载，作为最后兜底
+        const ul = _menuPanel && _menuPanel.querySelector('.mobile-nav-list');
+        if (ul && ul.children.length === 0) {
+            const navLinks = document.querySelectorAll('.main-nav .nav-list a');
+            if (navLinks && navLinks.length > 0) {
+                _fillMenuItems(ul, navLinks);
+                _debugLog('mobileMenu', 'ℹ️ 移动端菜单通过 openMobileMenu 兜底填充成功');
+            }
+        }
         _menuOpen = true;
 
         _menuPanel.classList.add('active');
@@ -542,6 +581,8 @@ function debugLog(module, ...args) {
                 } else if (retryCount < maxRetries) {
                     retryCount++;
                     setTimeout(tryBind, 200);
+                } else {
+                    _debugLog('mobileMenu', '⚠️ 汉堡按钮绑定超时：.nav-toggle 未找到');
                 }
             }
             tryBind();
@@ -555,7 +596,7 @@ function debugLog(module, ...args) {
                 if (_menuPanel.contains(e.target) || (_menuToggleBtn && _menuToggleBtn.contains(e.target))) return;
                 closeMobileMenu();
             }, false);
-        } catch (e) { debugLog('fragments', '移动端菜单初始化失败:', e); }
+        } catch (e) { _debugLog('mobileMenu', '移动端菜单初始化失败:', e); }
     }
 
     // DOM 就绪后初始化移动端菜单

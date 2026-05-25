@@ -1,14 +1,14 @@
 :root {
     --page-bg: #f5efe2;
-    --paper-bg: #FFFCF6E0;
+    --paper-bg: #fffcf6e0;
     --paper-strong: #fffdf8;
     --ink: #162033;
     --ink-soft: #5f6c80;
-    --line: #1620331F;
+    --line: #1620331f;
     --accent: #b24a2f;
     --accent-deep: #7f2412;
-    --shadow-lg: 0 24px 70px #251C1029;
-    --shadow-md: 0 12px 28px #251C101A;
+    --shadow-lg: 0 24px 70px #251c1029;
+    --shadow-md: 0 12px 28px #251c101a;
     /* 动态变量：线路颜色（由JS动态设置，此处提供默认值）*/
     --route-color: #1a1a1a;
 }
@@ -17,7 +17,7 @@
 body {
     font-family: Georgia, "Times New Roman", "Songti SC", "Noto Serif SC", serif;
     color: var(--ink);
-    background: #FFFCF7F5; /* 与展示容器背景色一致，消除左侧分界颜色 */
+    background: #fffcf7f5; /* 与展示容器背景色一致，消除左侧分界颜色 */
     min-height: 100vh;
     padding: 0; /* 移除内边距，使内容全宽显示 */
     /* 如果没有navigate.js，需要手动设置padding-top防止被导航遮挡 */
@@ -25,7 +25,7 @@ body {
 }
 @media (max-width: 768px) {
     h1 { font-size: 24px;}
-    body { padding: 16px;}
+    body { padding: 0;}
 }
 
 .container {
@@ -38,7 +38,7 @@ body {
     display: flex;
     gap: 0;
     min-height: calc(100vh - var(--header-height));
-    background: #FFFCF7F5;
+    background: #fffcf7f5;
 }
 
 /* ========== 左侧导航栏 ========= */
@@ -80,8 +80,9 @@ body {
     color: #333;
     text-align: left;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     text-decoration: none;
     white-space: normal;
     word-break: keep-all;
@@ -129,15 +130,12 @@ body {
     height: 100%;
 }
 
-/* 二级导航中英文双行：默认隐藏英文行 */
+/* 二级导航中英文双行 */
 .secondary-nav-section .secondary-nav-item .nav-label-en {
-    display: none;
     font-size: 11px;
+    line-height: 1.2;
+    margin-top: 2px;
     opacity: 0.75;
-}
-
-.secondary-nav-section .secondary-nav-item .nav-label-cn {
-    display: block;
 }
 
 /* 子选项区域 */
@@ -145,7 +143,7 @@ body {
     flex: 1;
     padding: 35px 0;
     overflow-y: auto;
-    background: #FFFCF7; /* 作业本纸的温暖米黄色 */
+    background: #fffcf7; /* 作业本纸的温暖米黄色 */
 }
 
 .sub-nav-content {
@@ -220,7 +218,7 @@ body {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    background: #FFFCF7F5;
+    background: #fffcf7f5;
     overflow-y: auto;
 }
 
@@ -274,7 +272,7 @@ body {
 .secondary-nav-item:hover,
 .category-tab:hover,
 .map-nav-item:hover {
-    background: #FFFFFF1A; /* 悬停时微亮 */
+    background: #ffffff1a; /* 悬停时微亮 */
     color: #ffffff;
     transform: none;
 }
@@ -380,13 +378,7 @@ body {
         flex-direction: column;
     }
     
-    .secondary-nav-section .secondary-nav-item .nav-label-cn {
-        font-size: 14px;
-        line-height: 1.3;
-    }
-    
     .secondary-nav-section .secondary-nav-item .nav-label-en {
-        display: block;
         font-size: 10px;
         line-height: 1.2;
         margin-top: 2px;
@@ -401,8 +393,7 @@ body {
         background: #e60012 !important;
         color: #ffffff !important;
     }
-    .secondary-nav-section .secondary-nav-item.active .nav-label-cn,
-    .secondary-nav-section .secondary-nav-item.active .nav-label-en {
+    .secondary-nav-section .secondary-nav-item.active {
         color: #ffffff !important;
     }
     
@@ -412,8 +403,7 @@ body {
         color: #ffffff;
         border-right: none;
     }
-    .secondary-nav-section .secondary-nav-item.external-link .nav-label-cn,
-    .secondary-nav-section .secondary-nav-item.external-link .nav-label-en {
+    .secondary-nav-section .secondary-nav-item.external-link {
         color: #ffffff !important;
     }
     .secondary-nav-section .secondary-nav-item.external-link:hover {
@@ -520,7 +510,7 @@ body {
     /* 增加上下内边距，减少黑色背景影响 为滚动条留出空间 */
     padding: 32px 48px 32px 40px;
     /* 修改背景色与展示容器一致，增加渐变 */
-    background: linear-gradient(180deg, #FFFCF7 0%, #FFF9F0 100%);
+    background: linear-gradient(180deg, #fffcf7 0%, #fff9f0 100%);
     /* 移除边框，使视觉上连起来 */
     border-radius: 0; /* 矩形，无圆角 */
     margin-bottom: 22px; /* 恢复底部边距，与黑色标题区域增加间距 */
@@ -528,7 +518,7 @@ body {
     backdrop-filter: blur(14px);
     /* 移除顶部边框，与分类标签无缝连接 */
     border-style: none;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid #0000000f;
 }
 
 /* 自定义滚动条样式 */
@@ -537,7 +527,7 @@ body {
 }
 
 .line-blocks-container::-webkit-scrollbar-track {
-    background: #0000000D;
+    background: #0000000d;
     border-radius: 4px;
 }
 
@@ -548,7 +538,7 @@ body {
 }
 
 .line-blocks-container::-webkit-scrollbar-thumb:hover {
-    background: #0000004D;
+    background: #0000004d;
 }
 
 
@@ -574,7 +564,7 @@ body {
 
 .line-block-label,
 .station-block-label {
-    color: white;
+    color: #ffffff;
     font-size: 13px;
     font-weight: 700;
     text-align: center;
@@ -587,15 +577,15 @@ body {
 .line-block:hover,
 .station-block:hover {
     transform: translateY(-4px) scale(1.08);
-    box-shadow: 0 18px 40px #251C1040;
-    border-color: #FFFFFFDD;
+    box-shadow: 0 18px 40px #251c1040;
+    border-color: #ffffffdd;
 }
 
 .line-block.active,
 .station-block.active {
     transform: scale(1.12);
-    border-color: white;
-    box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
+    border-color: #ffffff;
+    box-shadow: 0 22px 44px #251c1055, 0 0 0 3px #ffffff4d;
     z-index: 5;
 }
 .station-block.active {
@@ -605,10 +595,10 @@ body {
 /* 选中态脉冲动画 */
 @keyframes stationPulse {
     0%, 100% { 
-        box-shadow: 0 22px 44px #251C1055, 0 0 0 3px rgba(255,255,255,0.3);
+        box-shadow: 0 22px 44px #251c1055, 0 0 0 3px #ffffff4d;
     }
     50% { 
-        box-shadow: 0 24px 50px #251C1070, 0 0 0 6px rgba(255,255,255,0.2);
+        box-shadow: 0 24px 50px #251c1070, 0 0 0 6px #ffffff33;
     }
 }
 
@@ -629,8 +619,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-    border: 2px solid rgba(255,255,255,0.9);
+    box-shadow: 0 3px 10px #00000040;
+    border: 2px solid #ffffffe6;
     z-index: 10;
 }
 
@@ -657,6 +647,12 @@ body {
         padding: 18px; /* 移动端内边距 */
         border-radius: 0; /* 移动端也保持矩形 */
     }
+
+    #routesContainer {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        padding: 0 20px 22px;
+    }
 }
 
 /*.direction-label-forward, .direction-label-reverse已移动到unuse.css中*/
@@ -664,7 +660,7 @@ body {
 #routesContainer {
     width: 100%; /* 与右侧内容区域同宽 */
     /* 添加背景色与色块容器一致 */
-    background: #FFFCF7F5;
+    background: #fffcf7f5;
     border: none; /* 移除边框 */
     box-shadow: none; /* 移除阴影 */
     padding: 0 40px 22px;
@@ -682,13 +678,13 @@ body {
 }
 
 .route-card {
-    background: #FFFCF7EB;
-    border: 1px solid #FFFFFFA3;
+    background: #fffcf7eb;
+    border: 1px solid #ffffffa3;
     border-radius: 26px;
     padding: 0;
     margin-bottom: 22px;
     overflow: hidden;
-    box-shadow: 0 4px 12px #251C1014;
+    box-shadow: 0 4px 12px #251c1014;
     backdrop-filter: blur(14px);
 }
 .route-card.hidden {
@@ -705,8 +701,8 @@ body {
     margin: 0;
     padding: 18px 22px;
     background:
-        linear-gradient(135deg, #0B1324F5 0%, #1E293BEF 100%);
-    color: white;
+        linear-gradient(135deg, #0b1324f5 0%, #1e293bef 100%);
+    color: #ffffff;
     flex-wrap: wrap;
     gap: 12px;
 }
@@ -720,23 +716,23 @@ body {
     border-radius: 0;
     margin-right: 12px;
     flex-shrink: 0;
-    border: 2px solid white;
+    border: 2px solid #ffffff;
 }
 .route-title h2 {
-    color: white;
+    color: #ffffff;
     font-size: 18px;
     margin-bottom: 2px;
     font-weight: 700;
     letter-spacing: 0.3px;
     /* 增强立体感：多层阴影 + 内发光效果 */
     text-shadow: 
-        0 1px 0 rgba(0,0,0,0.3),
-        0 2px 4px rgba(0,0,0,0.4),
-        0 4px 8px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.15);
+        0 1px 0 #0000004d,
+        0 2px 4px #00000066,
+        0 4px 8px #0000004d,
+        inset 0 1px 0 #ffffff26;
 }
 .route-title p {
-    color: #FFFFFFB3;
+    color: #ffffffb3;
     font-size: 12px;
     font-weight: 500;
 }
@@ -768,7 +764,7 @@ body {
     background: #e8e8e8;
 }
 .direction-btn.active {
-    background: white;
+    background: #ffffff;
     color: #1a1a1a;
     border-bottom: 3px solid;
     border-color: inherit;
@@ -791,7 +787,7 @@ body {
 }
 
 .station-list::-webkit-scrollbar-track {
-    background: #0000000D;
+    background: #0000000d;
     border-radius: 4px;
 }
 
@@ -802,7 +798,7 @@ body {
 }
 
 .station-list::-webkit-scrollbar-thumb:hover {
-    background: #0000004D;
+    background: #0000004d;
 }
 .station-item {
     display: flex;
@@ -956,7 +952,7 @@ body {
 
 /* ========== 手风琴：多分支折叠 ========== */
 .branch-container {
-    border-bottom: 1px solid rgba(22, 32, 51, 0.08);
+    border-bottom: 1px solid #16203314;
 }
 .branch-container:last-child {
     border-bottom: none;
@@ -978,7 +974,7 @@ body {
     position: relative;
 }
 .branch-label:hover {
-    background: rgba(22, 32, 51, 0.04);
+    background: #1620330a;
 }
 .branch-label::after {
     content: '';
@@ -1030,7 +1026,7 @@ body {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: white;
+    background: #ffffff;
     border: 6px solid var(--route-color, #1a1a1a);
     display: flex;
     align-items: center;
@@ -1117,7 +1113,7 @@ body {
     height: 8px;
     border-radius: 50%;
     border: 2px solid var(--tc, #607d8b);
-    background: #fff;
+    background: #ffffff;
     flex-shrink: 0;
     margin: 0;
 }
@@ -1192,7 +1188,7 @@ body {
     width: 100%; /* 与父容器同宽 */
     max-width: none; /* 不限制最大宽度 */
     margin: 0; /* 移除所有边距，与展示区和页脚无缝连接 */
-    background: #FFFCF7F5; /* 应用背景色，消除界限 */
+    background: #fffcf7f5; /* 应用背景色，消除界限 */
     border: none; /* 移除边框 */
     border-radius: 0; /* 矩形边框 */
     padding: 32px 40px 80px; /* 增加上下内边距，文字距边界留间距，底部加大间距覆盖页脚 */
@@ -1269,9 +1265,9 @@ body {
 /* Tooltip 样式（从 JS 中提取）*/
 .tooltip-header {
     background: linear-gradient(135deg, 
-        rgba(11, 19, 36, 0.98) 0%, 
-        rgba(30, 41, 59, 0.96) 50%,
-        rgba(45, 55, 72, 0.94) 100%);
+        #0b1324fa 0%, 
+        #1e293bf5 50%,
+        #2d3748f0 100%);
     padding: 20px 24px;
     margin-bottom: 16px;
     width: 100%;
@@ -1280,8 +1276,8 @@ body {
     position: relative;
     overflow: hidden;
     box-shadow: 
-        0 4px 20px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.1);
+        0 4px 20px #0000004d,
+        inset 0 1px 0 #ffffff1a;
 }
 
 /* Tooltip头部装饰性背景图案 */
@@ -1292,7 +1288,7 @@ body {
     right: -20%;
     width: 200px;
     height: 200px;
-    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, #ffffff0f 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -1303,16 +1299,16 @@ body {
     letter-spacing: 0.5px;
     /* 增强立体感：多层阴影 + 内发光 + 浮雕效果 */
     text-shadow: 
-        0 1px 0 rgba(0,0,0,0.4),
-        0 2px 4px rgba(0,0,0,0.5),
-        0 4px 10px rgba(0,0,0,0.4),
-        0 6px 16px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.2),
-        inset 0 -1px 0 rgba(0,0,0,0.2);
+        0 1px 0 #00000066,
+        0 2px 4px #00000080,
+        0 4px 10px #00000066,
+        0 6px 16px #0000004d,
+        inset 0 1px 0 #ffffff33,
+        inset 0 -1px 0 #00000033;
 }
 
 .tooltip-subtitle {
-    color: rgba(255, 255, 255, 0.7);
+    color: #ffffffb3;
     font-size: 14px;
     margin-top: 4px;
 }
@@ -1342,8 +1338,8 @@ body {
 }
 
 .tooltip-line-badge {
-    background: var(--line-color, #999);
-    color: white;
+    background: #999;
+    color: #ffffff;
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 13px;
@@ -1353,8 +1349,8 @@ body {
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 
-        0 2px 6px rgba(0,0,0,0.2),
-        inset 0 1px 0 rgba(255,255,255,0.2);
+        0 2px 6px #00000033,
+        inset 0 1px 0 #ffffff33;
     position: relative;
     letter-spacing: 0.2px;
 }
@@ -1362,8 +1358,8 @@ body {
 .tooltip-line-badge:hover {
     transform: translateY(-2px) scale(1.05);
     box-shadow: 
-        0 4px 12px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.3);
+        0 4px 12px #0000004d,
+        inset 0 1px 0 #ffffff4d;
 }
 
 .tooltip-nearby-container {
@@ -1386,13 +1382,13 @@ body {
     align-items: center;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px #0000001a;
     letter-spacing: 0.2px;
 }
 
 .tooltip-nearby-link:hover {
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px #00000026;
     background: linear-gradient(135deg, #b2ebf2 0%, #80deea 100%);
 }
 
@@ -1425,6 +1421,50 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Tooltip 移动端适配 */
+@media (max-width: 768px) {
+    .tooltip-container {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        padding: 24px 20px 80px;
+        border-radius: 0;
+    }
+    .tooltip-header {
+        padding: 16px 20px;
+        border-radius: 10px;
+    }
+    .tooltip-title {
+        font-size: 20px;
+    }
+    .tooltip-subtitle {
+        font-size: 13px;
+    }
+    .tooltip-section-title {
+        font-size: 17px;
+    }
+    .tooltip-lines-container {
+        gap: 6px;
+    }
+    .tooltip-line-badge {
+        padding: 3px 8px;
+        font-size: 13px;
+    }
+    .tooltip-nearby-container {
+        gap: 8px;
+    }
+    .tooltip-nearby-link {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    .exits-grid {
+        grid-template-columns: 1fr;
+    }
+    .exit-name {
+        font-size: 16px;
+    }
+}
+
+
 .back-to-top {
     display: none;
     position: fixed;
@@ -1434,7 +1474,7 @@ body {
     border: none;
     outline: none;
     background-color: #1a1a1a;
-    color: white;
+    color: #ffffff;
     cursor: pointer;
     padding: 15px;
     border-radius: 50%;
@@ -1497,7 +1537,7 @@ body {
     width: 50px;
     height: 50px;
     border-radius: 4px;
-    background: white; /* 白色背景 */
+    background: #ffffff; /* 白色背景 */
     color: #003366; /* 深蓝色文字 */
     font-size: 14px;
     font-weight: 600;
@@ -1541,7 +1581,7 @@ max-width: 400px 限制在大屏幕上的最大宽度，避免过宽，min-width
     width: 90%; /* 移动端优先：占据屏幕90%宽度 */
     max-width: 400px; /* 电脑端最大宽度限制 */
     min-width: 280px; /* 最小宽度保证可读性 */
-    background: white;
+    background: #ffffff;
     padding: 20px;
     border-radius: 8px;
     position: relative;
@@ -1610,7 +1650,7 @@ body.route-map-active .main-footer {
 /* 站点选择容器 */
 .station-selector-container {
     width: 100%;
-    background: #FFFCF7F5;
+    background: #fffcf7f5;
 }
 
 /* 站点色块容器 */
@@ -1623,12 +1663,12 @@ body.route-map-active .main-footer {
     max-height: calc(6 * (52px + 10px)); /* 6行色块高度 */
     overflow-y: auto;
     padding: 32px 48px 32px 40px;
-    background: linear-gradient(180deg, #FFFCF7 0%, #FFF9F0 100%);
+    background: linear-gradient(180deg, #fffcf7 0%, #fff9f0 100%);
     border-radius: 0;
     margin-bottom: 0;
     box-shadow: none;
     backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid #0000000f;
 }
 
 /* 自定义滚动条样式 */
@@ -1637,7 +1677,7 @@ body.route-map-active .main-footer {
 }
 
 .station-blocks-container::-webkit-scrollbar-track {
-    background: #0000000D;
+    background: #0000000d;
     border-radius: 4px;
 }
 
@@ -1648,13 +1688,13 @@ body.route-map-active .main-footer {
 }
 
 .station-blocks-container::-webkit-scrollbar-thumb:hover {
-    background: #0000004D;
+    background: #0000004d;
 }
 
 /* 站点信息显示容器 */
 .station-info-container {
     width: 100%;
-    background: #FFFCF7F5;
+    background: #fffcf7f5;
     border: none;
     box-shadow: none;
     padding: 0 40px 40px;
@@ -1663,13 +1703,13 @@ body.route-map-active .main-footer {
 
 /* 站点详情容器 */
 .station-detail-container {
-    background: #FFFCF7EB;
-    border: 1px solid #FFFFFFA3;
+    background: #fffcf7eb;
+    border: 1px solid #ffffffa3;
     border-radius: 26px;
     padding: 0;
     margin-top: 22px;
     overflow: hidden;
-    box-shadow: 0 4px 12px #251C1014;
+    box-shadow: 0 4px 12px #251c1014;
     backdrop-filter: blur(14px);
 }
 
@@ -1680,28 +1720,28 @@ body.route-map-active .main-footer {
     align-items: center;
     margin: 0;
     padding: 24px 22px;
-    background: linear-gradient(135deg, #0B1324F5 0%, #1E293BEF 100%);
-    color: white;
+    background: linear-gradient(135deg, #0b1324f5 0%, #1e293bef 100%);
+    color: #ffffff;
     text-align: center;
 }
 
 .station-detail-header h2 {
-    color: white;
+    color: #ffffff;
     font-size: 28px;
     margin: 0 0 8px 0;
     font-weight: 700;
     letter-spacing: 0.5px;
     /* 增强立体感：多层阴影 + 内发光效果 */
     text-shadow: 
-        0 1px 0 rgba(0,0,0,0.35),
-        0 2px 5px rgba(0,0,0,0.45),
-        0 4px 12px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.18);
+        0 1px 0 #00000059,
+        0 2px 5px #00000073,
+        0 4px 12px #00000059,
+        inset 0 1px 0 #ffffff2e;
 }
 
 .station-en-name {
-    color: #FFFFFFB3;
-    font-size: 14px;
+    color: #ffffffb3;
+    font-size: 12px;
     font-weight: 500;
     margin: 0 0 12px 0;
 }
@@ -1719,12 +1759,12 @@ body.route-map-active .main-footer {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(255, 255, 255, 0.15);
+    background: #ffffff26;
     padding: 6px 12px;
     border-radius: 16px;
     font-size: 13px;
     font-weight: 600;
-    color: white;
+    color: #ffffff;
 }
 
 .stat-item i {
@@ -1774,8 +1814,8 @@ body.route-map-active .main-footer {
 
 /* 站点线路徽章 */
 .station-line-badge {
-    background: var(--line-color, #999);
-    color: white;
+    background: #999;
+    color: #ffffff;
     padding: 6px 10px;
     border-radius: 6px;
     font-size: 13px;
@@ -1784,12 +1824,12 @@ body.route-map-active .main-footer {
     align-items: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px #00000033;
 }
 
 .station-line-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px #0000004d;
 }
 
 /* 站点出口区块 */

@@ -151,6 +151,21 @@
     /* 动画结束后添加水面阴影效果 */
     filter: drop-shadow(0 8px 12px #0000004D);
     white-space: nowrap; /* 防止文字换行 */
+    max-width: 90vw; /* 移动端安全边界 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: clamp(20px, 6vw, calc(var(--hero-banner-title-size) * 2));
+        bottom: 42%;
+    }
+}
+@media (max-width: 420px) {
+    .hero-title {
+        font-size: clamp(18px, 7.5vw, calc(var(--hero-banner-title-size) * 2));
+        bottom: 44%;
+    }
 }
 .hero-title::after {
     content: attr(data-text);
