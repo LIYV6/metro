@@ -1338,8 +1338,8 @@ body {
 }
 
 .tooltip-line-badge {
-    background: #999;
-    color: #ffffff;
+    background:var(--line-color);
+    color: #fff;
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 13px;
