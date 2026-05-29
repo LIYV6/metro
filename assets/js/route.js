@@ -966,7 +966,13 @@ function buildStationTransferModel(station) {
     const airTransfers = [];
     if (station.transfers && station.transfers.length > 0) {
         station.transfers.forEach(transfer => {
-            if (transfer.mode === 'HIGH_SPEED') {
+
+            // 判断是否为高铁：mode === 'HIGH_SPEED' 或 type === 'HIGH_SPEED' 或符合线路名称特征
+            const isHighSpeed = (transfer.mode === 'HIGH_SPEED') ||
+                (transfer.type === 'HIGH_SPEED') ||
+                isHighSpeedLineEx(transfer.nameCn, transfer.mode, transfer.type);
+
+            if (isHighSpeed) {
                 hasHighSpeed = true;
                 highSpeedTransfers.push(transfer);
             } else if (transfer.mode === 'BOAT') {
