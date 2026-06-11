@@ -473,6 +473,158 @@ function normalizeRouteBaseNameV2(rawName) {
     return stripBranchSuffix(cleanDirectionSuffix(rawName || '')).trim();
 }
 
+// ==================== 线路排序 ====================
+
+/**
+ * 获取单个字符的类型
+ * @param {string} ch - 单个字符
+ * @returns {string} 字符类型: 'greek' | 'letter' | 'digit' | 'chinese' | 'other'
+ */
+function getCharType(ch) {
+    if (/[\u0370-\u03FF\u1F00-\u1FFF\u2211]/.test(ch)) return 'greek'; // 希腊字母(含∑求和符号)
+    if (/[a-zA-Z]/.test(ch)) return 'letter'; // 英文字母
+    if (/[0-9]/.test(ch)) return 'digit'; // 数字
+    if (/[\u4e00-\u9fff\u3400-\u4dbf]/.test(ch)) return 'chinese'; // 汉字
+    return 'other';
+}
+
+/**
+ * 从字符串指定位置提取连续数字，返回 [数值, 数字长度]
+ * @param {string} str - 字符串
+ * @param {number} start - 起始位置
+ * @returns {[number, number]} [数值, 长度]
+ */
+function extractNumber(str, start) {
+    let end = start;
+    while (end < str.length && /[0-9]/.test(str[end])) end++;
+    return [parseInt(str.substring(start, end), 10), end - start];
+}
+
+/**
+ * 获取线路大类排序序号
+ * 规则：地铁/轻轨(0) > 轮船(1) > 索道/缆车(2) > 飞机(3) > 火车/高铁/铁路(4)
+ * @param {Object} route - 线路对象
+ * @returns {number} 大类序号
+ */
+function getRouteCategorySortOrder(route) {
+    const mode = String(route.mode || '').trim();
+    const nameRaw = String(route.nameCn || '');
+    const routeType = route.type || '';
+
+    if (mode === 'LIGHT_RAIL') return 0;
+    if (mode === 'BOAT') return 1;
+    if (mode === 'CABLE_CAR' || mode === 'CABLECAT') return 2;
+    if (mode === 'AIRPLANE') return 3;
+
+    if (mode === 'TRAIN' || mode === 'NORMAL') {
+        if (isHighSpeedLineEx(nameRaw, mode, routeType)) return 4; // 铁路
+        return 0; // 地铁
+    }
+
+    return 0; // 默认按地铁处理
+}
+
+/**
+ * 根据线路大类获取字符类型优先级
+ * 地铁：希腊字母(0) > 英文字母(1) > 数字(2) > 汉字(3) > 其他(4)
+ * 飞机：汉字(0) > 字母/希腊字母(1) > 数字/其他(2)
+ * 铁路：汉字(0) > 字母(1) > 数字(2) > 其他(3)
+ * 轮船/索道：各类型平级，保持自然顺序
+ * @param {string} charType - 字符类型
+ * @param {number} category - 线路大类序号
+ * @returns {number} 优先级（越小越高）
+ */
+function getCharPriorityByCategory(charType, category) {
+    switch (category) {
+        case 0: // 地铁/轻轨: 希腊字母 > 英文字母 > 数字 > 汉字 > 其他
+            return { greek: 0, letter: 1, digit: 2, chinese: 3, other: 4 }[charType];
+        case 3: // 飞机: 汉字 > 字母(含希腊字母) > 数字 > 其他
+            return { chinese: 0, greek: 1, letter: 1, digit: 2, other: 2 }[charType] !== undefined
+                ? { chinese: 0, greek: 1, letter: 1, digit: 2, other: 2 }[charType]
+                : 2;
+        case 4: // 火车/高铁/铁路: 汉字 > 字母 > 数字 > 其他
+            return { chinese: 0, letter: 1, digit: 2, other: 3 }[charType] !== undefined
+                ? { chinese: 0, letter: 1, digit: 2, other: 3 }[charType]
+                : 3;
+        default:
+            // 轮船、索道：各类型平级，按字符自然顺序比较
+            return 0;
+    }
+}
+
+/**
+ * 在同大类内按线路名称逐位比较
+ * 规则：逐位比较，前者优先；前三种类型（希腊、英文、数字）按升序排列
+ * @param {string} nameA - 线路名称A
+ * @param {string} nameB - 线路名称B
+ * @param {number} category - 线路大类序号
+ * @returns {number} 负数A在前，正数B在前
+ */
+function compareRouteName(nameA, nameB, category) {
+    let i = 0, j = 0;
+    while (i < nameA.length && j < nameB.length) {
+        const chA = nameA[i];
+        const chB = nameB[j];
+
+        const isDigitA = /[0-9]/.test(chA);
+        const isDigitB = /[0-9]/.test(chB);
+
+        // 同位置都是数字时，提取完整数字按数值比较（解决"1号"和"11号"的排序）
+        if (isDigitA && isDigitB) {
+            const [numA, lenA] = extractNumber(nameA, i);
+            const [numB, lenB] = extractNumber(nameB, j);
+            if (numA !== numB) return numA - numB;
+            i += lenA;
+            j += lenB;
+            continue;
+        }
+
+        const typeA = getCharType(chA);
+        const typeB = getCharType(chB);
+
+        const priorityA = getCharPriorityByCategory(typeA, category);
+        const priorityB = getCharPriorityByCategory(typeB, category);
+
+        // 类型优先级不同，高优先级的在前
+        if (priorityA !== priorityB) return priorityA - priorityB;
+
+        // 同类型按值升序比较
+        if (typeA === 'greek' || typeA === 'letter' || typeA === 'digit') {
+            if (chA !== chB) return chA.localeCompare(chB);
+        } else if (typeA === 'chinese') {
+            const cmp = chA.localeCompare(chB, 'zh-CN');
+            if (cmp !== 0) return cmp;
+        } else {
+            if (chA !== chB) return chA.localeCompare(chB);
+        }
+        i++;
+        j++;
+    }
+    // 较短者在前
+    return nameA.length - nameB.length;
+}
+
+/**
+ * 线路排序比较函数（入口）
+ * 先按大类排序，同一大类内逐位比较名称
+ * @param {Object} routeA - 线路A
+ * @param {Object} routeB - 线路B
+ * @returns {number} 比较结果
+ */
+function routeSortCompare(routeA, routeB) {
+    const catA = getRouteCategorySortOrder(routeA);
+    const catB = getRouteCategorySortOrder(routeB);
+
+    if (catA !== catB) return catA - catB;
+
+    const nameA = cleanLineDisplayName(routeA.nameCn || '');
+    const nameB = cleanLineDisplayName(routeB.nameCn || '');
+
+    return compareRouteName(nameA, nameB, catA);
+}
+
+// ================================================
+
 // 渲染所有路线到页面。创建统一展示区域，按线路分组路线，生成线路选择器的色块
 function renderRoutes() {
     const container = document.getElementById('routesContainer');
@@ -507,7 +659,15 @@ function renderRoutes() {
     // Store grouped routes for later use
     window.groupedRoutesData = groupedRoutes;
 
-    Object.keys(groupedRoutes).forEach((groupKey, groupIndex) => {
+    // 按排序规则对分组后的线路进行排序，并将排序后的键存储供 selectLine/openLineDetail 使用
+    const sortedKeys = Object.keys(groupedRoutes).sort((keyA, keyB) => {
+        const routeA = groupedRoutes[keyA][0];
+        const routeB = groupedRoutes[keyB][0];
+        return routeSortCompare(routeA, routeB);
+    });
+    window.sortedRouteKeys = sortedKeys;
+
+    sortedKeys.forEach((groupKey, groupIndex) => {
         const routes = groupedRoutes[groupKey];
         const primaryRoute = routes[0]; // use the first route as representative
         
@@ -565,9 +725,10 @@ function selectLine(groupIndex) {
         selectedBlock.classList.add('active');
     }
     
-    // Get the route data for this group
+    // Get the route data for this group (使用排序后的键数组确保与色块顺序一致)
     const groupedRoutes = window.groupedRoutesData;
-    const groupKey = Object.keys(groupedRoutes)[groupIndex];
+    const sortedKeys = window.sortedRouteKeys || Object.keys(groupedRoutes);
+    const groupKey = sortedKeys[groupIndex];
     if (!groupKey) return;
     
     const routes = groupedRoutes[groupKey];
@@ -967,22 +1128,29 @@ function buildStationTransferModel(station) {
     if (station.transfers && station.transfers.length > 0) {
         station.transfers.forEach(transfer => {
 
-            // 判断是否为高铁：mode === 'HIGH_SPEED' 或 type === 'HIGH_SPEED' 或符合线路名称特征
-            const isHighSpeed = (transfer.mode === 'HIGH_SPEED') ||
-                (transfer.type === 'HIGH_SPEED') ||
-                isHighSpeedLineEx(transfer.nameCn, transfer.mode, transfer.type);
-
-            if (isHighSpeed) {
-                hasHighSpeed = true;
-                highSpeedTransfers.push(transfer);
-            } else if (transfer.mode === 'BOAT') {
+            // 先根据 mode 字段做显式判断（避免被名称推测误判为高铁）
+            const modeText = String(transfer.mode || '').trim();
+            if (modeText === 'BOAT') {
                 hasBoat = true;
                 boatTransfers.push(transfer);
-            } else if (transfer.mode === 'AIRPLANE') {
+            } else if (modeText === 'AIRPLANE') {
                 hasAirplane = true;
                 airTransfers.push(transfer);
-            } else {
+            } else if (modeText === 'CABLE_CAR' || modeText === 'CABLECAT') {
+                // 索道/缆车按普通换乘处理
                 normalTransfers.push(transfer);
+            } else {
+                // mode 不明确时，用名称推测是否为高铁
+                const isHighSpeed = (modeText === 'HIGH_SPEED') ||
+                    (transfer.type === 'HIGH_SPEED') ||
+                    isHighSpeedLineEx(transfer.nameCn, transfer.mode, transfer.type);
+
+                if (isHighSpeed) {
+                    hasHighSpeed = true;
+                    highSpeedTransfers.push(transfer);
+                } else {
+                    normalTransfers.push(transfer);
+                }
             }
         });
     }
@@ -1684,8 +1852,8 @@ function openLineDetail(lineNameEncoded) {
     let targetGroupIndex = null;
     let bestMatchScore = -1; // 用于记录最佳匹配分数
     
-    // Search through all groups to find a match
-    const groupKeys = Object.keys(groupedRoutes);
+    // Search through all groups to find a match (使用排序后的键数组确保索引与色块一致)
+    const groupKeys = window.sortedRouteKeys || Object.keys(groupedRoutes);
     for (let i = 0; i < groupKeys.length; i++) {
         const routes = groupedRoutes[groupKeys[i]];
         if (routes && routes.length > 0) {
