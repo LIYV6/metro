@@ -145,13 +145,6 @@ class MultiPageLoader {
             .replace(/'/g, "&#039;");
     }
 
-    // ========== 工具函数：深层取值（支持条件渲染） ==========
-    getValue(obj, path) {
-        if (!obj || !path) return undefined;
-        return path.split('.').reduce((o, k) => o?.[k], obj);
-    }
-
-    // ========== 工具函数：XSS安全净化 ==========
     // ========== 工具函数：XSS安全净化（默认白名单，安全+支持格式） ==========
     sanitizeContent(html, rules) {
         if (!html || typeof html !== 'string') return "";

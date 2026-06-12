@@ -100,7 +100,7 @@
         
         // 将汉堡按钮变为"X"
         if (toggleBtn) {
-            toggleBtn.querySelector('span').textContent = '✕';
+            toggleBtn.classList.add('active');
             toggleBtn.setAttribute('aria-expanded', 'true');
             toggleBtn.setAttribute('aria-label', '关闭导航菜单');
         }
@@ -117,7 +117,7 @@
         
         // 将图标恢复为汉堡菜单
         if (toggleBtn) {
-            toggleBtn.querySelector('span').textContent = '≡';
+            toggleBtn.classList.remove('active');
             toggleBtn.setAttribute('aria-expanded', 'false');
             toggleBtn.setAttribute('aria-label', '打开导航菜单');
         }
@@ -196,7 +196,7 @@
             
             // ESC键关闭
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' || e.keyCode === 27) {
+                if (e.key === 'Escape') {
                     closeMenu();
                 }
             }, false);

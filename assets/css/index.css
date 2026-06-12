@@ -1,5 +1,4 @@
-/* 页面专属样式 */
-
+/* 首页专属样式 */
 /* =====index.html 页面专属变量===== */
 :root {
     /* Hero标题倒影间距 */
@@ -13,9 +12,7 @@
 }
 
 /* Snap container 样式 - 移除滚动，让 body 统一滚动 */
-#snap-container {
-    /* 不设置 overflow，让内容自然流动 */
-}
+#snap-container { /* 不设置 overflow，让内容自然流动 */}
 
 /* 每个节 - 改为普通高度 */
 .snap-page {
@@ -97,12 +94,8 @@
     transition: none !important;
 }
 
-/* 移除对 hero-title 的覆盖，让它保持原有的 animation 动画 */
-
 /* 为 section 添加顶部间距，避免被固定头部遮挡 */
-.snap-page {
-    /* 默认不设置 padding-top */
-}
+.snap-page { /* 默认不设置 padding-top */}
 
 /* 只有非第一节的 section 需要顶部间距 */
 #section-2,
@@ -155,6 +148,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 @media (max-width: 768px) {
     .hero-title {
         font-size: clamp(20px, 6vw, calc(var(--hero-banner-title-size) * 2));
@@ -454,11 +448,5 @@
         grid-template-columns: 1fr;
     }
 }
-
 /* 或者给第二节添加上边距（二选一）*/
-/*
-#second-screen.snap-page {
-    margin-top: 80px;
-}
-*/
-/* =====index.html 页面专属样式结束===== */
+/*#second-screen.snap-page {argin-top: 80px;}*/

@@ -145,13 +145,14 @@
 }
 
 .nav-link {
-    display: inline-block;
-    font-size: 17px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
     color: #000000; /* 黑色字体 */
     border-radius: 0;
     transition: color 200ms ease, background-color 200ms ease, transform 200ms ease, font-weight 200ms ease;
     line-height: 1;
-    padding: 12px 18px 10px;
+    padding: 20px 18px 20px;
 }
 
 .nav-link:hover,
@@ -194,84 +195,16 @@
     opacity: 1;
 }
 
-/* =========================
-启用：多行自适应顶部导航（已启用，适用于 .main-nav.multiline-nav）
-说明：当 .main-nav 带有类 .multiline-nav 时，导航将允许换行（flex-wrap）并根据容器宽度自动分配多行。
-JS 会计算每行可放置的项数并将行数写入 CSS 变量 --nav-rows（见 assets/js/multiline-nav.js）。
-页底背景（.main-footer）会基于 --nav-rows 自动调整顶部内边距，避免视觉遮挡。
-若需禁用：移除 .multiline-nav 类或注释下面的规则。*/
-.main-nav.multiline-nav .nav-inner {
-    padding: 8px 12px;
-}
-
-.main-nav.multiline-nav .nav-scroll {
-    overflow: visible;
-}
-
-.main-nav.multiline-nav .nav-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 12px;
-    padding: 6px 12px;
-    align-content: flex-start;
-    align-items: flex-start;
-}
-
-.main-nav.multiline-nav .nav-list .nav-item {
-    flex: 0 0 auto;
-    align-self: flex-start;
-}
-
-/* 根据 --nav-rows 调整 main-nav 高度（每行 64px）并为主体及页脚留出空间
-多行导航容器高度说明：
-JS 会根据导航项和容器宽度计算实际行数并通过 CSS 变量写入 --nav-rows。
-每行的高度由 --nav-row-height 决定（默认 64px），便于不同字体/行高情况下做微调。
-height 使用两个变量相乘，便于 JS 或样式在运行时调整单行高度或行数。*/
-.main-nav.multiline-nav {
-    --nav-rows: 1;
-    /* 默认值，JS 会覆盖真实值 */
-    --nav-row-height: 64px;
-    /* 单行高度的默认值，可由 JS 覆盖 */
-    height: calc(var(--nav-rows) * var(--nav-row-height));
-}
-
-/* 底部延伸边框：使用 .nav-inner::after 在导航容器底部绘制一条背景色线，
-并将其垂直位置与多行高度对齐，确保无论换行多少行边框都延伸到最下方。
-该伪元素不会遮挡交互（pointer-events: none）。如需不同颜色或粗细，可覆盖下列变量。 */
-.main-nav.multiline-nav .nav-inner::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    /* 将伪元素放置在导航容器的实际底部，使用 calc 以适配多行高度 */
-    top: calc(100% - 1px);
-    height: 1px;
-    background: rgba(255, 255, 255, 0.08);
-    /* 可覆盖 */
-    pointer-events: none;
-    z-index: 1199;
-}
-
-/* 页脚顶部内边距调整：当导航增高时，页脚背景可视上移以保持视觉平衡 */
+/* ========== Footer ========== */
+/*页脚顶部内边距调整：当导航增高时，页脚背景可视上移以保持视觉平衡*/
 .main-footer {
     width:100%;
     background-color:#f0f0f0;
     color:#333;
     transition: padding-top 220ms ease;
     padding: calc(32px + (var(--nav-rows, 1) - 1) * 12px) 0 32px;
-    /* 基础 32px，加上每行的微调 */
 }
 
-/* 在较窄视口里限制最大行数示例（可按需调整） */
-@media (max-width: 420px) {
-    .main-nav.multiline-nav {
-        height: calc(var(--nav-rows) * 64px);
-    }
-}
-
-/* ====================================================== */
-/* ========== Footer ========== */
 /* 页脚内容容器 */
 .main-footer .container {
     max-width: 1200px;
@@ -1022,7 +955,6 @@ body:not(.js-loaded) .server-section {
 }
 
 /* ========== 汉堡菜单样式（仅移动端显示）========== */
-
 /* 汉堡按钮 - 默认隐藏，仅在移动端显示 */
 .nav-toggle {
     display: none; /* 桌面端隐藏 */
@@ -1030,21 +962,62 @@ body:not(.js-loaded) .server-section {
     border: none;
     cursor: pointer;
     padding: 8px;
-    font-size: 28px;
-    color: #000000;
-    line-height: 1;
-    transition: color 0.2s ease;
+    width: 52px;
+    height: 52px;
     z-index: 1200;
     position: relative;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.nav-toggle:hover {
-    color: #c00000;
-}
-
-.nav-toggle span {
+/* 图标容器：相对定位，作为线条参考系 */
+.nav-toggle-icon {
+    position: relative;
     display: block;
-    font-weight: bold;
+    width: 28px;
+    height: 20px;
+    pointer-events: none;
+}
+
+/* 通用横线样式 */
+.nav-toggle-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #000000;
+    border-radius: 3px;
+    will-change: transform, opacity;
+    transform-origin: center center;
+    /* 只过渡 transform 和 opacity，避免 Layout 触发 */
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 三条线统一用 top: 50% 定位，靠 translateY 拉开距离 */
+.nav-toggle-line:nth-child(1) {
+    top: 50%;
+    transform: translateY(-8px);
+}
+.nav-toggle-line:nth-child(2) {
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 1;
+}
+.nav-toggle-line:nth-child(3) {
+    top: 50%;
+    transform: translateY(6px);
+}
+
+/* 激活态：中间线消失，上下线旋转成 X */
+.nav-toggle.active .nav-toggle-line:nth-child(1) {
+    transform: translateY(-50%) rotate(45deg);
+}
+.nav-toggle.active .nav-toggle-line:nth-child(2) {
+    transform: translateY(-50%) scaleX(0.8);
+    opacity: 0;
+}
+.nav-toggle.active .nav-toggle-line:nth-child(3) {
+    transform: translateY(-50%) rotate(-45deg);
 }
 
 /* 移动端导航面板 */

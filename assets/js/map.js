@@ -87,8 +87,11 @@ function initLinemap() {
     let startPosX, startPosY; // 拖拽起始偏移
 
     // 触摸状态变量（移动端适配）
-    let touchStartX, touchStartY;       // 触摸起始坐标
-    let touchStartPosX, touchStartPosY; // 触摸起始偏移
+    let touchStartX, touchStartY;       // 单指触摸起始坐标
+    let touchStartPosX, touchStartPosY; // 单指触摸起始偏移
+    let touchStartDistance = 0;         // 双指起始距离
+    let touchStartScale = 1;            // 双指起始缩放比例
+    let isPinching = false;             // 是否正在双指缩放
 
     // 缩放限制：增大最大放大倍数，允许更小最小值
     const MIN_SCALE = 0.3;
@@ -139,7 +142,7 @@ function initLinemap() {
         // 若数据尚未加载，显示加载提示并在加载完成后更新中文
         if (!item) {
             infoText.textContent = '正在加载...';
-            document.getElementById('modal-title').textContent = '线路说明';
+            document.getElementById('modal-title').textContent = '地图说明';
             infoModal.classList.add('show');
             lineInfoPromise.then(() => {
                 const loaded = lineInfo[selectedValue] || { zh: '' };
@@ -149,7 +152,7 @@ function initLinemap() {
         }
         //数据已就绪，直接显示中文
         infoText.textContent = item.zh || '';
-        document.getElementById('modal-title').textContent = '线路说明';
+        document.getElementById('modal-title').textContent = '地图说明';
         infoModal.classList.add('show');
     });
 
@@ -209,32 +212,87 @@ function initLinemap() {
         isDragging = false;
     });
 
-// ========== 触摸拖拽（移动端适配） ==========
+// ========== 触摸操作（移动端：单指平移 + 双指缩放） ==========
     mapContainer.addEventListener('touchstart', function(e) {
         if (e.target.closest('button, a, input, select, textarea, .control-btn, .info-btn, .map-select')) return;
-        if (e.touches.length !== 1) return;
 
-        isDragging = true;
         const rect = mapContainer.getBoundingClientRect();
-        touchStartX = e.touches[0].clientX - rect.left;
-        touchStartY = e.touches[0].clientY - rect.top;
-        touchStartPosX = posX;
-        touchStartPosY = posY;
-    }, { passive: true });
 
-    window.addEventListener('touchmove', function(e) {
-        if (!isDragging || e.touches.length !== 1) return;
-        const rect = mapContainer.getBoundingClientRect();
-        const currentX = e.touches[0].clientX - rect.left;
-        const currentY = e.touches[0].clientY - rect.top;
-        posX = touchStartPosX + (currentX - touchStartX);
-        posY = touchStartPosY + (currentY - touchStartY);
-        updateMapTransform();
-    }, { passive: true });
+        if (e.touches.length === 2) {
+            // 双指缩放开始
+            isPinching = true;
+            isDragging = false;
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            touchStartDistance = Math.hypot(dx, dy);
+            touchStartScale = scale;
+            // 记录起始偏移，用于缩放时保持中心点不变
+            touchStartPosX = posX;
+            touchStartPosY = posY;
+        } else if (e.touches.length === 1 && !isPinching) {
+            // 单指平移开始
+            isDragging = true;
+            isPinching = false;
+            touchStartX = e.touches[0].clientX - rect.left;
+            touchStartY = e.touches[0].clientY - rect.top;
+            touchStartPosX = posX;
+            touchStartPosY = posY;
+        }
+        e.preventDefault();
+    }, { passive: false });
 
-    window.addEventListener('touchend', function(e) {
+    mapContainer.addEventListener('touchmove', function(e) {
+        if (e.target.closest('button, a, input, select, textarea, .control-btn, .info-btn, .map-select')) return;
+
+        if (isPinching && e.touches.length === 2) {
+            // 双指缩放：计算距离变化，保持双指中心点不动
+            const rect = mapContainer.getBoundingClientRect();
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const currentDistance = Math.hypot(dx, dy);
+            const scaleRatio = currentDistance / touchStartDistance;
+            const oldScale = scale;
+            const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, touchStartScale * scaleRatio));
+
+            // 双指中心点（相对于容器）
+            const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+            const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+
+            // 计算中心点在图片坐标系中的位置（基于当前状态）
+            const imgX = (midX - (rect.width / 2 + posX)) / oldScale;
+            const imgY = (midY - (rect.height / 2 + posY)) / oldScale;
+
+            scale = newScale;
+            posX = midX - rect.width / 2 - imgX * newScale;
+            posY = midY - rect.height / 2 - imgY * newScale;
+
+            updateMapTransform();
+        } else if (isDragging && e.touches.length === 1 && !isPinching) {
+            // 单指平移
+            const rect = mapContainer.getBoundingClientRect();
+            const currentX = e.touches[0].clientX - rect.left;
+            const currentY = e.touches[0].clientY - rect.top;
+            posX = touchStartPosX + (currentX - touchStartX);
+            posY = touchStartPosY + (currentY - touchStartY);
+            updateMapTransform();
+        }
+        // 阻止浏览器默认行为（页面滚动、下拉刷新）
+        e.preventDefault();
+    }, { passive: false });
+
+    mapContainer.addEventListener('touchend', function(e) {
         if (e.touches.length === 0) {
             isDragging = false;
+            isPinching = false;
+        } else if (e.touches.length === 1 && isPinching) {
+            // 双指缩放后抬起一指，切换为单指平移
+            isPinching = false;
+            isDragging = true;
+            const rect = mapContainer.getBoundingClientRect();
+            touchStartX = e.touches[0].clientX - rect.left;
+            touchStartY = e.touches[0].clientY - rect.top;
+            touchStartPosX = posX;
+            touchStartPosY = posY;
         }
     });
 

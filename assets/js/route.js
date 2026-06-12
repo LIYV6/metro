@@ -1003,7 +1003,7 @@ function buildNormalTransferBadges(normalTransfers, safeNameCn, safeNameEn, safe
         const pBadge = transfer.platformName ? `<span style="background:rgba(0,0,0,0.2); border-radius:2px; padding:0 4px; margin-left:4px; font-size:10px;">站台 ${transfer.platformName}</span>` : '';
         const transferPayload = [{ name: transfer.name, nameRaw: transfer.name, nameAll: transfer.name, nameCn: transfer.name, nameEn: transfer.name, color: transfer.color, mode: transfer.mode, platformName: transfer.platformName }];
         const payload = encodeURIComponent(JSON.stringify(transferPayload));
-        html += `<div class="transfer-link-item direct-item" title="${transferTitle}" style="--tc:${transfer.color};" onclick="event.stopPropagation(); showStationInfo(this, '${safeNameCn}', '${safeNameEn}', '${payload}', '${safeExitsData}')"><span class="transfer-link-dot"></span><span class="transfer-link-line"></span><span class="transfer-link-dot transfer-link-dot-end"></span><span class="transfer-link-text">${transferName}${pBadge}</span></div>`;
+        html += `<div class="transfer-link-item direct-item" title="${transferTitle}" style="--tc:${transfer.color};" onclick="showStationInfo(this, '${safeNameCn}', '${safeNameEn}', '${payload}', '${safeExitsData}')"><span class="transfer-link-dot"></span><span class="transfer-link-line"></span><span class="transfer-link-dot transfer-link-dot-end"></span><span class="transfer-link-text">${transferName}${pBadge}</span></div>`;
     });
     
     return html;
@@ -1022,7 +1022,7 @@ function buildHighSpeedBadge(station, highSpeedTransfers, hasNearby, safeNameCn,
     const hsData = encodeURIComponent(JSON.stringify(highSpeedTransfers));
     const payload = hasNearby ? safeMergedPayload : hsData;
     const hsText = escapeJsString(getHighSpeedTransferHint(station));
-    return `<div class="transfer-link-item summary-item hs-item" onclick="event.stopPropagation(); showStationInfo(this, '${safeNameCn}', '${safeNameEn}', '${payload}', '${safeExitsData}')"><span class="transfer-link-dot"></span><span class="transfer-link-line"></span><span class="transfer-link-dot transfer-link-dot-end"></span><span class="transfer-link-text">${hsText}</span></div>`;
+    return `<div class="transfer-link-item summary-item hs-item" onclick="showStationInfo(this, '${safeNameCn}', '${safeNameEn}', '${payload}', '${safeExitsData}')"><span class="transfer-link-dot"></span><span class="transfer-link-line"></span><span class="transfer-link-dot transfer-link-dot-end"></span><span class="transfer-link-text">${hsText}</span></div>`;
 }
 
 // 构建其他模式（轮船/飞机）换乘徽章
@@ -1038,7 +1038,7 @@ function buildModeTransferBadge(modeLabel, transfers, hasNearby, safeNameCn, saf
     const modeData = encodeURIComponent(JSON.stringify(transfers));
     const payload = hasNearby ? safeMergedPayload : modeData;
     const text = `可换乘${modeLabel}`;
-    return `<div class="transfer-link-item summary-item other-mode-transfer" onclick="event.stopPropagation(); showStationInfo(this, '${safeNameCn}', '${safeNameEn}', '${payload}', '${safeExitsData}')"><span class="transfer-link-dot"></span><span class="transfer-link-line"></span><span class="transfer-link-dot transfer-link-dot-end"></span><span class="transfer-link-text">${text}</span></div>`;
+    return `<div class="transfer-link-item summary-item other-mode-transfer" onclick="showStationInfo(this, '${safeNameCn}', '${safeNameEn}', '${payload}', '${safeExitsData}')"><span class="transfer-link-dot"></span><span class="transfer-link-line"></span><span class="transfer-link-dot transfer-link-dot-end"></span><span class="transfer-link-text">${text}</span></div>`;
 }
 
 // 生成线路的 HTML 结构。包括站点名称、换乘徽章、点击事件等
@@ -1622,7 +1622,7 @@ function getStationGlobalInfo(stationName, stationEn) {
 // @param {string} exitsJsonEscaped - URL编码的出口信息JSON
 // @param {string} tooltipId - tooltip容器ID，默认为'tooltip'
 function showStationInfo(element, nameCn, nameEn, transfersJsonEscaped, exitsJsonEscaped, tooltipId = 'tooltip') {
-    if (window.event) window.event.stopPropagation();
+    // 事件传播由调用方的 onclick 内联处理
     
     const tooltip = document.getElementById(tooltipId);
     if (!tooltip) {

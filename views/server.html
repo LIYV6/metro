@@ -18,12 +18,9 @@
     <script src="../assets/js/libs/mustache.min.js"></script>
     <script src="../assets/js/libs/json5.min.js"></script>
 </head>
-
 <body class="is-loading">
 <script>window.PAGE_ID = 'server';</script>
-<!-- 页顶部 -->
 <div data-include="header"></div>
-
 
 <main class="server-page">
     <!-- 左侧导航菜单 -->
@@ -40,29 +37,17 @@
     <!-- 右侧内容区域 -->
     <div class="server-content">
         <!-- 乘客守则 -->
-        <section class="server-section" id="passenger-rule">
-            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
-        </section>
-    
+        <section class="server-section" id="passenger-rule"></section>
         <!-- 查看信息 -->
-        <section class="server-section" id="see-route-guide">
-            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
-        </section>
-        
+        <section class="server-section" id="see-route-guide"></section>
         <!-- 鲤湖湾州及鲤城之地图 -->
-        <section class="server-section" id="lhwlc-map">
-            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
-        </section>
-        <section class="server-section" id="3d-map">
-
-        </section>
+        <section class="server-section" id="lhwlc-map"></section>
+        <!-- 3D地图 -->
+        <section class="server-section" id="3d-map"></section>
         <!-- 乘车指南 -->
-        <section class="server-section" id="use-guide">
-            <!-- 内容由 loader.js 从 JSON5 注入，使用 article 标签 -->
-        </section>
+        <section class="server-section" id="use-guide"></section>
     </div>
 </main>
-<!--网站页脚 -->
 <div data-include="footer"></div>
 
 <script src="../assets/js/include-fragments.js"></script>

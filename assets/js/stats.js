@@ -1,6 +1,5 @@
 // ==================== 首页功能模块 ====================
 // 包含：数据统计面板 + 滚动揭示动画
-// ================================================
 
 // ==================== 统一调试配置 ====================
 const STATS_DEBUG_CONFIG = {
@@ -64,9 +63,7 @@ function getCachedData() {
     return null;
 }
 
-/**
- * 保存数据到缓存
- */
+/*保存数据到缓存*/
 function setCacheData(data) {
     if (!STATS_CONFIG.enableCache) {
         debugLog('stats', '缓存已禁用，跳过保存');
@@ -79,9 +76,7 @@ function setCacheData(data) {
     debugLog('stats', '数据已缓存');
 }
 
-/**
- * 加载统计数据（带缓存机制）
- */
+/*加载统计数据（带缓存机制）*/
 async function loadStats() {
     if (statsCache.isLoading) {
         debugLog('stats', '数据加载中，请稍候...');
@@ -206,10 +201,8 @@ function initStatsObserver() {
     observer.observe(statsPanel);
 }
 
-// ================================================
-// ==================== 滚动揭示动画模块 ===============
-// ================================================
 
+// ==================== 滚动揭示动画模块 ===============
 /**
  * 初始化滚动揭示动画
  */

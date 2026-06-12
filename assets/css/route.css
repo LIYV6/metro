@@ -15,7 +15,6 @@
 
 /* route页面特定的body样式，覆盖base.css的全局body */
 body {
-    font-family: Georgia, "Times New Roman", "Songti SC", "Noto Serif SC", serif;
     color: var(--ink);
     background: #fffcf7f5; /* 与展示容器背景色一致，消除左侧分界颜色 */
     min-height: 100vh;

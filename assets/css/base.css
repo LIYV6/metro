@@ -1,19 +1,18 @@
 /*此处定义全局变量和全局样式重置*/
-
 /* 根变量：全局主题配置 */
 :root {
     /* 导航栏背景色（深蓝色）*/
     --nav-bg-color: #003366;
     /* 深色背景上的白色文字/图标 */
     --text-on-dark: #ffffff;
-    /* MTR 主题强调色（紫色）*/
+    /* 主题强调色（紫色）*/
     --mtr-accent-purple: #540a5e;
     /* 正文默认色：深灰色 */
     --body-text-color: #333333;
     /* 品牌红色（用于按钮、强调等）*/
     --brand-red: #e60012;
-    /* 全局字体策略：英文字母/数字优先使用 Arial，其次 Times New Roman；中文优先使用黑体，其次微软雅黑 */
-    --body-font: "Arial", "Times New Roman", "SimHei", "Microsoft YaHei", sans-serif;
+    /* 全局字体策略：英文优先 Georgia，中文优先宋体系列；原文 Arial/黑体作为兜底 */
+    --body-font: Georgia, "Times New Roman", "Songti SC", "Noto Serif SC", "Arial", "SimHei", "Microsoft YaHei", serif;
     /* 头部固定高度，方便布局计算 */
     --header-height: 64px;
     /* 页面文章/声明/新闻正文字体 */
@@ -35,7 +34,7 @@
     box-sizing: border-box;
 }
 
-/* 主标题（h1）全局样式，.page-title 使用该尺寸以保证与 h1 等价 */
+/* 标题（h1-h6）与品牌名等从 body 继承 Georgia，文章正文由 .content-card 覆盖为楷体 */
 h1 { font-size: var(--heading-h1-size); }
 
 html, body {height: 100%;}
@@ -98,9 +97,8 @@ input {
 }
 
 /* ========== 页面加载动画 ==========
- * 加载时：header和footer显示，main区域显示loading动画
- * 加载完成后：移除loading类，显示实际内容
- */
+加载时：header和footer显示，main区域显示loading动画
+加载完成后：移除loading类，显示实际内容*/
 
 /* Loading遮罩层 */
 .page-loading-overlay {

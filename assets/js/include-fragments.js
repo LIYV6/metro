@@ -516,7 +516,7 @@ function debugLog(module, ...args) {
         document.body.style.overflow = 'hidden';
 
         if (_menuToggleBtn) {
-            _menuToggleBtn.querySelector('span').textContent = '✕';
+            _menuToggleBtn.classList.add('active');
             _menuToggleBtn.setAttribute('aria-expanded', 'true');
             _menuToggleBtn.setAttribute('aria-label', '关闭导航菜单');
         }
@@ -527,7 +527,7 @@ function debugLog(module, ...args) {
         _menuOpen = false;
 
         if (_menuToggleBtn) {
-            _menuToggleBtn.querySelector('span').textContent = '≡';
+            _menuToggleBtn.classList.remove('active');
             _menuToggleBtn.setAttribute('aria-expanded', 'false');
             _menuToggleBtn.setAttribute('aria-label', '打开导航菜单');
         }

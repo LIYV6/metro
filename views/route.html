@@ -19,10 +19,8 @@
     <style>/* route.html 页面始终隐藏页脚。使用更具体的选择器以匹配动态加载的页脚 */
         .main-footer {display: none !important;}
     </style>
-
 </head>
 <body class="is-loading">
-<!-- 页顶部 -->
     <div data-include="header"></div>
 
 <main class="route-page">
@@ -111,6 +109,14 @@
                         <button class="close-btn" id="closeBtn">&times;</button>
                         <h2 id="modal-title">地图说明</h2>
                         <div class="modal-body" id="info-text"><!-- Content injected via JS --></div>
+                        <br/>
+                        <br/>
+                        <p><strong>操作提示</strong></p>
+                        <ul style="text-align:left; font-size:14px; line-height:1.8; padding-left:20px; margin:4px 0 12px;">
+                            <li><strong>电脑端：</strong>鼠标滚轮缩放；点击 <kbd>+</kbd> / <kbd>-</kbd> 按钮缩放；按住鼠标拖拽平移；按 <kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&larr;</kbd><kbd>&rarr;</kbd> 方向键滚动地图</li>
+                            <li><strong>移动端：</strong>双指捏合缩放；单指滑动平移；点击 <kbd>+</kbd> / <kbd>-</kbd> 按钮缩放</li>
+                            <li>点击 <kbd>&#x27F3;</kbd> 按钮重置地图至初始视图</li>
+                        </ul>
 
                         <div class="modal-footer">
                             <p data-i18n="contact">信息提供: 
@@ -131,14 +137,10 @@
 
             <!--车站信息内容区域-->
             <div id="station-info-content" class="tab-content">
-                <!-- 站点选择容器 -->
                 <div class="station-selector-container">
-                    <div id="stationBlocksContainer" class="station-blocks-container">
-                        <!-- 站点色块将由JS动态生成 -->
-                    </div>
+                <div id="stationBlocksContainer" class="station-blocks-container"><!--站点色块--></div>
                 </div>
-                <div class="selector-divider"></div><!--分割线-->
-                
+                <div class="selector-divider"><!--分割线--></div>
                 <!-- 车站信息页面的tooltip（直接显示站点详细信息） -->
                 <div id="station-tooltip" class="tooltip-container">
                     <div class="empty-state">
@@ -151,9 +153,7 @@
 
     <button id="backToTop" class="back-to-top" title="返回顶部">↑</button>
 </main><!--主体区域结束-->
-
-<!--网站页脚-->
-        <div data-include="footer" id="site-footer"></div>
+    <div data-include="footer" id="site-footer"></div>
 
 <script src="../assets/js/include-fragments.js"></script>
 <script src="../assets/js/libs/sql-wasm.js"></script>
