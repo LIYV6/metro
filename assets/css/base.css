@@ -43,7 +43,20 @@ html, body {height: 100%;}
 [id] {scroll-margin-top: calc(max(var(--header-height), calc(var(--nav-rows, 1) * var(--nav-row-height, 64px))) + 12px);}
 
 /*全局平滑滚动（页面内锚点/脚本滚动优先）*/
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+}
+
+/* 隐藏页面最右侧滚动条，保留滚动功能 */
+html,
+body {
+    scrollbar-width: none;            /* Firefox */
+    -ms-overflow-style: none;         /* IE/Edge */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;                    /* Chrome/Safari/新Edge */
+}
 
 body {
     display: flex;

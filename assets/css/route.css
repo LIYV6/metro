@@ -11,6 +11,13 @@
     --shadow-md: 0 12px 28px #251c101a;
     /* 动态变量：线路颜色（由JS动态设置，此处提供默认值）*/
     --route-color: #1a1a1a;
+    /* 动态变量：线路标题文字色（由JS根据线路色亮度自动计算）*/
+    --route-text-color: #ffffff;
+    --route-text-shadow: rgba(0,0,0,0.5);
+    /* 线路标题渐变：左侧纯色区间的终点位置（占容器宽度的百分比） */
+    --gradient-solid-distance: 20%;
+    /* 线路标题渐变：渐变过渡到完全无色的终点位置（占容器宽度的百分比），之后保持无色 */
+    --gradient-fade-end: 80%;
 }
 
 /* route页面特定的body样式，覆盖base.css的全局body */
@@ -52,7 +59,15 @@ body {
     top: var(--header-height);
     height: calc(100vh - var(--header-height));
     overflow-y: auto;
+    overflow-x: hidden;
     z-index: 10;
+    /* 隐藏滚动条 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.left-sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 /* 二级导航区域 */
@@ -88,7 +103,7 @@ body {
 }
 
 .secondary-nav-section .secondary-nav-item:hover {
-    background: #f5f5f5;
+    transform: translateX(4px) scale(1.06);
 }
 
 .secondary-nav-section .secondary-nav-item.active {
@@ -142,7 +157,15 @@ body {
     flex: 1;
     padding: 35px 0;
     overflow-y: auto;
+    overflow-x: hidden;
     background: #fffcf7; /* 作业本纸的温暖米黄色 */
+    /* 隐藏滚动条 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sub-nav-section::-webkit-scrollbar {
+    display: none;
 }
 
 .sub-nav-content {
@@ -180,6 +203,7 @@ body {
 .sub-nav-content .map-nav-item:hover {
     background: #ebebeb;
     color: #c00000;
+    transform: translateX(4px) scale(1.03);
 }
 
 .sub-nav-content .category-tab.active,
@@ -271,9 +295,7 @@ body {
 .secondary-nav-item:hover,
 .category-tab:hover,
 .map-nav-item:hover {
-    background: #ffffff1a; /* 悬停时微亮 */
-    color: #ffffff;
-    transform: none;
+    transform: translateX(4px) scale(1.06);
 }
 
 .secondary-nav-item.active {
@@ -282,10 +304,9 @@ body {
     font-weight: 600 !important;
 }
 
-/* 选中的二级导航项悬停时变白 */
+/* 选中的二级导航项悬停时仅文字放大+右移 */
 .secondary-nav-item.active:hover {
-    background: #ffffff !important;
-    color: #e60012 !important;
+    transform: translateX(4px) scale(1.06);
 }
 
 .secondary-nav-item a,
@@ -563,12 +584,12 @@ body {
 
 .line-block-label,
 .station-block-label {
-    color: #ffffff;
+    color: var(--route-text-color, #ffffff);
     font-size: 13px;
     font-weight: 700;
     text-align: center;
     white-space: nowrap;
-    text-shadow: 0 1px 3px #00000066;
+    text-shadow: 0 1px 3px var(--route-text-shadow, #00000066);
     z-index: 1;
     letter-spacing: 0.3px;
 }
@@ -679,7 +700,7 @@ body {
 .route-card {
     background: #fffcf7eb;
     border: 1px solid #ffffffa3;
-    border-radius: 26px;
+    border-radius: 0;
     padding: 0;
     margin-bottom: 22px;
     overflow: hidden;
@@ -699,41 +720,32 @@ body {
     align-items: center;
     margin: 0;
     padding: 18px 22px;
-    background:
-        linear-gradient(135deg, #0b1324f5 0%, #1e293bef 100%);
+    background: linear-gradient(to right, var(--route-color) 0%, var(--route-color) var(--gradient-solid-distance), transparent var(--gradient-fade-end));
     color: #ffffff;
     flex-wrap: wrap;
     gap: 12px;
 }
 .unified-header {
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start;
+    text-align: left;
 }
 .route-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 0;
-    margin-right: 12px;
-    flex-shrink: 0;
-    border: 2px solid #ffffff;
+    display: none;
 }
 .route-title h2 {
-    color: #ffffff;
+    color: var(--route-text-color, #ffffff);
     font-size: 18px;
     margin-bottom: 2px;
     font-weight: 700;
     letter-spacing: 0.3px;
-    /* 增强立体感：多层阴影 + 内发光效果 */
-    text-shadow: 
-        0 1px 0 #0000004d,
-        0 2px 4px #00000066,
-        0 4px 8px #0000004d,
-        inset 0 1px 0 #ffffff26;
+    text-shadow: 0 1px 3px var(--route-text-shadow, rgba(0,0,0,0.5));
 }
 .route-title p {
-    color: #ffffffb3;
+    color: var(--route-text-color, #ffffff);
+    opacity: 0.7;
     font-size: 12px;
     font-weight: 500;
+    text-shadow: 0 1px 2px var(--route-text-shadow, rgba(0,0,0,0.5));
 }
 /*方向选择*/
 .direction-selector {
@@ -778,6 +790,15 @@ body {
     overflow-y: auto;
     align-items: flex-start;
     min-height: 160px;
+}
+
+/* Canvas 主线：绝对定位覆盖容器，z-index 低于站点圆点 */
+.station-main-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* 垂直滚动条：与线路色块容器保持一致 */
@@ -935,8 +956,8 @@ body {
         min-width: 0;
     }
 
-    /* 连接线不需要在竖向模式使用 */
-    .station-main-line {
+    /* Canvas 主线在竖向模式隐藏（移动端用 ::after 伪元素竖向连线） */
+    .station-main-canvas {
         display: none !important;
     }
     /* 移动端手风琴适配 */
@@ -1263,20 +1284,19 @@ body {
 
 /* Tooltip 样式（从 JS 中提取）*/
 .tooltip-header {
-    background: linear-gradient(135deg, 
-        #0b1324fa 0%, 
-        #1e293bf5 50%,
-        #2d3748f0 100%);
+    background: linear-gradient(to right, var(--route-color) 0%, var(--route-color) var(--gradient-solid-distance), transparent var(--gradient-fade-end));
     padding: 20px 24px;
     margin-bottom: 16px;
     width: 100%;
     box-sizing: border-box;
-    border-radius: 14px 14px 0 0;
+    border-radius: 0;
     position: relative;
     overflow: hidden;
-    box-shadow: 
-        0 4px 20px #0000004d,
-        inset 0 1px 0 #ffffff1a;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 /* Tooltip头部装饰性背景图案 */
@@ -1294,22 +1314,17 @@ body {
 .tooltip-title {
     font-size: 24px;
     font-weight: 800;
-    color: #ffffff;
+    color: var(--route-text-color, #ffffff);
     letter-spacing: 0.5px;
-    /* 增强立体感：多层阴影 + 内发光 + 浮雕效果 */
-    text-shadow: 
-        0 1px 0 #00000066,
-        0 2px 4px #00000080,
-        0 4px 10px #00000066,
-        0 6px 16px #0000004d,
-        inset 0 1px 0 #ffffff33,
-        inset 0 -1px 0 #00000033;
+    text-shadow: 0 1px 4px var(--route-text-shadow, rgba(0,0,0,0.55));
 }
 
 .tooltip-subtitle {
-    color: #ffffffb3;
+    color: var(--route-text-color, #ffffff);
+    opacity: 0.7;
     font-size: 14px;
-    margin-top: 4px;
+    margin-top: 0;
+    text-shadow: 0 1px 2px var(--route-text-shadow, rgba(0,0,0,0.5));
 }
 
 .tooltip-section {
@@ -1338,7 +1353,8 @@ body {
 
 .tooltip-line-badge {
     background:var(--line-color);
-    color: #fff;
+    color: var(--route-text-color, #fff);
+    text-shadow: 0 1px 2px var(--route-text-shadow, rgba(0,0,0,0.5));
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 13px;
@@ -1430,7 +1446,7 @@ body {
     }
     .tooltip-header {
         padding: 16px 20px;
-        border-radius: 10px;
+        border-radius: 0;
     }
     .tooltip-title {
         font-size: 20px;
@@ -1521,35 +1537,61 @@ body {
     cursor: grabbing; /*按住时抓手样式*/
 }
 
-/*缩放控制按钮：右下角垂直排列*/
+/*缩放控制按钮*/
 .control-buttons {
     position: absolute;
     bottom: 20px;
     right: 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     z-index: 99;
 }
 
 .control-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 4px;
-    background: #ffffff; /* 白色背景 */
-    color: #003366; /* 深蓝色文字 */
-    font-size: 14px;
+    width: 57px;
+    height: 57px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.92);
+    color: #333;
+    font-size: 30px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid #00336633; /* 淡蓝色边框 */
-    box-shadow: 0 2px 8px #00000026; /* 轻微阴影 */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, box-shadow 0.15s;
+    line-height: 1;
+    padding: 0;
 }
 
 .control-btn:hover {
-    background: #f0f4f8; /* 悬停时淡灰色背景 */
-    border-color: #00336666;
-    transform: scale(1.05);
+    background: #e8f0fe;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.22);
+}
+
+.control-btn:active {
+    background: #d2e3fc;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .control-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 24px;
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .control-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 20px;
+    }
 }
 
 /*信息弹窗样式*/
@@ -1880,19 +1922,3 @@ body.route-map-active .main-footer {
     }
 }
 
-/* ========== 站点色块Loading动画样式 ========== */
-.station-blocks-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-    width: 100%;
-    gap: 16px;
-}
-
-.loading-text {
-    font-size: 14px;
-    color: #666;
-    font-weight: 500;
-}
