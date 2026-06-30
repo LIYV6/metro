@@ -10,7 +10,7 @@
   },
 
   "security": {
-    "allowedTags": ["p", "br", "b", "strong", "i", "em", "u", "a", "ul", "ol", "li", "blockquote", "img"],
+    "allowedTags": ["p", "br", "b", "strong", "i", "em", "u", "a", "ul", "ol", "li", "blockquote", "img", "address", "h1", "h2", "h3", "h4", "span"],
     "allowedAttr": ["href", "target", "src", "alt", "title", "width", "height", "loading"],
     "forbidAttr": ["onerror", "onload", "onclick", "style"]
   }

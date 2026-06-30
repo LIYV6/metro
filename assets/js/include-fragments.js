@@ -1,5 +1,5 @@
-
-// ==================== 统一调试配置 ====================
+// HTML页面拼接/汉堡菜单
+// ==== 统一调试配置 =====
 const FRAGMENTS_DEBUG_CONFIG = {
     // 全局调试开关
     enabled: false,
@@ -29,7 +29,7 @@ function debugLog(module, ...args) {
     // 捕获当前文件的 debugLog，防止被后加载脚本覆盖
     const _debugLog = debugLog;
 
-    // ---------- 默认配置（可通过构造器覆盖） ----------
+    // ----- 默认配置（可通过构造器覆盖） ------
     const DEFAULT_CONFIG = {
         // 占位符定义：键为片段名，值包含 selector 与 candidates（相对路径数组或生成函数）
         placeholders: {
@@ -143,6 +143,28 @@ function debugLog(module, ...args) {
     }
 
     // 修复注入片段内的相对链接：支持相对路径和绝对路径的自动转换
+    // （提取：单链接修复逻辑）
+    function fixSingleLinkHref(a, isInViews, nameSet) {
+        const href = a.getAttribute('href');
+        if (!href) return;
+        // 跳过外部链接、锚点、已经是绝对路径的链接
+        if (/^(https?:)?\/\//i.test(href)) return;
+        if (href.startsWith('#')) return;
+        
+        // 如果是简单文件名（如 info.html）且在 views 目录外，添加 views/ 前缀
+        if (!isInViews && !href.startsWith('/') && !href.startsWith('./') && !href.startsWith('../')) {
+            const name = href.split('?')[0].split('#')[0];
+            if (nameSet[name]) {
+                a.setAttribute('href', 'views/' + href);
+            }
+        }
+        // 如果在 views 目录内且链接以 /views/ 开头，转换为相对路径
+        else if (isInViews && href.startsWith('/views/')) {
+            const relativePath = href.substring(7); // 去掉 '/views/'
+            a.setAttribute('href', relativePath);
+        }
+    }
+
     function fixRelativeLinks(containers, filenames) {
         try {
             const path = location.pathname || '';
@@ -155,35 +177,15 @@ function debugLog(module, ...args) {
             containers.forEach(containerSel => {
                 qAll(containerSel).forEach(root => {
                     qAll('a', root).forEach(a => {
-                        try {
-                            const href = a.getAttribute('href');
-                            if (!href) return;
-                            // 跳过外部链接、锚点、已经是绝对路径的链接
-                            if (/^(https?:)?\/\//i.test(href)) return;
-                            if (href.startsWith('#')) return;
-                            
-                            // 如果是简单文件名（如 info.html）且在 views 目录外，添加 views/ 前缀
-                            if (!isInViews && !href.startsWith('/') && !href.startsWith('./') && !href.startsWith('../')) {
-                                const name = href.split('?')[0].split('#')[0];
-                                if (nameSet[name]) {
-                                    a.setAttribute('href', 'views/' + href);
-                                }
-                            }
-                            // 如果在 views 目录内且链接以 /views/ 开头，转换为相对路径
-                            else if (isInViews && href.startsWith('/views/')) {
-                                const relativePath = href.substring(7); // 去掉 '/views/'
-                                a.setAttribute('href', relativePath);
-                            }
-                        } catch (e) { /* per-link ignore */ }
+                        try { fixSingleLinkHref(a, isInViews, nameSet); } catch (e) { /* per-link ignore */ }
                     });
                 });
             });
         } catch (e) { /* ignore overall link-fix errors */ }
     }
 
-    // 管理 loading state（已统一由 page-loading-overlay 处理）
-    
-    // ⭐ 新增：创建和移除页面loading遮罩
+    // ---------- 页面 Loading 遮罩 ----------
+
     let _loadingSlowTimer = null;
     let _loadingVerySlowTimer = null;
 
@@ -211,11 +213,11 @@ function debugLog(module, ...args) {
             if (textEl) textEl.textContent = '加载超时，请尝试刷新页面或换用更好的网络重试';
         }, 15000);
         
-        // ⭐ 尝试设置 padding-top（如果 header 已加载）
+        // 尝试设置 padding-top（如果 header 已加载）
         setBodyPaddingTop();
     }
     
-    // ⭐ 新增：设置 body 的 padding-top
+    // 设置 body 的 padding-top
     function setBodyPaddingTop() {
         const header = document.querySelector('.site-header');
         if (header) {
@@ -248,7 +250,36 @@ function debugLog(module, ...args) {
         document.body.classList.remove('is-loading');
     }
 
-    // ⭐ 新增：导航链接自动高亮功能
+    // ---------- 导航链接自动高亮 ----------
+
+    // （提取：单个导航链接的激活处理）
+    function applyNavLinkActive(link, curPath, allLinks) {
+        try {
+            const href = link.getAttribute('href') || '';
+            if (!href) return;
+            
+            // 创建临时 <a> 元素来解析路径
+            const tmp = document.createElement('a');
+            tmp.href = href;
+            const targetPath = (tmp.pathname || '').replace(/\\/g, '/');
+            
+            // 判断当前 URL 是否包含目标路径
+            if (targetPath && curPath.indexOf(targetPath) !== -1) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+            
+            // 点击时更新激活状态
+            link.addEventListener('click', function() {
+                allLinks.forEach(function(el) { el.classList.remove('active'); });
+                link.classList.add('active');
+            }, false);
+        } catch (e) {
+            // 忽略单个链接的错误
+        }
+    }
+
     function highlightActiveNav() {
         try {
             const navLinks = document.querySelectorAll('.nav-link');
@@ -258,33 +289,62 @@ function debugLog(module, ...args) {
             const curPath = (window.location.pathname || window.location.href).replace(/\\/g, '/');
             
             navLinks.forEach(function(a) {
-                try {
-                    const href = a.getAttribute('href') || '';
-                    if (!href) return;
-                    
-                    // 创建临时 <a> 元素来解析路径
-                    const tmp = document.createElement('a');
-                    tmp.href = href;
-                    const targetPath = (tmp.pathname || '').replace(/\\/g, '/');
-                    
-                    // 判断当前 URL 是否包含目标路径
-                    if (targetPath && curPath.indexOf(targetPath) !== -1) {
-                        a.classList.add('active');
-                    } else {
-                        a.classList.remove('active');
-                    }
-                    
-                    // 点击时更新激活状态
-                    a.addEventListener('click', function() {
-                        navLinks.forEach(function(el) { el.classList.remove('active'); });
-                        a.classList.add('active');
-                    }, false);
-                } catch (e) {
-                    // 忽略单个链接的错误
-                }
+                applyNavLinkActive(a, curPath, navLinks);
             });
         } catch (e) {
             _debugLog('fragments', '导航高亮失败:', e);
+        }
+    }
+
+    // ---------- 片段加载核心逻辑 ----------
+
+    // （提取：FragmentLoader.load() 中的核心异步逻辑）
+    async function loadAllFragments(cfg) {
+        const tasks = [];
+        try {
+            Object.keys(cfg.placeholders).forEach(key => {
+                const ph = cfg.placeholders[key];
+                try {
+                    const el = document.querySelector(ph.selector);
+                    if (!el) return; // 占位符不存在
+                    const task = (async () => {
+                        try {
+                            const result = await tryLoadFromCandidates(ph.candidates, cfg.fetchCache, cfg.onError);
+                            if (result && result.text) {
+                                replacePlaceholder(el, result.text);
+                            }
+                        } catch (err) {
+                            // 将错误抛给上层处理或回调
+                            cfg.onError && cfg.onError(err, { placeholder: key });
+                        }
+                    })();
+                    tasks.push(task);
+                } catch (e) { cfg.onError && cfg.onError(e, { placeholder: key }); }
+            });
+
+            await Promise.all(tasks);
+
+            // 后处理：去重与修复链接
+            try { dedupeElements(cfg.dedupeSelectors); } catch (e) { cfg.onError && cfg.onError(e, { step: 'dedupe' }); }
+            try { fixRelativeLinks(cfg.linkFixContainers, cfg.viewFilenames); } catch (e) { cfg.onError && cfg.onError(e, { step: 'fixLinks' }); }
+
+            // 导航链接自动高亮
+            try { highlightActiveNav(); } catch (e) { cfg.onError && cfg.onError(e, { step: 'highlightNav' }); }
+            
+            // header/footer 加载完成后，重新设置 padding-top
+            setBodyPaddingTop();
+
+            // 等待一帧以便样式重算（单层 rAF 即可）
+            await new Promise(r => requestAnimationFrame(r));
+
+            // 不在这里移除loading遮罩，等待window.load事件
+            // 这样可以确保loader.js等异步内容也加载完成
+            return true;
+        } catch (err) {
+            // 出错时也要移除loading遮罩，避免一直转圈
+            removePageLoadingOverlay();
+            cfg.onError && cfg.onError(err, { step: 'overall' });
+            throw err;
         }
     }
 
@@ -300,65 +360,44 @@ function debugLog(module, ...args) {
         // 加载并注入所有占位符
         async load() {
             if (this._loadedPromise) return this._loadedPromise;
-            const cfg = this.config;
             
-            // ⭐ 创建页面loading遮罩
+            // 创建页面loading遮罩
             createPageLoadingOverlay();
 
-            this._loadedPromise = (async () => {
-                const tasks = [];
-                try {
-                    Object.keys(cfg.placeholders).forEach(key => {
-                        const ph = cfg.placeholders[key];
-                        try {
-                            const el = document.querySelector(ph.selector);
-                            if (!el) return; // 占位符不存在
-                            const task = (async () => {
-                                try {
-                                    const result = await tryLoadFromCandidates(ph.candidates, cfg.fetchCache, cfg.onError);
-                                    if (result && result.text) {
-                                        replacePlaceholder(el, result.text);
-                                    }
-                                } catch (err) {
-                                    // 将错误抛给上层处理或回调
-                                    cfg.onError && cfg.onError(err, { placeholder: key });
-                                }
-                            })();
-                            tasks.push(task);
-                        } catch (e) { cfg.onError && cfg.onError(e, { placeholder: key }); }
-                    });
-
-                    await Promise.all(tasks);
-
-                    // 后处理：去重与修复链接
-                    try { dedupeElements(cfg.dedupeSelectors); } catch (e) { cfg.onError && cfg.onError(e, { step: 'dedupe' }); }
-                    try { fixRelativeLinks(cfg.linkFixContainers, cfg.viewFilenames); } catch (e) { cfg.onError && cfg.onError(e, { step: 'fixLinks' }); }
-
-                    // ⭐ 新增：导航链接自动高亮
-                    try { highlightActiveNav(); } catch (e) { cfg.onError && cfg.onError(e, { step: 'highlightNav' }); }
-                    
-                    // ⭐ header/footer 加载完成后，重新设置 padding-top
-                    setBodyPaddingTop();
-
-                    // 等待一帧以便样式重算（单层 rAF 即可）
-                    await new Promise(r => requestAnimationFrame(r));
-
-                    // ⭐ 注意：不在这里移除loading遮罩，等待window.load事件
-                    // 这样可以确保loader.js等异步内容也加载完成
-                    return true;
-                } catch (err) {
-                    // 出错时也要移除loading遮罩，避免一直转圈
-                    removePageLoadingOverlay();
-                    cfg.onError && cfg.onError(err, { step: 'overall' });
-                    throw err;
-                }
-            })();
-
+            this._loadedPromise = loadAllFragments(this.config);
             return this._loadedPromise;
         }
     }
 
-    // 将类或实例按配置暴露到全局（可选）以保持兼容与扩展性
+    // ---------- 启动逻辑 ----------
+
+    // （提取：Loading 遮罩的移除时机调度）
+    function scheduleOverlayRemoval() {
+        if (document.readyState === 'complete') {
+            // 如果已经加载完成，延迟一点再隐藏（给其他脚本执行时间）
+            setTimeout(function() {
+                removePageLoadingOverlay();
+            }, 300);
+        } else {
+            // 否则等待window.load事件
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    removePageLoadingOverlay();
+                }, 300);
+            });
+        }
+    }
+
+    // （提取：窗口大小变化监听）
+    function setupResizeListener() {
+        window.addEventListener('resize', function() {
+            clearTimeout(window.__resizeTimer);
+            window.__resizeTimer = setTimeout(function() {
+                setBodyPaddingTop();
+            }, 100);
+        });
+    }
+
     function bootDefault() {
         try {
             const defaultLoader = new FragmentLoader();
@@ -375,29 +414,11 @@ function debugLog(module, ...args) {
                 defaultLoader.load().catch(() => {});
             }
             
-            // ⭐ 监听窗口大小变化，动态调整padding-top
-            window.addEventListener('resize', function() {
-                clearTimeout(window.__resizeTimer);
-                window.__resizeTimer = setTimeout(function() {
-                    setBodyPaddingTop();
-                }, 100);
-            });
+            // 监听窗口大小变化，动态调整padding-top
+            setupResizeListener();
             
-            // ⭐ 等待所有资源加载完成后才隐藏loading遮罩
-            // 这样可以确保loader.js等异步内容也加载完成
-            if (document.readyState === 'complete') {
-                // 如果已经加载完成，延迟一点再隐藏（给其他脚本执行时间）
-                setTimeout(function() {
-                    removePageLoadingOverlay();
-                }, 300);
-            } else {
-                // 否则等待window.load事件
-                window.addEventListener('load', function() {
-                    setTimeout(function() {
-                        removePageLoadingOverlay();
-                    }, 300);
-                });
-            }
+            // 等待所有资源加载完成后才隐藏loading遮罩
+            scheduleOverlayRemoval();
         } catch (e) { _debugLog('fragments', '错误:', e); }
     }
 
@@ -414,7 +435,7 @@ function debugLog(module, ...args) {
         bootDefault();
     }
 
-    // ========== 移动端汉堡菜单（从 mobile-menu.js 合并） ==========
+    // ========== 移动端汉堡菜单 ==========
     let _menuOpen = false;
     let _menuPanel = null;
     let _menuOverlay = null;
@@ -435,7 +456,7 @@ function debugLog(module, ...args) {
 
             const a = document.createElement('a');
             a.href = link.href;
-            // 在非 views 页面时，修正相对路径（header.html 中的 href 基于_views/解析，导致缺少 views/ 前缀）
+            // 在非 views 页面时，修正相对路径（header.html 中的 href 基于 views/ 解析，导致缺少 views/ 前缀）
             if (!_isViewsPage && !a.pathname.includes('/views/') && !a.pathname.endsWith('index.html')) {
                 a.href = 'views/' + link.getAttribute('href');
             }
@@ -474,26 +495,25 @@ function debugLog(module, ...args) {
         return { panel: _menuPanel, overlay: _menuOverlay, list: ul };
     }
 
+    // （提取：菜单填充的重试逻辑）
+    function retryPopulateMenu(ul, retries, maxRetries) {
+        const navLinks = document.querySelectorAll('.main-nav .nav-list a');
+        if (navLinks && navLinks.length > 0) {
+            _populating = false;
+            _debugLog('mobileMenu', '✅ 菜单填充成功，' + navLinks.length + ' 项，耗时 ' + (retries * 100) + 'ms');
+            _fillMenuItems(ul, navLinks);
+        } else if (retries < maxRetries) {
+            setTimeout(function() { retryPopulateMenu(ul, retries + 1, maxRetries); }, 100);
+        } else {
+            _populating = false;
+            _debugLog('mobileMenu', '⚠️ 移动端菜单填充超时：导航链接未找到');
+        }
+    }
+
     function populateMobileMenu(ul) {
         if (ul.children.length > 0 || _populating) return; // 已有内容或正在填充，跳过
         _populating = true;
-        let retries = 0;
-        const maxRetries = 15;
-        function tryPopulate() {
-            const navLinks = document.querySelectorAll('.main-nav .nav-list a');
-            if (navLinks && navLinks.length > 0) {
-                _populating = false;
-                _debugLog('mobileMenu', '✅ 菜单填充成功，' + navLinks.length + ' 项，耗时 ' + (retries * 100) + 'ms');
-                _fillMenuItems(ul, navLinks);
-            } else if (retries < maxRetries) {
-                retries++;
-                setTimeout(tryPopulate, 100);
-            } else {
-                _populating = false;
-                _debugLog('mobileMenu', '⚠️ 移动端菜单填充超时：导航链接未找到');
-            }
-        }
-        tryPopulate();
+        retryPopulateMenu(ul, 0, 15);
     }
 
     function openMobileMenu() {
@@ -557,6 +577,38 @@ function debugLog(module, ...args) {
         if (_menuOpen) { closeMobileMenu(); } else { openMobileMenu(); }
     }
 
+    // （提取：切换按钮绑定的重试逻辑）
+    function retryBindToggle(retryCount, maxRetries) {
+        _menuToggleBtn = document.querySelector('.nav-toggle');
+        if (_menuToggleBtn) {
+            _menuToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMobileMenu();
+            }, false);
+            // 确保菜单项已填充
+            const ul = _menuPanel.querySelector('.mobile-nav-list');
+            if (ul && ul.children.length === 0) populateMobileMenu(ul);
+        } else if (retryCount < maxRetries) {
+            setTimeout(function() { retryBindToggle(retryCount + 1, maxRetries); }, 200);
+        } else {
+            _debugLog('mobileMenu', '⚠️ 汉堡按钮绑定超时：.nav-toggle 未找到');
+        }
+    }
+
+    // （提取：移动端菜单的事件监听注册）
+    function setupMobileMenuEvents() {
+        _menuOverlay.addEventListener('click', function(e) { e.preventDefault(); closeMobileMenu(); }, false);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMobileMenu();
+        }, false);
+        document.addEventListener('click', function(e) {
+            if (!_menuOpen || !e.target) return;
+            if (_menuPanel.contains(e.target) || (_menuToggleBtn && _menuToggleBtn.contains(e.target))) return;
+            closeMobileMenu();
+        }, false);
+    }
+
     function initMobileMenu() {
         try {
             const menu = createMobileMenu();
@@ -564,38 +616,11 @@ function debugLog(module, ...args) {
             _menuOverlay = menu.overlay;
             populateMobileMenu(menu.list);
 
-            // 等待 header 加载后绑定按钮
-            let retryCount = 0;
-            const maxRetries = 10;
-            function tryBind() {
-                _menuToggleBtn = document.querySelector('.nav-toggle');
-                if (_menuToggleBtn) {
-                    _menuToggleBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleMobileMenu();
-                    }, false);
-                    // 确保菜单项已填充
-                    const ul = _menuPanel.querySelector('.mobile-nav-list');
-                    if (ul && ul.children.length === 0) populateMobileMenu(ul);
-                } else if (retryCount < maxRetries) {
-                    retryCount++;
-                    setTimeout(tryBind, 200);
-                } else {
-                    _debugLog('mobileMenu', '⚠️ 汉堡按钮绑定超时：.nav-toggle 未找到');
-                }
-            }
-            tryBind();
+            // 等待 header 加载后绑定按钮（带重试）
+            retryBindToggle(0, 10);
 
-            _menuOverlay.addEventListener('click', function(e) { e.preventDefault(); closeMobileMenu(); }, false);
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeMobileMenu();
-            }, false);
-            document.addEventListener('click', function(e) {
-                if (!_menuOpen || !e.target) return;
-                if (_menuPanel.contains(e.target) || (_menuToggleBtn && _menuToggleBtn.contains(e.target))) return;
-                closeMobileMenu();
-            }, false);
+            // 注册全局事件监听
+            setupMobileMenuEvents();
         } catch (e) { _debugLog('mobileMenu', '移动端菜单初始化失败:', e); }
     }
 

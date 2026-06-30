@@ -25,6 +25,8 @@
     --hero-banner-title-size: 40px;
     /* 导航高亮色（黄色，暂未使用）*/
     --nav-highlight-color: #ffcc00;
+    /* 文章标题底部装饰线颜色 */
+    --accent-line-color: #a60c0c;
 }
 
 /* 全局样式重置 */

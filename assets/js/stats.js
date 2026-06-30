@@ -1,7 +1,5 @@
-// ==================== 首页功能模块 ====================
-// 包含：数据统计面板 + 滚动揭示动画
-
-// ==================== 统一调试配置 ====================
+//数据统计面板动画首页专用
+// ====统一调试配置
 const STATS_DEBUG_CONFIG = {
     // 全局调试开关：true 启用所有调试日志，false 关闭
     enabled: false,
@@ -25,9 +23,9 @@ function debugLog(module, ...args) {
     const prefix = `[${module === 'stats' ? 'Stats' : 'Scroll'}]`;
     console.log(prefix, ...args);
 }
-// ================================================
+// ======
 
-// ==================== 数据统计模块 ====================
+// ==================== 数据统计模块
 const statsCache = {
     data: null,
     timestamp: null,
@@ -242,7 +240,7 @@ function initScrollReveal() {
     animatedElements.forEach(el => observer.observe(el));
 }
 
-// ==================== 初始化入口 ===================
+// ==================== 初始化入口
 document.addEventListener('DOMContentLoaded', () => {
     debugLog('stats', 'DOM 加载完成，初始化模块...');
     

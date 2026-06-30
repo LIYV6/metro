@@ -18,38 +18,27 @@
     <script src="../assets/js/libs/mustache.min.js"></script>
     <script src="../assets/js/libs/json5.min.js"></script>
 </head>
-<body class="is-loading">
+<body class="is-loading moreinfo-page">
 <script>window.PAGE_ID = 'moreinfo';</script>
 <div data-include="header"></div>
-<main class="server-page">
-    <!-- 左侧导航菜单 -->
-    <nav class="server-nav">
-        <ul class="server-nav-list">
-            <li class="server-nav-item"><a class="server-nav-link active" href="#lyrail">鲤鱼铁路</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#furail">傅量铁路</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#yirail">怡文铁路</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#service-culture">服务与文化</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#service">服务声明</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#privacy">隐私政策</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#copyright">版权声明</a></li>
-        </ul>
+<main class="nav-page">
+    <!-- 一级父导航：始终采用横向滚动效果（移动端样式） -->
+    <nav class="parent-nav">
+        <ul class="parent-nav-list"></ul>
     </nav>
-
-    <!-- 右侧内容区域 -->
-    <div class="server-content">
-        <section class="server-section" id="lyrail"></section>
-        <section class="server-section" id="furail"></section>
-        <section class="server-section" id="yirail"></section>
-        <section class="server-section" id="service-culture"></section>
-        <section class="server-section" id="service"></section>
-        <section class="server-section" id="privacy"></section>
-        <section class="server-section" id="copyright"></section>
+    <!-- 子导航 + 内容容器 -->
+    <div class="content-body">
+        <!-- 二级子导航菜单：左侧垂直样式 -->
+        <nav class="child-nav">
+            <ul class="child-nav-list"></ul>
+        </nav>
+        <!-- 右侧内容区域（section 由 loader.js 根据 JSON5 自动生成） -->
+        <div class="content-area"></div>
     </div>
 </main>
 <div data-include="footer"></div>
 
 <script src="../assets/js/include-fragments.js"></script>
 <script src="../assets/js/loader.js"></script>
-<script src="../assets/js/server-nav.js"></script>
 </body>
 </html>

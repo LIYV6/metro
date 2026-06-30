@@ -1,61 +1,101 @@
 {
   // 页面标识
   "pageId": "server",
-  // 页面上的插槽定义：每个键对应 HTML 中的 section id
-  "slots": {
-    "passenger-rule": {
-      "dataKey": "passenger-rule",
-      "semanticTag": "article"
-    },
-    "see-route-guide": {
-      "dataKey": "see-route-guide",
-      "semanticTag": "article"
-    },
-    "lhwlc-map": {
-      "dataKey": "lhwlc-map",
-      "semanticTag": "article"
-    },
-    "3d-map": {
-      "dataKey": "3d-map",
-      "semanticTag": "article"
-    },
-    "use-guide": {
-      "dataKey": "use-guide",
-      "semanticTag": "article"
-    }
-  },
 
-  // 页面内容项
-  "content": {
+  // 导航分组（父导航 → 子导航 两级结构）
+  "navGroups": [
+    {
+      "id": "passenger-rule",
+      "label": "乘客守则",
+      "children": ["passenger-rule"]
+    },
+    {
+      "id": "map-info",
+      "label": "地图信息",
+      "children": ["lhwlc-map","map1"]
+    },
+    {
+      "id": "use-guide-group",
+      "label": "乘车指南",
+//      "children": ["guide-1", "guide-2", "guide-3"],
+      "children": [],
+    },
+    {
+      "id": "faq",
+      "label": "F&Q",
+      "children": ["see-route-guide", "3d-map"]
+    }
+
+  ],
+
+  "articles": {
+
     "passenger-rule": {
       "type": "article",
+      "navLabel": "乘客守则",
       "title": "乘客守则",
       "date": "2025-05-21",
       "content": "<p>&emsp;&emsp;为保障鲤鱼交通集团运营的地铁、火车线路有序、安全运行，维护全体玩家的乘车权益，营造文明、和谐的乘车环境，特制定本乘客守则，请所有乘车玩家严格遵守：</p><p>&emsp;&emsp;1.文明乘车，有序上下：乘车时请自觉排队，有序上下列车，不拥挤、不插队，不堵塞车门、站台通道，避免影响其他玩家乘车；上车后及时找好位置，不占用应急通道、换乘通道。</p><p>&emsp;&emsp;2.爱护设施，杜绝破坏：严禁破坏地铁、火车列车、轨道、站台、标识等相关设施，严禁擅自修改轨道线路、拆卸乘车设备、破坏站点装饰，违者将暂停乘车权限，并配合服务器相关规定处理。</p><p>&emsp;&emsp;3.规范乘车，遵守规则：乘车期间不随意跳车、不攀爬列车、不擅自进入轨道区域，避免发生安全事故；不携带违规物品（如破坏类道具、大型阻碍物等）乘车，不影响列车正常运行。</p><p>&emsp;&emsp;4.文明自律，互相体谅：乘车时不大声喧哗、不恶意骚扰其他玩家，不随意丢弃游戏道具、垃圾，保持站台、列车内整洁；尊重其他玩家的乘车习惯，互相体谅、友好共处。</p><p>&emsp;&emsp;5.配合管理，服从调度：自觉服从集团运营人员的管理与调度，遇到线路临时调整、故障检修等情况，主动配合引导，不擅自违规乘车、不恶意投诉；若发现设施故障、安全隐患，及时向运营人员反馈。</p><p>&emsp;&emsp;6.特殊说明：禁止利用地铁、火车线路进行违规传送、作弊等行为，严禁借助轨道交通设施扰乱服务器秩序，一经发现，将取消乘车资格，并交由服务器管理方处理。</p>"
     },
+
     "see-route-guide": {
       "type": "article",
+      "navLabel": "查看线路与导航信息",
+      "parentGroup": "faq",
       "title": "如何查看线路和导航信息？",
       "date": "2026-05-19",
       "content": "<p>要想查看信息，可以找到图1物品栏所示的物品 ：<strong>铁路仪表盘</strong>，然后手持。</p><div class='guide-image'><img src='../assets/images/guide/step1.png' alt='Step 1: 手持铁路仪表盘'><p class='image-caption'>图1：手持物品铁路仪表盘</p></div><p>接着按鼠标右键打开铁路仪表盘。界面如图2所示：</p><div class='guide-image'><img src='../assets/images/guide/step2.png' alt='Step 2: 铁路仪表盘界面'><p class='image-caption'>图2：铁路仪表盘界面</p></div><p>然后点击下方的交通线路图按钮，会打开浏览器窗口，稍等一下就能加载出来界面了。</p><div class='guide-image'><img src='../assets/images/guide/step3.png' alt='Step 3: 交通线路图加载界面'><p class='image-caption'>图3：交通线路图加载界面</p></div><p>点击加载出来的页面右下角的菜单，我们可以进行一系列的选择设置，比如设置不同种交通线路在图上的显示，还可以使用导航功能前往你想要前往的地方。</p><p>如果你觉得这种导航不太好用，可以尝试用服主自制的导航功能，链接如下：<a href='https://mtrmap.mcbar.cc/route.html' target='_blank'>routeguide</a>，但需要注意的是，该页面的返回首页可不是这个网站的首页哦。</p><p>在图2界面时，我们可以点击右下角的'选项'，接着会出现如图4的界面。</p><div class='guide-image'><img src='../assets/images/guide/step4.png' alt='Step 4: 选项界面'><p class='image-caption'>图4：选项界面</p></div><p>我来一一介绍各个选项：</p><p>在聊天栏显示下一站信息作用是当乘车时会在聊天框播报下一站信息，包括下一站站名，换乘线路。使用文字转语音广播选项在打开时会用语音播报上述内容。动态纹理分辨率的数值越高会让你的屏蔽门等模组方块变得更清晰真实，但可能会增加性能消耗或游戏卡死。如果您打开以立体形式渲染预设轨道，这会使轨道形态变得更真实。其他选项没什么需要说的。好了就这样，尽情享受您的旅行！</p>"
     },
+
     "lhwlc-map": {
       "type": "article",
+      "navLabel": "鲤湖湾州及鲤城",
+      "parentGroup": "map-info",
       "title": "鲤湖湾州及鲤城之地图",
       "date": "2026-05-21",
-      "content": "<p>&emsp;&emsp;以下是鲤湖湾州及鲤城地区的地图总览，后续我将添加更多该区域的地理布局、交通网络和重要地标。</p><div class='guide-image'><img src='../assets/images/lhwlc-map.webp' alt='鲤湖湾州及鲤城之地图'><p class='image-caption'>鲤湖湾州及鲤城之地图</p></div><p style='text-align: center; color: #666; font-size: 14px; margin-top: 16px;'>💡 <strong>提示：</strong>建议您右键点击图片选择“将图像另存为”保存到本地，或在新标签页中打开以便全屏查看。</p>"
+      "content": "<p>&emsp;&emsp;以下是鲤湖湾州及鲤城地区的地图总览，后续我将添加更多该区域的地理布局、交通网络和重要地标。</p><div class='guide-image'><img src='../assets/images/lhwlc-map.webp' alt='鲤湖湾州及鲤城之地图'><p class='image-caption'>鲤湖湾州及鲤城之地图</p></div><p style='text-align: center; color: #666; font-size: 14px; margin-top: 16px;'>💡 <strong>提示：</strong>建议您右键点击图片选择'将图像另存为'保存到本地，或在新标签页中打开以便全屏查看。</p>"
     },
+    "map1": {
+      "type": "article",
+      "navLabel": "其他地区",
+      "parentGroup": "map-info",
+      "title": "其他地区地图",
+      "date": "2026-06-30",
+      "content": "<p>&emsp;&emsp;其他地区的地图仍在制作中，敬请期待。</p>"
+    },
+
     "3d-map": {
       "type": "article",
+      "navLabel": "3D地图",
+      "parentGroup": "faq",
       "title": "查看3D地图",
       "date": "2026-05-29",
       "content": "<p>&emsp;&emsp;F:我能不能在不进入服务器的情况下查看地图？</p><p>&emsp;&emsp;Q:欲查看各地区之立体地图，请前往<a href='https://mtr3d.mcbar.cc' target='_blank'>3D地图</a></p>"
     },
-    "use-guide": {
+
+    "guide-1": {
       "type": "article",
-      "title": "乘车指南",
-      "date": "2026-05-19",
-      "content": "<p>&emsp;&emsp;欢迎使用鲤鱼铁路出行服务！本指南将帮助您了解如何便捷、安全地使用我们的轨道交通服务。详细内容即将开放，敬请期待！</p>"
+      "navLabel": "敬请期待",
+      "parentGroup": "use-guide-group",
+      "title": "基础操作",
+      "content": ""
+    },
+
+    "guide-2": {
+      "type": "article",
+      "navLabel": "站点信息",
+      "parentGroup": "use-guide-group",
+      "title": "站点信息",
+      "content": ""
+    },
+
+    "guide-3": {
+      "type": "article",
+      "navLabel": "常见问题",
+      "parentGroup": "use-guide-group",
+      "title": "常见问题",
+      "content": ""
     }
+
   }
 }

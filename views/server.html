@@ -22,36 +22,24 @@
 <script>window.PAGE_ID = 'server';</script>
 <div data-include="header"></div>
 
-<main class="server-page">
-    <!-- 左侧导航菜单 -->
-    <nav class="server-nav">
-        <ul class="server-nav-list">
-            <li class="server-nav-item"><a class="server-nav-link active" href="#passenger-rule">乘客守则</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#see-route-guide">查看线路与导航信息</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#lhwlc-map">鲤湖湾州及鲤城之地图</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#3d-map">3D地图</a></li>
-            <li class="server-nav-item"><a class="server-nav-link" href="#use-guide">乘车指南</a></li>
-        </ul>
+<main class="nav-page">
+    <!-- 一级父导航：始终采用横向滚动效果（移动端样式） -->
+    <nav class="parent-nav">
+        <ul class="parent-nav-list"></ul>
     </nav>
-
-    <!-- 右侧内容区域 -->
-    <div class="server-content">
-        <!-- 乘客守则 -->
-        <section class="server-section" id="passenger-rule"></section>
-        <!-- 查看信息 -->
-        <section class="server-section" id="see-route-guide"></section>
-        <!-- 鲤湖湾州及鲤城之地图 -->
-        <section class="server-section" id="lhwlc-map"></section>
-        <!-- 3D地图 -->
-        <section class="server-section" id="3d-map"></section>
-        <!-- 乘车指南 -->
-        <section class="server-section" id="use-guide"></section>
+    <!-- 子导航 + 内容容器 -->
+    <div class="content-body">
+        <!-- 二级子导航菜单：左侧垂直样式 -->
+        <nav class="child-nav">
+            <ul class="child-nav-list"></ul>
+        </nav>
+        <!-- 右侧内容区域（section 由 loader.js 根据 JSON5 自动生成） -->
+        <div class="content-area"></div>
     </div>
 </main>
 <div data-include="footer"></div>
 
 <script src="../assets/js/include-fragments.js"></script>
 <script src="../assets/js/loader.js"></script>
-<script src="../assets/js/server-nav.js"></script>
 </body>
 </html>

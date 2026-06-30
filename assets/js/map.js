@@ -1,12 +1,9 @@
-// ==================== 统一调试配置 ====================
+// 地图交互/地图数据加载
+// ====== 统一调试配置 ======
 const MAP_DEBUG_CONFIG = {
-    // 全局调试开关：true 启用所有调试日志，false 关闭
-    enabled: false,
-    
+    enabled: false,// 全局调试开关：true 启用所有调试日志，false 关闭
     // 模块级开关
-    modules: {
-        data: true           // 数据加载相关日志
-    }
+    modules: {data: true}// 数据加载相关日志
 };
 
 /**
